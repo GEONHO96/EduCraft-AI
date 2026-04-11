@@ -166,8 +166,13 @@ cd backend
 export AI_API_KEY=your-anthropic-api-key
 ./gradlew bootRun
 
-# 3. 프론트엔드 실행 (새 터미널)
+# 3. 프론트엔드 환경변수 설정 (새 터미널)
 cd frontend
+cp .env.example .env
+# .env 파일에서 소셜 로그인 키 설정 (선택사항)
+# VITE_GOOGLE_CLIENT_ID, VITE_KAKAO_CLIENT_ID, VITE_NAVER_CLIENT_ID 등
+
+# 4. 프론트엔드 실행
 npm install
 npm run dev
 ```
@@ -198,6 +203,7 @@ docker-compose up --build
 |--------|----------|------|------|
 | POST | `/api/auth/register` | 회원가입 | - |
 | POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
+| POST | `/api/auth/social-login` | 소셜 로그인 (Google/Kakao/Naver) | - |
 | GET | `/api/auth/me` | 내 정보 조회 | 로그인 |
 
 ### 강의
@@ -237,7 +243,7 @@ docker-compose up --build
 
 | 페이지 | 설명 |
 |--------|------|
-| **로그인/회원가입** | 교강사/학생 역할 선택 후 가입 |
+| **로그인/회원가입** | 이메일 또는 소셜 로그인(Google/Kakao/Naver), 교강사/학생 역할 선택 |
 | **교강사 대시보드** | 강의 수, 수강생 수, AI 생성 횟수, 절약 시간 통계 |
 | **학생 대시보드** | 수강 강의, 퀴즈 성적, 평균 점수 |
 | **강의 관리** | 강의 CRUD, 커리큘럼 목록 확인 |
