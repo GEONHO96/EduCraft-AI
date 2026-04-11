@@ -37,6 +37,11 @@ export default function Layout() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     )},
+    { path: '/grade-quiz', label: 'AI 퀴즈', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
+    )},
     { path: '/recommend', label: '강의 추천', icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
@@ -53,6 +58,7 @@ export default function Layout() {
   // 현재 경로와 메뉴 항목의 활성 상태를 비교
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/'
+    if (path === '/grade-quiz') return location.pathname.startsWith('/grade-quiz')
     if (path === '/recommend') return location.pathname.startsWith('/recommend')
     if (path === '/sns/feed') return location.pathname.startsWith('/sns')
     if (path === '/courses/browse') return location.pathname === '/courses/browse'

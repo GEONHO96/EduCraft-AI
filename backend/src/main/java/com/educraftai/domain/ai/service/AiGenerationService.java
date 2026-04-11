@@ -269,6 +269,80 @@ public class AiGenerationService {
                 .build();
     }
 
+    /** 학년별 AI 퀴즈 생성 (학생용, DB 저장 없이 바로 반환) */
+    public AiResponse.GradeQuizResult generateGradeQuiz(Long userId, AiRequest.GenerateGradeQuiz request) {
+        int questionCount = request.getQuestionCount() != null ? request.getQuestionCount() : 5;
+        int difficulty = request.getDifficulty() != null ? request.getDifficulty() : 3;
+
+        // 학년 코드를 한국어 텍스트로 변환
+        String gradeLabel = convertGradeLabel(request.getGrade());
+
+        String systemPrompt = """
+                당신은 한국 교육과정에 맞는 문제 출제 전문가입니다.
+                학생의 학년과 과목에 맞는 수준의 퀴즈 문제를 생성해주세요.
+                한국 교육과정 기준으로 해당 학년에서 실제로 배우는 내용으로 출제하세요.
+                반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 포함하지 마세요.
+                {
+                  "questions": [
+                    {
+                      "number": 1,
+                      "type": "MULTIPLE_CHOICE",
+                      "question": "문제 내용",
+                      "options": ["보기1", "보기2", "보기3", "보기4"],
+                      "answer": 0,
+                      "explanation": "해설"
+                    }
+                  ]
+                }
+                type은 MULTIPLE_CHOICE(객관식) 또는 SHORT_ANSWER(주관식)입니다.
+                객관식의 answer는 정답 보기의 인덱스(0부터), 주관식의 answer는 정답 문자열입니다.
+                객관식과 주관식을 적절히 섞어서 출제하세요.
+                """;
+
+        String userPrompt = String.format("""
+                학년: %s
+                과목: %s
+                문제 수: %d개
+                난이도: %d/5 (1=매우 쉬움, 3=보통, 5=매우 어려움)
+
+                위 학년의 한국 교육과정에 맞는 %s 문제를 출제해주세요.
+                학생이 실제 학교 시험에서 만날 수 있는 수준의 문제로 만들어주세요.
+                """,
+                gradeLabel, request.getSubject(), questionCount, difficulty, request.getSubject()
+        );
+
+        log.info("[AI 학년별 퀴즈 생성] userId={}, grade={}, subject={}, count={}", userId, request.getGrade(), request.getSubject(), questionCount);
+
+        String aiResult = aiClient.generate(systemPrompt, userPrompt);
+        String jsonContent = extractJson(aiResult);
+
+        return AiResponse.GradeQuizResult.builder()
+                .questionsJson(jsonContent)
+                .questionCount(questionCount)
+                .grade(request.getGrade())
+                .subject(request.getSubject())
+                .build();
+    }
+
+    /** 학년 코드를 한국어 라벨로 변환 */
+    private String convertGradeLabel(String grade) {
+        return switch (grade) {
+            case "ELEMENTARY_1" -> "초등학교 1학년";
+            case "ELEMENTARY_2" -> "초등학교 2학년";
+            case "ELEMENTARY_3" -> "초등학교 3학년";
+            case "ELEMENTARY_4" -> "초등학교 4학년";
+            case "ELEMENTARY_5" -> "초등학교 5학년";
+            case "ELEMENTARY_6" -> "초등학교 6학년";
+            case "MIDDLE_1" -> "중학교 1학년";
+            case "MIDDLE_2" -> "중학교 2학년";
+            case "MIDDLE_3" -> "중학교 3학년";
+            case "HIGH_1" -> "고등학교 1학년";
+            case "HIGH_2" -> "고등학교 2학년";
+            case "HIGH_3" -> "고등학교 3학년";
+            default -> grade;
+        };
+    }
+
     public AiResponse.SupplementResult generateSupplement(Long userId, AiRequest.GenerateSupplement request) {
         QuizSubmission submission = quizSubmissionRepository.findById(request.getQuizSubmissionId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_NOT_FOUND));

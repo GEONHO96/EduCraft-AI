@@ -40,6 +40,15 @@ public class AiResponse {
         private Integer timeSavedSeconds;
     }
 
+    /** 학년별 AI 퀴즈 생성 결과 (DB 저장 없이 바로 반환) */
+    @Getter @Builder @AllArgsConstructor
+    public static class GradeQuizResult {
+        private String questionsJson;
+        private Integer questionCount;
+        private String grade;
+        private String subject;
+    }
+
     @Getter @Builder @AllArgsConstructor
     public static class SupplementResult {
         private String explanationJson;

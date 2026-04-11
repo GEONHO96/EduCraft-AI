@@ -50,6 +50,19 @@ public class AiRequest {
         private String additionalRequirements;
     }
 
+    /** 학년별 AI 퀴즈 생성 요청 (학생용) */
+    @Getter @Setter
+    public static class GenerateGradeQuiz {
+        @NotBlank(message = "학년 정보는 필수입니다.")
+        private String grade;        // ELEMENTARY_1 ~ HIGH_3
+
+        @NotBlank(message = "과목은 필수입니다.")
+        private String subject;      // 국어, 영어, 수학
+
+        private Integer questionCount; // 기본 5문제
+        private Integer difficulty;    // 1~5, 기본 3
+    }
+
     @Getter @Setter
     public static class GenerateSupplement {
         @NotNull

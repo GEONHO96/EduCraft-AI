@@ -38,6 +38,13 @@ public class AiController {
         return ApiResponse.ok(aiGenerationService.generateQuiz(AuthUtil.getCurrentUserId(), request));
     }
 
+    /** 학년별 AI 퀴즈 생성 (학생용 - 로그인한 사용자 누구나 가능) */
+    @PostMapping("/quiz/grade-quiz")
+    public ApiResponse<AiResponse.GradeQuizResult> generateGradeQuiz(
+            @Valid @RequestBody AiRequest.GenerateGradeQuiz request) {
+        return ApiResponse.ok(aiGenerationService.generateGradeQuiz(AuthUtil.getCurrentUserId(), request));
+    }
+
     @PostMapping("/supplement/generate")
     public ApiResponse<AiResponse.SupplementResult> generateSupplement(
             @Valid @RequestBody AiRequest.GenerateSupplement request) {

@@ -21,6 +21,7 @@ import QuizTakePage from './pages/quiz/QuizTakePage'
 import FeedPage from './pages/sns/FeedPage'
 import ProfilePage from './pages/sns/ProfilePage'
 import VideoRecommendPage from './pages/recommend/VideoRecommendPage'
+import GradeQuizPage from './pages/quiz/GradeQuizPage'
 
 /** 인증 가드 - 토큰 없으면 로그인 페이지로 리다이렉트 */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -67,6 +68,8 @@ function App() {
         <Route path="quiz/:quizId" element={<QuizTakePage />} />
         {/* 강의 추천 */}
         <Route path="recommend" element={<VideoRecommendPage />} />
+        {/* 학년별 AI 퀴즈 */}
+        <Route path="grade-quiz" element={<GradeQuizPage />} />
         {/* SNS 커뮤니티 */}
         <Route path="sns/feed" element={<FeedPage />} />
         <Route path="sns/profile/:userId" element={<ProfilePage />} />
