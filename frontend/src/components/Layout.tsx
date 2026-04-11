@@ -54,6 +54,11 @@ export default function Layout() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
       </svg>
     )},
+    { path: '/pricing', label: '요금제', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+    )},
   ]
 
   // 현재 경로와 메뉴 항목의 활성 상태를 비교
@@ -62,6 +67,7 @@ export default function Layout() {
     if (path === '/grade-quiz') return location.pathname.startsWith('/grade-quiz')
     if (path === '/recommend') return location.pathname.startsWith('/recommend')
     if (path === '/sns/feed') return location.pathname.startsWith('/sns')
+    if (path === '/pricing') return location.pathname.startsWith('/pricing')
     if (path === '/courses/browse') return location.pathname === '/courses/browse'
     if (path === '/courses') return location.pathname.startsWith('/courses') && !location.pathname.startsWith('/courses/browse')
     return location.pathname.startsWith(path)
