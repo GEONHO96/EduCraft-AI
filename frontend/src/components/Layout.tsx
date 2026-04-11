@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
+import ChatBot from './ChatBot'
 
 export default function Layout() {
   const { user, logout } = useAuthStore()
@@ -200,6 +201,9 @@ export default function Layout() {
           </div>
         </div>
       )}
+
+      {/* AI 챗봇 위젯 */}
+      <ChatBot />
     </div>
   )
 }
