@@ -48,6 +48,10 @@
 | **소셜 로그인** | Google, Kakao, Naver 소셜 계정으로 간편 로그인 |
 | **아이디 찾기** | 이름으로 가입된 이메일 검색 (마스킹 처리) |
 | **비밀번호 재설정** | 임시 비밀번호 발급 → 새 비밀번호 설정 (3단계) |
+| **커뮤니티 피드** | 게시글 작성/조회, 카테고리 필터, 팔로잉 피드 |
+| **좋아요 & 댓글** | 게시글 좋아요 토글, 댓글 작성/삭제, 실시간 반영 |
+| **팔로우 시스템** | 사용자 간 팔로우/언팔로우, 팔로워/팔로잉 수 표시 |
+| **프로필 페이지** | 프로필 정보, 게시글 수, 팔로워/팔로잉 통계 |
 
 <br/>
 
@@ -203,6 +207,7 @@ EduCraft-AI/
 │       │   ├── curriculum/     # 커리큘럼 (CRUD)
 │       │   ├── material/       # 수업 자료
 │       │   ├── quiz/           # 퀴즈 (출제, 응시, 채점)
+│       │   ├── sns/            # SNS (게시글, 좋아요, 댓글, 팔로우)
 │       │   ├── ai/             # AI 생성 (커리큘럼/자료/퀴즈)
 │       │   ├── batch/          # Spring Batch (통계 집계, 비활성 감지)
 │       │   └── dashboard/      # 대시보드 (통계)
@@ -226,7 +231,8 @@ EduCraft-AI/
             ├── course/         # 강의 목록, 상세
             ├── curriculum/     # AI 커리큘럼 생성
             ├── material/       # AI 자료 생성
-            └── quiz/           # AI 퀴즈 생성, 퀴즈 풀기
+            ├── quiz/           # AI 퀴즈 생성, 퀴즈 풀기
+            └── sns/            # 커뮤니티 피드, 프로필
 ```
 
 <br/>
@@ -284,7 +290,7 @@ docker-compose up --build
 
 ## API 명세
 
-> 총 **26개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
+> 총 **37개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
 > 인증: `Authorization: Bearer <JWT_TOKEN>` 헤더 필요 (공개 API 제외)
 
 ---
@@ -875,6 +881,124 @@ docker-compose up --build
 
 ---
 
+### 8. SNS 커뮤니티 (`/api/sns`)
+
+#### `POST /api/sns/posts` — 게시글 작성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "content": "오늘 수업에서 배운 HTML 기초 정리합니다!",
+  "imageUrl": "https://example.com/image.jpg",
+  "category": "CLASS_SHARE"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| content | String | O | 게시글 내용 |
+| imageUrl | String | X | 이미지 URL |
+| category | Enum | X | `FREE`, `STUDY_TIP`, `CLASS_SHARE`, `QNA`, `RESOURCE` (기본: FREE) |
+
+---
+
+#### `GET /api/sns/posts` — 전체 피드
+> 권한: 로그인 필요 | 페이징: `?page=0&size=10`
+
+---
+
+#### `GET /api/sns/posts/following` — 팔로잉 피드
+> 권한: 로그인 필요 | 팔로우한 사용자 + 내 게시글
+
+---
+
+#### `GET /api/sns/posts/category/{category}` — 카테고리별 조회
+> 권한: 로그인 필요
+
+---
+
+#### `GET /api/sns/posts/{postId}` — 게시글 상세 (댓글 포함)
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "author": { "id": 1, "name": "김교수", "profileImage": null, "role": "TEACHER" },
+    "content": "오늘 수업에서 배운 HTML 기초 정리합니다!",
+    "imageUrl": "https://example.com/image.jpg",
+    "category": "CLASS_SHARE",
+    "likeCount": 5,
+    "commentCount": 2,
+    "liked": true,
+    "comments": [
+      { "id": 1, "author": { "id": 2, "name": "이학생", "role": "STUDENT" }, "content": "좋은 정리 감사합니다!", "createdAt": "2026-04-11T15:00:00" }
+    ],
+    "createdAt": "2026-04-11T14:30:00"
+  }
+}
+```
+
+---
+
+#### `DELETE /api/sns/posts/{postId}` — 게시글 삭제
+> 권한: 작성자만
+
+---
+
+#### `POST /api/sns/posts/{postId}/like` — 좋아요 토글
+> 권한: 로그인 필요
+
+**Response**
+```json
+{ "success": true, "data": { "liked": true, "likeCount": 6 } }
+```
+
+---
+
+#### `POST /api/sns/posts/{postId}/comments` — 댓글 작성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{ "content": "좋은 글이네요!" }
+```
+
+---
+
+#### `DELETE /api/sns/comments/{commentId}` — 댓글 삭제
+> 권한: 작성자만
+
+---
+
+#### `POST /api/sns/users/{userId}/follow` — 팔로우 토글
+> 권한: 로그인 필요
+
+**Response**
+```json
+{ "success": true, "data": { "following": true, "followerCount": 12 } }
+```
+
+---
+
+#### `GET /api/sns/users/{userId}/profile` — 프로필 조회
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1, "name": "김교수", "profileImage": null, "role": "TEACHER",
+    "postCount": 15, "followerCount": 42, "followingCount": 8, "isFollowing": false
+  }
+}
+```
+
+---
+
 ### API 요약
 
 | 카테고리 | 엔드포인트 수 | 권한 |
@@ -886,7 +1010,8 @@ docker-compose up --build
 | 퀴즈 | 4개 | 교강사 1 / 학생 2 / 로그인 1 |
 | 대시보드 | 3개 | 교강사 2 / 학생 1 |
 | 배치 | 1개 | 교강사 1 |
-| **합계** | **26개** | |
+| SNS 커뮤니티 | 11개 | 로그인 9 / 작성자 2 |
+| **합계** | **37개** | |
 
 <br/>
 
@@ -905,6 +1030,8 @@ docker-compose up --build
 | **AI 자료 생성** | 강의/실습 자료 AI 자동 생성 (난이도 조절) |
 | **AI 퀴즈 출제** | 문제 수/난이도/유형 설정 → AI 자동 출제 |
 | **퀴즈 풀기** | 카운트다운 타이머, 진행률 바, 자동 제출, 정답/오답 시각적 표시, 결과 배너 |
+| **커뮤니티 피드** | 전체/팔로잉 피드 전환, 카테고리 필터(자유/공부팁/수업공유/Q&A/자료), 글쓰기 모달, 좋아요, 댓글 |
+| **프로필** | 사용자 프로필 카드, 팔로워/팔로잉 수, 게시글 목록, 팔로우/언팔로우 버튼 |
 
 <br/>
 

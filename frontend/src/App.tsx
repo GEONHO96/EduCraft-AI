@@ -13,6 +13,8 @@ import CurriculumGeneratePage from './pages/curriculum/CurriculumGeneratePage'
 import MaterialGeneratePage from './pages/material/MaterialGeneratePage'
 import QuizGeneratePage from './pages/quiz/QuizGeneratePage'
 import QuizTakePage from './pages/quiz/QuizTakePage'
+import FeedPage from './pages/sns/FeedPage'
+import ProfilePage from './pages/sns/ProfilePage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token)
@@ -48,6 +50,8 @@ function App() {
         <Route path="curriculum/:curriculumId/generate-material" element={<MaterialGeneratePage />} />
         <Route path="curriculum/:curriculumId/generate-quiz" element={<QuizGeneratePage />} />
         <Route path="quiz/:quizId" element={<QuizTakePage />} />
+        <Route path="sns/feed" element={<FeedPage />} />
+        <Route path="sns/profile/:userId" element={<ProfilePage />} />
       </Route>
     </Routes>
   )
