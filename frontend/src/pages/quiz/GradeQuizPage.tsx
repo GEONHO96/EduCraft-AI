@@ -6,6 +6,7 @@
  */
 import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '../../stores/authStore'
+import { aiApi } from '../../api/ai'
 import toast from 'react-hot-toast'
 
 // ====== 타입 정의 ======
@@ -392,7 +393,17 @@ export default function GradeQuizPage() {
     })
     setScore(correct)
     setPhase('result')
-  }, [questions, answers])
+
+    // 백엔드에 결과 저장 (대시보드 반영용)
+    aiApi.submitGradeQuiz({
+      grade,
+      subject,
+      score: correct,
+      totalQuestions: questions.length,
+    }).catch(() => {
+      // 저장 실패해도 퀴즈 결과 표시에는 영향 없음
+    })
+  }, [questions, answers, grade, subject])
 
   useEffect(() => {
     if (phase !== 'quiz' || remainingSeconds <= 0) return

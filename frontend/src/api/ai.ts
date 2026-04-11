@@ -66,6 +66,22 @@ export interface GradeQuizResult {
   subject: string
 }
 
+export interface SubmitGradeQuizRequest {
+  grade: string
+  subject: string
+  score: number
+  totalQuestions: number
+}
+
+export interface GradeQuizSubmissionResult {
+  id: number
+  grade: string
+  subject: string
+  score: number
+  totalQuestions: number
+  submittedAt: string
+}
+
 export const aiApi = {
   generateCurriculum: (data: GenerateCurriculumRequest) =>
     apiClient.post<{ success: boolean; data: CurriculumResult }>('/ai/curriculum/generate', data),
@@ -78,4 +94,7 @@ export const aiApi = {
 
   generateGradeQuiz: (data: GenerateGradeQuizRequest) =>
     apiClient.post<{ success: boolean; data: GradeQuizResult }>('/ai/quiz/grade-quiz', data),
+
+  submitGradeQuiz: (data: SubmitGradeQuizRequest) =>
+    apiClient.post<{ success: boolean; data: GradeQuizSubmissionResult }>('/ai/quiz/grade-quiz/submit', data),
 }

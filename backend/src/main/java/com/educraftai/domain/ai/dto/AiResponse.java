@@ -49,6 +49,17 @@ public class AiResponse {
         private String subject;
     }
 
+    /** 학년별 퀴즈 결과 제출 응답 */
+    @Getter @Builder @AllArgsConstructor
+    public static class GradeQuizSubmissionResult {
+        private Long id;
+        private String grade;
+        private String subject;
+        private Integer score;
+        private Integer totalQuestions;
+        private String submittedAt;
+    }
+
     @Getter @Builder @AllArgsConstructor
     public static class SupplementResult {
         private String explanationJson;

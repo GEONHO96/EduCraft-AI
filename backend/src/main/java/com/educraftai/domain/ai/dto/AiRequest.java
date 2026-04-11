@@ -63,6 +63,22 @@ public class AiRequest {
         private Integer difficulty;    // 1~5, 기본 3
     }
 
+    /** 학년별 퀴즈 결과 제출 요청 */
+    @Getter @Setter
+    public static class SubmitGradeQuiz {
+        @NotBlank(message = "학년 정보는 필수입니다.")
+        private String grade;
+
+        @NotBlank(message = "과목은 필수입니다.")
+        private String subject;
+
+        @NotNull(message = "점수는 필수입니다.")
+        private Integer score;
+
+        @NotNull(message = "전체 문제 수는 필수입니다.")
+        private Integer totalQuestions;
+    }
+
     @Getter @Setter
     public static class GenerateSupplement {
         @NotNull
