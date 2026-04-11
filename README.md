@@ -198,44 +198,530 @@ docker-compose up --build
 
 ## API 명세
 
-### 인증
-| Method | Endpoint | 설명 | 권한 |
-|--------|----------|------|------|
-| POST | `/api/auth/register` | 회원가입 | - |
-| POST | `/api/auth/login` | 로그인 (JWT 발급) | - |
-| POST | `/api/auth/social-login` | 소셜 로그인 (Google/Kakao/Naver) | - |
-| GET | `/api/auth/me` | 내 정보 조회 | 로그인 |
+> 총 **23개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
+> 인증: `Authorization: Bearer <JWT_TOKEN>` 헤더 필요 (공개 API 제외)
 
-### 강의
-| Method | Endpoint | 설명 | 권한 |
-|--------|----------|------|------|
-| POST | `/api/courses` | 강의 생성 | 교강사 |
-| GET | `/api/courses` | 내 강의 목록 | 로그인 |
-| GET | `/api/courses/{id}` | 강의 상세 | 로그인 |
-| POST | `/api/courses/{id}/enroll` | 수강 신청 | 학생 |
+---
 
-### AI 생성
-| Method | Endpoint | 설명 | 권한 |
-|--------|----------|------|------|
-| POST | `/api/ai/curriculum/generate` | AI 커리큘럼 생성 | 교강사 |
-| POST | `/api/ai/material/generate` | AI 수업 자료 생성 | 교강사 |
-| POST | `/api/ai/quiz/generate` | AI 퀴즈 생성 | 교강사 |
-| POST | `/api/ai/supplement/generate` | AI 보충학습 생성 | 로그인 |
+### 1. 인증 (`/api/auth`)
 
-### 퀴즈
-| Method | Endpoint | 설명 | 권한 |
-|--------|----------|------|------|
-| GET | `/api/quizzes/{id}` | 퀴즈 조회 | 로그인 |
-| POST | `/api/quizzes/{id}/submit` | 퀴즈 제출 | 학생 |
-| GET | `/api/quizzes/{id}/results` | 퀴즈 결과 (전체) | 교강사 |
-| GET | `/api/quizzes/{id}/my-result` | 내 퀴즈 결과 | 학생 |
+#### `POST /api/auth/register` — 회원가입
+> 권한: 공개
 
-### 대시보드
-| Method | Endpoint | 설명 | 권한 |
-|--------|----------|------|------|
-| GET | `/api/dashboard/teacher` | 교강사 대시보드 | 교강사 |
-| GET | `/api/dashboard/student` | 학생 대시보드 | 학생 |
-| GET | `/api/dashboard/time-saved` | 시간 절약 통계 | 교강사 |
+**Request**
+```json
+{
+  "email": "teacher@edu.com",
+  "password": "password123",
+  "name": "김교수",
+  "role": "TEACHER"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| email | String | O | 이메일 (중복 불가) |
+| password | String | O | 비밀번호 |
+| name | String | O | 이름 |
+| role | Enum | O | `TEACHER` 또는 `STUDENT` |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJI...",
+    "user": {
+      "id": 1,
+      "email": "teacher@edu.com",
+      "name": "김교수",
+      "role": "TEACHER",
+      "profileImage": null,
+      "socialProvider": null
+    }
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/login` — 로그인
+> 권한: 공개
+
+**Request**
+```json
+{
+  "email": "teacher@edu.com",
+  "password": "password123"
+}
+```
+
+**Response** — 회원가입과 동일한 Token 형식
+
+---
+
+#### `POST /api/auth/social-login` — 소셜 로그인
+> 권한: 공개 | Google, Kakao, Naver 지원
+
+**Request**
+```json
+{
+  "accessToken": "소셜 플랫폼에서 받은 액세스 토큰",
+  "provider": "GOOGLE",
+  "role": "TEACHER"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| accessToken | String | O | 소셜 플랫폼 액세스 토큰 |
+| provider | Enum | O | `GOOGLE`, `KAKAO`, `NAVER` |
+| role | Enum | X | 최초 가입 시 역할 (기본: `STUDENT`) |
+
+**Response** — Token 형식 (profileImage, socialProvider 포함)
+
+---
+
+#### `GET /api/auth/me` — 내 정보 조회
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "teacher@edu.com",
+    "name": "김교수",
+    "role": "TEACHER",
+    "profileImage": "https://...",
+    "socialProvider": "GOOGLE"
+  }
+}
+```
+
+---
+
+### 2. 강의 (`/api/courses`)
+
+#### `POST /api/courses` — 강의 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "title": "웹 프로그래밍 기초",
+  "subject": "컴퓨터공학",
+  "description": "HTML, CSS, JavaScript를 활용한 웹 개발 입문 과정"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| title | String | O | 강의 제목 |
+| subject | String | O | 과목명 |
+| description | String | X | 강의 설명 |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "웹 프로그래밍 기초",
+    "subject": "컴퓨터공학",
+    "description": "HTML, CSS, JavaScript를 활용한 웹 개발 입문 과정",
+    "teacherName": "김교수",
+    "createdAt": "2026-04-11T10:30:00"
+  }
+}
+```
+
+---
+
+#### `GET /api/courses` — 내 강의 목록
+> 권한: 로그인 필요 | 교강사: 내가 만든 강의 / 학생: 수강 중인 강의
+
+**Response** — `List<CourseInfo>`
+
+---
+
+#### `GET /api/courses/{courseId}` — 강의 상세
+> 권한: 로그인 필요
+
+---
+
+#### `POST /api/courses/{courseId}/enroll` — 수강 신청
+> 권한: 학생
+
+**Response**
+```json
+{
+  "success": true,
+  "data": null
+}
+```
+
+---
+
+### 3. 커리큘럼 (`/api`)
+
+#### `GET /api/courses/{courseId}/curriculums` — 커리큘럼 목록
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "courseId": 1,
+      "weekNumber": 1,
+      "topic": "HTML 기초",
+      "objectives": "HTML 태그 구조 이해, 기본 페이지 제작",
+      "contentJson": "{...}",
+      "aiGenerated": true,
+      "createdAt": "2026-04-11T10:35:00"
+    }
+  ]
+}
+```
+
+---
+
+#### `PUT /api/curriculums/{curriculumId}` — 커리큘럼 수정
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "weekNumber": 1,
+  "topic": "HTML 기초 (수정)",
+  "objectives": "수정된 학습 목표",
+  "contentJson": "{...}"
+}
+```
+
+---
+
+#### `DELETE /api/curriculums/{curriculumId}` — 커리큘럼 삭제
+> 권한: 교강사
+
+---
+
+### 4. AI 생성 (`/api/ai`)
+
+#### `POST /api/ai/curriculum/generate` — AI 커리큘럼 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "courseId": 1,
+  "subject": "컴퓨터공학",
+  "topic": "웹 프로그래밍",
+  "totalWeeks": 15,
+  "targetLevel": "초급",
+  "additionalRequirements": "실습 위주로 구성해주세요"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| courseId | Long | O | 강의 ID |
+| subject | String | O | 과목명 |
+| topic | String | O | 주제 |
+| totalWeeks | Integer | O | 총 주차 수 |
+| targetLevel | String | O | 대상 수준 (초급/중급/고급) |
+| additionalRequirements | String | X | 추가 요구사항 |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "courseId": 1,
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "HTML 기초",
+        "objectives": "HTML 태그 구조 이해, 기본 페이지 제작",
+        "content": "상세 강의 내용..."
+      }
+    ],
+    "timeSavedSeconds": 3600
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/material/generate` — AI 수업 자료 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "curriculumId": 1,
+  "type": "LECTURE",
+  "difficulty": 3,
+  "additionalRequirements": "예제 코드를 많이 포함해주세요"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| curriculumId | Long | O | 커리큘럼 ID |
+| type | String | O | `LECTURE` (강의) 또는 `EXERCISE` (실습) |
+| difficulty | Integer | O | 난이도 (1~5) |
+| additionalRequirements | String | X | 추가 요구사항 |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "materialId": 1,
+    "title": "HTML 기초 - 강의자료",
+    "contentJson": "{...}",
+    "timeSavedSeconds": 1800
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/quiz/generate` — AI 퀴즈 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "curriculumId": 1,
+  "questionCount": 10,
+  "difficulty": 3,
+  "questionTypes": "MULTIPLE_CHOICE,SHORT_ANSWER",
+  "additionalRequirements": "실전 활용 문제 위주로"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| curriculumId | Long | O | 커리큘럼 ID |
+| questionCount | Integer | O | 문제 수 |
+| difficulty | Integer | O | 난이도 (1~5) |
+| questionTypes | String | O | 문제 유형 (쉼표 구분) |
+| additionalRequirements | String | X | 추가 요구사항 |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "quizId": 1,
+    "materialId": 1,
+    "questionsJson": "[{...}]",
+    "questionCount": 10,
+    "timeSavedSeconds": 2400
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/supplement/generate` — AI 보충학습 생성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "quizSubmissionId": 1,
+  "additionalRequirements": "쉬운 예제부터 단계적으로"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "explanationJson": "{오답 해설...}",
+    "additionalQuestionsJson": "[{추가 연습문제...}]",
+    "timeSavedSeconds": 1200
+  }
+}
+```
+
+---
+
+### 5. 퀴즈 (`/api/quizzes`)
+
+#### `GET /api/quizzes/{quizId}` — 퀴즈 조회
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "materialId": 1,
+    "questionsJson": "[{\"question\": \"HTML에서 제목 태그는?\", \"type\": \"MULTIPLE_CHOICE\", \"options\": [...]}]",
+    "timeLimit": 1800,
+    "createdAt": "2026-04-11T11:00:00"
+  }
+}
+```
+
+---
+
+#### `POST /api/quizzes/{quizId}/submit` — 퀴즈 제출
+> 권한: 학생
+
+**Request**
+```json
+{
+  "answersJson": "[{\"questionIndex\": 0, \"answer\": \"A\"}, {\"questionIndex\": 1, \"answer\": \"B\"}]"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "quizId": 1,
+    "score": 8,
+    "totalQuestions": 10,
+    "answersJson": "[{...채점 결과...}]",
+    "submittedAt": "2026-04-11T11:30:00"
+  }
+}
+```
+
+---
+
+#### `GET /api/quizzes/{quizId}/results` — 퀴즈 결과 (전체)
+> 권한: 교강사
+
+**Response** — `List<SubmissionResult>` (전체 학생 제출 결과)
+
+---
+
+#### `GET /api/quizzes/{quizId}/my-result` — 내 퀴즈 결과
+> 권한: 학생
+
+**Response** — `SubmissionResult` (본인 제출 결과)
+
+---
+
+### 6. 대시보드 (`/api/dashboard`)
+
+#### `GET /api/dashboard/teacher` — 교강사 대시보드
+> 권한: 교강사
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "totalCourses": 3,
+    "totalStudents": 45,
+    "totalMaterials": 12,
+    "totalQuizzes": 8,
+    "timeSaved": {
+      "totalSeconds": 18000,
+      "generationCount": 23,
+      "formatted": "5시간 0분"
+    },
+    "recentActivities": [
+      {
+        "type": "QUIZ",
+        "description": "웹 프로그래밍 1주차 퀴즈 생성",
+        "createdAt": "2026-04-11T10:00:00"
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### `GET /api/dashboard/student` — 학생 대시보드
+> 권한: 학생
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "enrolledCourses": 2,
+    "completedQuizzes": 5,
+    "averageScore": 85.5,
+    "recentQuizResults": [
+      {
+        "quizTitle": "HTML 기초 퀴즈",
+        "score": 9,
+        "totalQuestions": 10,
+        "submittedAt": "2026-04-11T11:30:00"
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### `GET /api/dashboard/time-saved` — 시간 절약 통계
+> 권한: 교강사
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "totalSeconds": 18000,
+    "generationCount": 23,
+    "formatted": "5시간 0분"
+  }
+}
+```
+
+---
+
+### 7. 배치 (`/api/batch`)
+
+#### `POST /api/batch/run/{jobName}` — 배치 수동 실행
+> 권한: 교강사
+
+| jobName | 설명 | 자동 스케줄 |
+|---------|------|------------|
+| `learning-stats` | 일일 학습 통계 집계 | 매일 자정 |
+| `ai-usage-stats` | 일일 AI 사용 통계 집계 | 매일 새벽 1시 |
+| `inactive-students` | 비활성 수강생 감지 (7일) | 매주 월요일 오전 9시 |
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "job": "learning-stats",
+    "status": "COMPLETED",
+    "executedAt": "2026-04-11T12:00:00"
+  }
+}
+```
+
+---
+
+### API 요약
+
+| 카테고리 | 엔드포인트 수 | 권한 |
+|----------|-------------|------|
+| 인증 | 4개 | 공개 3 / 로그인 1 |
+| 강의 | 4개 | 교강사 1 / 학생 1 / 로그인 2 |
+| 커리큘럼 | 3개 | 교강사 2 / 로그인 1 |
+| AI 생성 | 4개 | 교강사 3 / 로그인 1 |
+| 퀴즈 | 4개 | 교강사 1 / 학생 2 / 로그인 1 |
+| 대시보드 | 3개 | 교강사 2 / 학생 1 |
+| 배치 | 1개 | 교강사 1 |
+| **합계** | **23개** | |
 
 <br/>
 
