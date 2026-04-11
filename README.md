@@ -2,21 +2,21 @@
 
 > **AI 기반 맞춤형 교육 플랫폼**
 >
-> 교강사의 수업 준비 시간을 줄이고, 학생에게 학년별 맞춤 학습을 제공하는 차세대 교육 솔루션
+> 교강사의 수업 준비 시간을 획기적으로 줄이고, 학생에게 학년별 맞춤 학습을 제공하는 AI 차세대 교육 솔루션
 
 <br/>
 
 ## 프로젝트 소개
 
 교육 현장에서 교강사는 강의안 작성, 문제 출제, 커리큘럼 설계 등 **수업 준비에 과도한 시간**을 소모하고,
-학생은 자신의 수준에 맞는 학습 자료를 찾기 어렵습니다.
+학생은 자신의 수준에 맞는 학습 자료와 연습 문제를 찾기 어렵습니다.
 
 **EduCraft AI**는 이 문제를 해결합니다.
 
 - 과목과 주제만 입력하면 **AI가 주차별 커리큘럼을 자동 설계**합니다
 - 커리큘럼 기반으로 **강의 자료와 실습 자료를 자동 생성**합니다
 - 학습 목표에 맞는 **퀴즈를 자동 출제**하고 **자동 채점**합니다
-- 학생의 **학년과 과목에 맞는 AI 퀴즈**를 즉시 풀 수 있습니다
+- 학생의 **학년과 과목에 맞는 맞춤 퀴즈**를 즉시 풀 수 있습니다
 - **학년별 맞춤 유튜브 강의를 추천**하여 자기주도 학습을 지원합니다
 - 학생의 오답을 분석하여 **맞춤형 보충 학습 자료**를 제공합니다
 - 모든 과정에서 **절약된 시간을 정량적으로 측정**하여 보여줍니다
@@ -25,34 +25,35 @@
 
 ## 핵심 기능
 
-### 교강사 기능
+### 교강사
 
 | 기능 | 설명 |
 |------|------|
 | **AI 커리큘럼 설계** | 과목/주제/주차 수/대상 수준 입력 → 주차별 커리큘럼 자동 생성 |
 | **AI 수업 자료 생성** | 커리큘럼 기반 강의자료/실습자료 자동 생성 (난이도 조절 가능) |
 | **AI 퀴즈 출제** | 객관식/주관식 문제 자동 생성, 해설 포함 |
-| **학생 성취도 대시보드** | 강의 수, 수강생 수, AI 사용 통계, 시간 절약 현황 |
+| **학생 성취도 대시보드** | 반 전체 & 개별 학생 성적 분석, 시간 절약 통계 |
 | **배치 통계 집계** | 일일 학습 통계, AI 사용 통계, 비활성 수강생 자동 감지 |
 
-### 학생 기능
+### 학생
 
 | 기능 | 설명 |
 |------|------|
-| **학년별 AI 퀴즈** | 초등~고등 12개 학년, 국어/영어/수학 3과목 맞춤 퀴즈 (210+ 문제 내장) |
-| **맞춤 강의 추천** | 학년에 맞는 유튜브 교육 영상을 과목별로 추천 (검증된 교육 채널) |
-| **온라인 퀴즈** | 강의 퀴즈 응시 → 자동 채점 → 해설 확인 |
-| **학습 현황 대시보드** | 수강 강의 수, 완료한 퀴즈 수, 평균 점수, 최근 퀴즈 결과 |
+| **학년별 AI 퀴즈** | 초등~고등 12개 학년 × 국어/영어/수학 3과목 맞춤 퀴즈 (210+ 문제 내장) |
+| **맞춤 강의 추천** | 학년에 맞는 검증된 유튜브 교육 영상을 과목별로 추천 |
 | **수업 자료 열람** | 교강사가 생성한 강의자료/실습자료 확인 |
+| **온라인 퀴즈** | 퀴즈 응시 → 자동 채점 → 해설 확인 |
 | **AI 보충 학습** | 틀린 문제 기반 맞춤형 보충 설명 + 추가 연습 문제 |
+| **학습 현황 대시보드** | 수강 강의, 퀴즈 점수(강의+학년별 통합), 평균 성적 확인 |
 
-### 공통 기능
+### 공통
 
 | 기능 | 설명 |
 |------|------|
 | **소셜 로그인** | Google, Kakao, Naver 소셜 계정으로 간편 로그인 |
-| **학년 등록** | 회원가입 시 학년 선택 (초등 1학년 ~ 고등 3학년), 맞춤 콘텐츠 제공 |
-| **아이디/비밀번호 찾기** | 이름으로 이메일 검색 (마스킹 처리) / 임시 비밀번호 발급 → 재설정 |
+| **학년 등록** | 회원가입 시 학년 선택 (초등 1학년 ~ 고등 3학년), 맞춤 콘텐츠 자동 제공 |
+| **아이디 찾기** | 이름으로 가입된 이메일 검색 (마스킹 처리) |
+| **비밀번호 재설정** | 임시 비밀번호 발급 → 새 비밀번호 설정 (3단계) |
 | **커뮤니티 피드** | 게시글 작성/조회, 카테고리 필터, 팔로잉 피드 |
 | **좋아요 & 댓글** | 게시글 좋아요 토글, 댓글 작성/삭제, 실시간 반영 |
 | **팔로우 시스템** | 사용자 간 팔로우/언팔로우, 팔로워/팔로잉 수 표시 |
@@ -62,16 +63,18 @@
 
 ## 학년별 AI 퀴즈 시스템
 
-한국 교육과정에 맞춘 **오프라인 문제은행 기반 퀴즈 시스템**입니다.
+한국 교육과정에 맞춘 **오프라인 문제은행 기반 퀴즈 시스템**입니다. API 키 없이도 즉시 동작합니다.
 
-- **지원 학년**: 초등 1~6학년, 중학 1~3학년, 고등 1~3학년 (12개 학년)
-- **지원 과목**: 국어, 영어, 수학
-- **문제 유형**: 객관식 + 주관식 (과목별 혼합)
-- **내장 문제**: 210+ 문제 (7개 대표 학년 x 3과목 x 10문제, 인접 학년 자동 매칭)
-- **Fisher-Yates 셔플**: 매번 다른 순서로 출제
-- **타이머**: 문항당 2분, 시간 초과 시 자동 제출
-- **결과 분석**: O/X 표시, 정답 하이라이트, 문항별 해설 제공
-- **대시보드 연동**: 퀴즈 결과가 학생 대시보드에 자동 반영
+| 항목 | 내용 |
+|------|------|
+| **지원 학년** | 초등 1~6학년, 중학 1~3학년, 고등 1~3학년 (12개 학년) |
+| **지원 과목** | 국어, 영어, 수학 |
+| **문제 유형** | 객관식 + 주관식 혼합 |
+| **내장 문제** | 210+ 문제 (7개 대표 학년 × 3과목 × 10문제, 인접 학년 자동 매칭) |
+| **출제 방식** | Fisher-Yates 셔플 알고리즘으로 매번 다른 순서 출제 |
+| **타이머** | 문항당 2분, 시간 초과 시 자동 제출 |
+| **결과 분석** | O/X 표시, 정답 하이라이트, 문항별 해설 제공 |
+| **대시보드 연동** | 퀴즈 결과가 학생 대시보드에 자동 반영 (강의 퀴즈와 통합 집계) |
 
 <br/>
 
@@ -79,10 +82,13 @@
 
 학생의 학년에 맞는 **검증된 유튜브 교육 영상**을 추천합니다.
 
-- **초등**: onschool 공식 교육 포털 영상
-- **중등**: 나무아카데미(국어), 영어의비법(영어), 수악중독(수학)
-- **고등**: 메가스터디 인강 (현우진/박석준/조정식), 영어의비법, 나무아카데미
-- 학생 로그인 시 학년이 자동 선택되어 바로 맞춤 추천
+| 학교급 | 추천 채널 |
+|--------|----------|
+| **초등** | onschool 공식 교육 포털 |
+| **중등** | 나무아카데미(국어), 영어의비법(영어), 수악중독(수학) |
+| **고등** | 메가스터디(현우진/박석준/조정식), 영어의비법, 나무아카데미 |
+
+> 학생 로그인 시 등록된 학년이 자동 선택되어 바로 맞춤 영상을 확인할 수 있습니다.
 
 <br/>
 
@@ -97,8 +103,9 @@
 | Spring Data JPA | 3.x | ORM |
 | Spring Batch | 5.x | 배치 작업 (통계 집계, 비활성 감지) |
 | QueryDSL | 5.1.0 | 타입 안전 쿼리 |
-| H2 Database | - | 개발용 인메모리 DB |
+| H2 Database | - | 개발용 인메모리 DB (샘플 데이터 자동 생성) |
 | MySQL | 8.0 | 운영 데이터베이스 |
+| Redis | 7 | 캐싱 |
 
 ### Frontend
 | 기술 | 버전 | 용도 |
@@ -116,8 +123,8 @@
 | 기술 | 용도 |
 |------|------|
 | Claude API (Anthropic) | 커리큘럼/자료/퀴즈/보충학습 AI 생성 |
-| 오프라인 문제은행 | 학년별 퀴즈 (API 키 없이 동작) |
-| YouTube Embed | 학년별 맞춤 강의 추천 |
+| 오프라인 문제은행 | 학년별 AI 퀴즈 (API 키 없이 동작) |
+| YouTube Embed API | 학년별 맞춤 강의 영상 추천 |
 
 ### Infra
 | 기술 | 용도 |
@@ -130,40 +137,100 @@
 
 ## 아키텍처
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                      Client (Browser)                    │
-└─────────────┬───────────────────────────────┬───────────┘
-              │                               │
-              ▼                               ▼
-┌─────────────────────────┐   ┌───────────────────────────┐
-│    Frontend (:5173)      │   │   YouTube Embed API       │
-│  React + TypeScript      │   │   (맞춤 강의 추천)          │
-│  Vite + Tailwind CSS     │   └───────────────────────────┘
-│  Zustand + TanStack Query│
-│  오프라인 문제은행 (210+)   │
-└─────────────┬────────────┘
-              │ REST API (JSON)
-              ▼
-┌─────────────────────────┐     ┌─────────────────────────┐
-│    Backend (:8080)       │────▶│   Claude API (Anthropic) │
-│  Spring Boot 3.2.5       │     │   AI 커리큘럼/자료/퀴즈    │
-│  Spring Security (JWT)   │     └─────────────────────────┘
-│  Spring Batch            │
-│  Spring Data JPA         │     ┌─────────────────────────┐
-│                          │────▶│   OAuth 2.0 Providers    │
-└─────────────┬────────────┘     │   Google / Kakao / Naver │
-              │ JPA              └─────────────────────────┘
-              ▼
-┌─────────────────────────┐
-│   Database               │
-│   H2 (개발) / MySQL (운영) │
-│   + DataInitializer       │
-│   (샘플 데이터 자동 생성)    │
-└──────────────────────────┘
-```
+<div align="center">
 
-> **Data Flow**: `Client` → `Spring Boot API` → `H2/MySQL` ↔ `Claude AI`
+<table>
+<tr>
+<td align="center" colspan="5">
+<h3>🏗️ System Architecture</h3>
+</td>
+</tr>
+<tr>
+<td align="center" width="200">
+<h4>📱 Frontend</h4>
+<p>
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/><br/>
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/><br/>
+<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/><br/>
+<img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind"/><br/>
+<img src="https://img.shields.io/badge/Zustand-433E38?style=for-the-badge&logo=react&logoColor=white" alt="Zustand"/>
+</p>
+<code>:5173</code>
+</td>
+<td align="center" width="60">
+<h2>⟷</h2>
+<sub>REST API</sub><br/>
+<sub>JSON</sub>
+</td>
+<td align="center" width="200">
+<h4>⚙️ Backend</h4>
+<p>
+<img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot"/><br/>
+<img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" alt="Spring Security"/><br/>
+<img src="https://img.shields.io/badge/Spring_Batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Batch"/><br/>
+<img src="https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/><br/>
+<img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT"/>
+</p>
+<code>:8080</code>
+</td>
+<td align="center" width="60">
+<h2>⟷</h2>
+<sub>JPA</sub><br/>
+<sub>Query</sub>
+</td>
+<td align="center" width="200">
+<h4>🗄️ Database</h4>
+<p>
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/><br/>
+<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"/><br/>
+<img src="https://img.shields.io/badge/H2_(Dev)-0000BB?style=for-the-badge&logoColor=white" alt="H2"/>
+</p>
+<code>:3306 / :6379</code>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="5">
+<br/>
+<h2>⬇️</h2>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="2">
+<h4>🤖 AI Engine</h4>
+<p>
+<img src="https://img.shields.io/badge/Claude_API-191919?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude API"/><br/>
+<img src="https://img.shields.io/badge/Anthropic-D4A574?style=for-the-badge&logo=anthropic&logoColor=black" alt="Anthropic"/><br/>
+<img src="https://img.shields.io/badge/오프라인_문제은행-FF6B6B?style=for-the-badge&logoColor=white" alt="Offline Quiz"/>
+</p>
+<sub>커리큘럼 · 자료 · 퀴즈 · 보충학습 생성</sub><br/>
+<sub>학년별 AI 퀴즈 (210+ 내장 문제)</sub>
+</td>
+<td align="center">
+<h4>🔐 OAuth 2.0</h4>
+<p>
+<img src="https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google"/><br/>
+<img src="https://img.shields.io/badge/Kakao-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=black" alt="Kakao"/><br/>
+<img src="https://img.shields.io/badge/Naver-03C75A?style=for-the-badge&logo=naver&logoColor=white" alt="Naver"/>
+</p>
+<sub>소셜 로그인</sub>
+</td>
+<td align="center" colspan="2">
+<h4>🚀 Infra & External</h4>
+<p>
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/><br/>
+<img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx"/><br/>
+<img src="https://img.shields.io/badge/YouTube_API-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube"/>
+</p>
+<sub>컨테이너 배포 · 맞춤 강의 추천</sub>
+</td>
+</tr>
+</table>
+
+<br/>
+
+> **Data Flow**: `Client` → `Nginx` → `Spring Boot API` → `MySQL / Redis` ↔ `Claude AI`
+
+</div>
 
 <br/>
 
@@ -189,7 +256,7 @@ EduCraft-AI/
 │       │   └── dashboard/      # 대시보드 (강의+학년별 퀴즈 통합 통계)
 │       ├── global/
 │       │   ├── common/         # 공통 응답 (ApiResponse)
-│       │   ├── config/         # DataInitializer (샘플 데이터)
+│       │   ├── config/         # DataInitializer (샘플 데이터 자동 생성)
 │       │   ├── exception/      # 예외 처리
 │       │   └── security/       # JWT, Security 설정
 │       └── infra/
@@ -203,7 +270,7 @@ EduCraft-AI/
         ├── stores/             # Zustand 상태 관리 (인증 상태)
         ├── components/         # 공통 컴포넌트 (Layout, 네비게이션)
         └── pages/
-            ├── auth/           # 로그인, 회원가입, 소셜로그인, 계정찾기
+            ├── auth/           # 로그인, 회원가입(학년 선택), 소셜로그인, 계정찾기
             ├── dashboard/      # 교강사/학생 대시보드
             ├── course/         # 강의 목록, 탐색, 상세
             ├── curriculum/     # AI 커리큘럼 생성
@@ -222,7 +289,7 @@ EduCraft-AI/
 - Java 17+
 - Node.js 18+
 - Docker & Docker Compose (배포 시)
-- Anthropic API Key (선택 - AI 생성 기능에 필요, 학년별 퀴즈/강의 추천은 API 키 없이 동작)
+- Anthropic API Key (선택 — 학년별 퀴즈/강의 추천은 API 키 없이 동작)
 
 ### 로컬 개발 환경
 
@@ -231,7 +298,7 @@ EduCraft-AI/
 git clone https://github.com/GEONHO96/EduCraft-AI.git
 cd EduCraft-AI
 
-# 2. 백엔드 실행 (H2 인메모리 DB - 샘플 데이터 자동 생성)
+# 2. 백엔드 실행 (H2 인메모리 DB, 샘플 데이터 자동 생성)
 cd backend
 ./gradlew bootRun
 # AI 생성 기능 사용 시: AI_API_KEY=your-key ./gradlew bootRun
@@ -248,7 +315,7 @@ npm run dev
 
 ### 샘플 계정
 
-서버 시작 시 DataInitializer가 자동으로 샘플 데이터를 생성합니다.
+서버 시작 시 `DataInitializer`가 자동으로 샘플 데이터를 생성합니다.
 
 | 역할 | 이메일 | 비밀번호 | 비고 |
 |------|--------|----------|------|
@@ -270,112 +337,636 @@ export AI_API_KEY=your-anthropic-api-key
 docker-compose up --build
 ```
 
+- 프론트엔드: http://localhost:5173
+- 백엔드 API: http://localhost:8080
+
 <br/>
 
 ## API 명세
 
-> 총 **39개** 엔드포인트 | 공통 응답: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`
+> 총 **40개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
 > 인증: `Authorization: Bearer <JWT_TOKEN>` 헤더 필요 (공개 API 제외)
 
-### 1. 인증 (`/api/auth`) - 7개
+---
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/auth/register` | 공개 | 회원가입 (학년 정보 포함) |
-| POST | `/api/auth/login` | 공개 | 로그인 (JWT 발급) |
-| POST | `/api/auth/social-login` | 공개 | 소셜 로그인 (Google/Kakao/Naver) |
-| GET | `/api/auth/me` | 로그인 | 내 정보 조회 |
-| POST | `/api/auth/find-email` | 공개 | 이메일 찾기 (이름 기반, 마스킹) |
-| POST | `/api/auth/reset-password` | 공개 | 임시 비밀번호 발급 |
-| POST | `/api/auth/change-password` | 공개 | 비밀번호 변경 |
+### 1. 인증 (`/api/auth`)
 
-### 2. 강의 (`/api/courses`) - 5개
+#### `POST /api/auth/register` — 회원가입
+> 권한: 공개
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/courses` | 교강사 | 강의 생성 |
-| GET | `/api/courses` | 로그인 | 내 강의 목록 |
-| GET | `/api/courses/browse` | 로그인 | 전체 강의 탐색 |
-| GET | `/api/courses/{courseId}` | 로그인 | 강의 상세 |
-| POST | `/api/courses/{courseId}/enroll` | 학생 | 수강 신청 |
+**Request**
+```json
+{
+  "email": "student1@edu.com",
+  "password": "password123",
+  "name": "홍길동",
+  "role": "STUDENT",
+  "grade": "MIDDLE_1"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| email | String | O | 이메일 (중복 불가) |
+| password | String | O | 비밀번호 |
+| name | String | O | 이름 |
+| role | Enum | O | `TEACHER` 또는 `STUDENT` |
+| grade | String | X | 학년 코드 (학생만, `ELEMENTARY_1` ~ `HIGH_3`) |
 
-### 3. 커리큘럼 (`/api`) - 3개
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJI...",
+    "user": {
+      "id": 1,
+      "email": "student1@edu.com",
+      "name": "홍길동",
+      "role": "STUDENT",
+      "grade": "MIDDLE_1",
+      "profileImage": null,
+      "socialProvider": null
+    }
+  }
+}
+```
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| GET | `/api/courses/{courseId}/curriculums` | 로그인 | 커리큘럼 목록 |
-| PUT | `/api/curriculums/{curriculumId}` | 교강사 | 커리큘럼 수정 |
-| DELETE | `/api/curriculums/{curriculumId}` | 교강사 | 커리큘럼 삭제 |
+---
 
-### 4. AI 생성 (`/api/ai`) - 5개
+#### `POST /api/auth/login` — 로그인
+> 권한: 공개
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/ai/curriculum/generate` | 교강사 | AI 커리큘럼 생성 |
-| POST | `/api/ai/material/generate` | 교강사 | AI 수업 자료 생성 |
-| POST | `/api/ai/quiz/generate` | 교강사 | AI 퀴즈 출제 |
-| POST | `/api/ai/quiz/grade-quiz` | 로그인 | 학년별 AI 퀴즈 생성 |
-| POST | `/api/ai/quiz/grade-quiz/submit` | 로그인 | 학년별 퀴즈 결과 저장 |
-| POST | `/api/ai/supplement/generate` | 로그인 | AI 보충학습 생성 |
+**Request**
+```json
+{
+  "email": "student1@edu.com",
+  "password": "password123"
+}
+```
 
-### 5. 퀴즈 (`/api/quizzes`) - 4개
+**Response** — 회원가입과 동일한 Token 형식
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| GET | `/api/quizzes/{quizId}` | 로그인 | 퀴즈 조회 |
-| POST | `/api/quizzes/{quizId}/submit` | 학생 | 퀴즈 제출 (자동 채점) |
-| GET | `/api/quizzes/{quizId}/results` | 교강사 | 전체 학생 결과 |
-| GET | `/api/quizzes/{quizId}/my-result` | 학생 | 내 퀴즈 결과 |
+---
 
-### 6. 대시보드 (`/api/dashboard`) - 3개
+#### `POST /api/auth/social-login` — 소셜 로그인
+> 권한: 공개 | Google, Kakao, Naver 지원
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| GET | `/api/dashboard/teacher` | 교강사 | 교강사 대시보드 (강의/수강생/AI 통계) |
-| GET | `/api/dashboard/student` | 학생 | 학생 대시보드 (강의+학년별 퀴즈 통합 통계) |
-| GET | `/api/dashboard/time-saved` | 교강사 | 시간 절약 통계 |
+**Request**
+```json
+{
+  "accessToken": "소셜 플랫폼에서 받은 액세스 토큰",
+  "provider": "GOOGLE",
+  "role": "TEACHER"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| accessToken | String | O | 소셜 플랫폼 액세스 토큰 |
+| provider | Enum | O | `GOOGLE`, `KAKAO`, `NAVER` |
+| role | Enum | X | 최초 가입 시 역할 (기본: `STUDENT`) |
 
-### 7. 배치 (`/api/batch`) - 1개
+**Response** — Token 형식 (profileImage, socialProvider 포함)
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/batch/run/{jobName}` | 교강사 | 배치 수동 실행 |
+---
 
-| jobName | 설명 | 스케줄 |
-|---------|------|--------|
+#### `GET /api/auth/me` — 내 정보 조회
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "email": "student1@edu.com",
+    "name": "홍길동",
+    "role": "STUDENT",
+    "grade": "MIDDLE_1",
+    "profileImage": null,
+    "socialProvider": null
+  }
+}
+```
+
+---
+
+#### `POST /api/auth/find-email` — 아이디(이메일) 찾기
+> 권한: 공개
+
+**Request**
+```json
+{ "name": "홍길동" }
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": ["stu***@edu.com"]
+}
+```
+> 보안을 위해 이메일 일부가 마스킹 처리됩니다.
+
+---
+
+#### `POST /api/auth/reset-password` — 임시 비밀번호 발급
+> 권한: 공개
+
+**Request**
+```json
+{
+  "email": "student1@edu.com",
+  "name": "홍길동"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": { "tempPassword": "aB3xK9mP" }
+}
+```
+
+---
+
+#### `POST /api/auth/change-password` — 비밀번호 변경
+> 권한: 공개
+
+**Request**
+```json
+{
+  "email": "student1@edu.com",
+  "tempPassword": "aB3xK9mP",
+  "newPassword": "newPassword123"
+}
+```
+
+**Response**
+```json
+{ "success": true, "data": null }
+```
+
+---
+
+### 2. 강의 (`/api/courses`)
+
+#### `POST /api/courses` — 강의 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "title": "웹 프로그래밍 기초",
+  "subject": "컴퓨터공학",
+  "description": "HTML, CSS, JavaScript를 활용한 웹 개발 입문 과정"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "웹 프로그래밍 기초",
+    "subject": "컴퓨터공학",
+    "description": "HTML, CSS, JavaScript를 활용한 웹 개발 입문 과정",
+    "teacherName": "김교수",
+    "createdAt": "2026-04-11T10:30:00"
+  }
+}
+```
+
+---
+
+#### `GET /api/courses` — 내 강의 목록
+> 권한: 로그인 필요 | 교강사: 내가 만든 강의 / 학생: 수강 중인 강의
+
+---
+
+#### `GET /api/courses/browse` — 전체 강의 탐색
+> 권한: 로그인 필요 | 모든 강의 목록 (수강 신청용)
+
+---
+
+#### `GET /api/courses/{courseId}` — 강의 상세
+> 권한: 로그인 필요
+
+---
+
+#### `POST /api/courses/{courseId}/enroll` — 수강 신청
+> 권한: 학생
+
+---
+
+### 3. 커리큘럼 (`/api`)
+
+#### `GET /api/courses/{courseId}/curriculums` — 커리큘럼 목록
+> 권한: 로그인 필요
+
+---
+
+#### `PUT /api/curriculums/{curriculumId}` — 커리큘럼 수정
+> 권한: 교강사
+
+---
+
+#### `DELETE /api/curriculums/{curriculumId}` — 커리큘럼 삭제
+> 권한: 교강사
+
+---
+
+### 4. AI 생성 (`/api/ai`)
+
+#### `POST /api/ai/curriculum/generate` — AI 커리큘럼 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "courseId": 1,
+  "subject": "컴퓨터공학",
+  "topic": "웹 프로그래밍",
+  "totalWeeks": 15,
+  "targetLevel": "초급",
+  "additionalRequirements": "실습 위주로 구성해주세요"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "courseId": 1,
+    "weeks": [
+      {
+        "weekNumber": 1,
+        "topic": "HTML 기초",
+        "objectives": "HTML 태그 구조 이해, 기본 페이지 제작",
+        "content": "상세 강의 내용..."
+      }
+    ],
+    "timeSavedSeconds": 3600
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/material/generate` — AI 수업 자료 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "curriculumId": 1,
+  "type": "LECTURE",
+  "difficulty": 3,
+  "additionalRequirements": "예제 코드를 많이 포함해주세요"
+}
+```
+
+---
+
+#### `POST /api/ai/quiz/generate` — AI 퀴즈 생성
+> 권한: 교강사
+
+**Request**
+```json
+{
+  "curriculumId": 1,
+  "questionCount": 10,
+  "difficulty": 3,
+  "questionTypes": "MULTIPLE_CHOICE,SHORT_ANSWER"
+}
+```
+
+---
+
+#### `POST /api/ai/quiz/grade-quiz` — 학년별 AI 퀴즈 생성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "grade": "MIDDLE_1",
+  "subject": "수학",
+  "questionCount": 5,
+  "difficulty": 3
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "questionsJson": "[{...}]",
+    "questionCount": 5,
+    "grade": "MIDDLE_1",
+    "subject": "수학"
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/quiz/grade-quiz/submit` — 학년별 퀴즈 결과 저장
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "grade": "MIDDLE_1",
+  "subject": "수학",
+  "score": 4,
+  "totalQuestions": 5
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "grade": "MIDDLE_1",
+    "subject": "수학",
+    "score": 4,
+    "totalQuestions": 5,
+    "submittedAt": "2026-04-12T15:30:00"
+  }
+}
+```
+
+---
+
+#### `POST /api/ai/supplement/generate` — AI 보충학습 생성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "quizSubmissionId": 1,
+  "additionalRequirements": "쉬운 예제부터 단계적으로"
+}
+```
+
+---
+
+### 5. 퀴즈 (`/api/quizzes`)
+
+#### `GET /api/quizzes/{quizId}` — 퀴즈 조회
+> 권한: 로그인 필요
+
+---
+
+#### `POST /api/quizzes/{quizId}/submit` — 퀴즈 제출
+> 권한: 학생
+
+**Request**
+```json
+{
+  "answersJson": "[{\"questionIndex\": 0, \"answer\": \"A\"}, {\"questionIndex\": 1, \"answer\": \"B\"}]"
+}
+```
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "quizId": 1,
+    "score": 8,
+    "totalQuestions": 10,
+    "submittedAt": "2026-04-11T11:30:00"
+  }
+}
+```
+
+---
+
+#### `GET /api/quizzes/{quizId}/results` — 퀴즈 결과 (전체)
+> 권한: 교강사
+
+---
+
+#### `GET /api/quizzes/{quizId}/my-result` — 내 퀴즈 결과
+> 권한: 학생
+
+---
+
+### 6. 대시보드 (`/api/dashboard`)
+
+#### `GET /api/dashboard/teacher` — 교강사 대시보드
+> 권한: 교강사
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "totalCourses": 3,
+    "totalStudents": 45,
+    "totalMaterials": 12,
+    "totalQuizzes": 8,
+    "timeSaved": {
+      "totalSeconds": 18000,
+      "generationCount": 23,
+      "formatted": "5시간 0분"
+    },
+    "recentActivities": [...]
+  }
+}
+```
+
+---
+
+#### `GET /api/dashboard/student` — 학생 대시보드
+> 권한: 학생 | 강의 퀴즈 + 학년별 AI 퀴즈 **통합 집계**
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "enrolledCourses": 2,
+    "completedQuizzes": 5,
+    "averageScore": 85.5,
+    "recentQuizResults": [
+      {
+        "quizTitle": "중학 1학년 수학 퀴즈",
+        "score": 4,
+        "totalQuestions": 5,
+        "submittedAt": "2026-04-12T15:30:00"
+      },
+      {
+        "quizTitle": "HTML 기초 퀴즈",
+        "score": 9,
+        "totalQuestions": 10,
+        "submittedAt": "2026-04-11T11:30:00"
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### `GET /api/dashboard/time-saved` — 시간 절약 통계
+> 권한: 교강사
+
+---
+
+### 7. 배치 (`/api/batch`)
+
+#### `POST /api/batch/run/{jobName}` — 배치 수동 실행
+> 권한: 교강사
+
+| jobName | 설명 | 자동 스케줄 |
+|---------|------|------------|
 | `learning-stats` | 일일 학습 통계 집계 | 매일 자정 |
-| `ai-usage-stats` | 일일 AI 사용 통계 | 매일 새벽 1시 |
+| `ai-usage-stats` | 일일 AI 사용 통계 집계 | 매일 새벽 1시 |
 | `inactive-students` | 비활성 수강생 감지 (7일) | 매주 월요일 오전 9시 |
 
-### 8. SNS 커뮤니티 (`/api/sns`) - 11개
+---
 
-| Method | Endpoint | 권한 | 설명 |
-|--------|----------|------|------|
-| POST | `/api/sns/posts` | 로그인 | 게시글 작성 |
-| GET | `/api/sns/posts` | 로그인 | 전체 피드 (페이징) |
-| GET | `/api/sns/posts/following` | 로그인 | 팔로잉 피드 |
-| GET | `/api/sns/posts/category/{category}` | 로그인 | 카테고리별 조회 |
-| GET | `/api/sns/posts/{postId}` | 로그인 | 게시글 상세 (댓글 포함) |
-| DELETE | `/api/sns/posts/{postId}` | 작성자 | 게시글 삭제 |
-| POST | `/api/sns/posts/{postId}/like` | 로그인 | 좋아요 토글 |
-| POST | `/api/sns/posts/{postId}/comments` | 로그인 | 댓글 작성 |
-| DELETE | `/api/sns/comments/{commentId}` | 작성자 | 댓글 삭제 |
-| POST | `/api/sns/users/{userId}/follow` | 로그인 | 팔로우 토글 |
-| GET | `/api/sns/users/{userId}/profile` | 로그인 | 프로필 조회 |
+### 8. SNS 커뮤니티 (`/api/sns`)
+
+#### `POST /api/sns/posts` — 게시글 작성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{
+  "content": "오늘 수업에서 배운 HTML 기초 정리합니다!",
+  "imageUrl": "https://example.com/image.jpg",
+  "category": "CLASS_SHARE"
+}
+```
+| 카테고리 | 설명 |
+|----------|------|
+| `FREE` | 자유 (기본) |
+| `STUDY_TIP` | 공부 팁 |
+| `CLASS_SHARE` | 수업 공유 |
+| `QNA` | 질문 & 답변 |
+| `RESOURCE` | 자료 공유 |
+
+---
+
+#### `GET /api/sns/posts` — 전체 피드
+> 권한: 로그인 필요 | 페이징: `?page=0&size=10`
+
+---
+
+#### `GET /api/sns/posts/following` — 팔로잉 피드
+> 권한: 로그인 필요 | 팔로우한 사용자 + 내 게시글
+
+---
+
+#### `GET /api/sns/posts/category/{category}` — 카테고리별 조회
+> 권한: 로그인 필요
+
+---
+
+#### `GET /api/sns/posts/{postId}` — 게시글 상세 (댓글 포함)
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "author": { "id": 1, "name": "김교수", "profileImage": null, "role": "TEACHER" },
+    "content": "오늘 수업에서 배운 HTML 기초 정리합니다!",
+    "imageUrl": "https://example.com/image.jpg",
+    "category": "CLASS_SHARE",
+    "likeCount": 5,
+    "commentCount": 2,
+    "liked": true,
+    "comments": [
+      { "id": 1, "author": { "id": 2, "name": "홍길동", "role": "STUDENT" }, "content": "좋은 정리 감사합니다!", "createdAt": "2026-04-11T15:00:00" }
+    ],
+    "createdAt": "2026-04-11T14:30:00"
+  }
+}
+```
+
+---
+
+#### `DELETE /api/sns/posts/{postId}` — 게시글 삭제
+> 권한: 작성자만
+
+---
+
+#### `POST /api/sns/posts/{postId}/like` — 좋아요 토글
+> 권한: 로그인 필요
+
+**Response**
+```json
+{ "success": true, "data": { "liked": true, "likeCount": 6 } }
+```
+
+---
+
+#### `POST /api/sns/posts/{postId}/comments` — 댓글 작성
+> 권한: 로그인 필요
+
+**Request**
+```json
+{ "content": "좋은 글이네요!" }
+```
+
+---
+
+#### `DELETE /api/sns/comments/{commentId}` — 댓글 삭제
+> 권한: 작성자만
+
+---
+
+#### `POST /api/sns/users/{userId}/follow` — 팔로우 토글
+> 권한: 로그인 필요
+
+**Response**
+```json
+{ "success": true, "data": { "following": true, "followerCount": 12 } }
+```
+
+---
+
+#### `GET /api/sns/users/{userId}/profile` — 프로필 조회
+> 권한: 로그인 필요
+
+**Response**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1, "name": "김교수", "profileImage": null, "role": "TEACHER",
+    "postCount": 15, "followerCount": 42, "followingCount": 8, "isFollowing": false
+  }
+}
+```
+
+---
 
 ### API 요약
 
-| 카테고리 | 엔드포인트 수 |
-|----------|-------------|
-| 인증 | 7개 |
-| 강의 | 5개 |
-| 커리큘럼 | 3개 |
-| AI 생성 | 6개 |
-| 퀴즈 | 4개 |
-| 대시보드 | 3개 |
-| 배치 | 1개 |
-| SNS 커뮤니티 | 11개 |
-| **합계** | **40개** |
+| 카테고리 | 엔드포인트 수 | 권한 |
+|----------|-------------|------|
+| 인증 | 7개 | 공개 6 / 로그인 1 |
+| 강의 | 5개 | 교강사 1 / 학생 1 / 로그인 3 |
+| 커리큘럼 | 3개 | 교강사 2 / 로그인 1 |
+| AI 생성 | 6개 | 교강사 3 / 로그인 3 |
+| 퀴즈 | 4개 | 교강사 1 / 학생 2 / 로그인 1 |
+| 대시보드 | 3개 | 교강사 2 / 학생 1 |
+| 배치 | 1개 | 교강사 1 |
+| SNS 커뮤니티 | 11개 | 로그인 9 / 작성자 2 |
+| **합계** | **40개** | |
 
 <br/>
 
@@ -383,22 +974,23 @@ docker-compose up --build
 
 | 페이지 | 경로 | 설명 |
 |--------|------|------|
-| **로그인** | `/login` | 이메일 로그인 + 소셜 로그인(Google/Kakao/Naver) |
-| **회원가입** | `/register` | 이메일/비밀번호/이름/역할 + 학생은 학년 선택 |
-| **계정 찾기** | `/find-account` | 아이디 찾기 / 임시 비밀번호 → 재설정 (3단계) |
-| **교강사 대시보드** | `/` | 강의/수강생/AI 사용 통계, 절약 시간 |
-| **학생 대시보드** | `/` | 수강 강의, 퀴즈 성적 (강의+학년별 통합), 평균 점수, 바로가기 |
-| **강의 관리** | `/courses` | 내 강의 목록, 검색, CRUD |
+| **로그인** | `/login` | 이메일 로그인 + 소셜 로그인(Google/Kakao/Naver) 버튼, 아이디/비밀번호 찾기 링크 |
+| **회원가입** | `/register` | 이메일/비밀번호/이름 입력, 교강사/학생 역할 선택, 학생은 학년 선택(초등~고등) |
+| **소셜 로그인 콜백** | `/auth/:provider/callback` | OAuth 인증 후 역할 선택(신규 가입 시), 자동 로그인 처리 |
+| **아이디/비밀번호 찾기** | `/find-account` | 탭 기반 UI — 이름으로 이메일 찾기 / 임시 비밀번호 발급 → 새 비밀번호 설정 (3단계) |
+| **교강사 대시보드** | `/` | 강의 수, 수강생 수, AI 생성 횟수, 절약 시간 통계, 로딩 스켈레톤, 에러 재시도 |
+| **학생 대시보드** | `/` | 수강 강의, 퀴즈 성적(강의+학년별 통합), 평균 점수, 바로가기 버튼 |
+| **강의 관리** | `/courses` | 강의 CRUD, 검색 필터, 카드 호버 효과, 로딩 스켈레톤, 빈 상태 표시 |
 | **강의 탐색** | `/courses/browse` | 전체 강의 목록, 수강 신청 |
-| **강의 상세** | `/courses/:id` | 커리큘럼, 자료, 퀴즈 관리 |
-| **AI 커리큘럼 생성** | `/courses/:id/generate-curriculum` | 과목/주제/주차/수준 → AI 설계 |
-| **AI 자료 생성** | `/curriculum/:id/generate-material` | 강의/실습 자료 AI 생성 |
-| **AI 퀴즈 출제** | `/curriculum/:id/generate-quiz` | 문제 수/난이도/유형 → AI 출제 |
-| **퀴즈 풀기** | `/quiz/:id` | 타이머, 진행률, 자동 채점, 해설 |
-| **학년별 AI 퀴즈** | `/grade-quiz` | 학년/과목 선택 → 오프라인 퀴즈 → 결과/해설 |
-| **맞춤 강의 추천** | `/recommend` | 학년별 유튜브 교육 영상 추천 |
-| **커뮤니티 피드** | `/sns/feed` | 전체/팔로잉 피드, 카테고리 필터, 글쓰기 |
-| **프로필** | `/sns/profile/:id` | 프로필 카드, 게시글, 팔로우 |
+| **강의 상세** | `/courses/:courseId` | 커리큘럼, 자료, 퀴즈 관리 |
+| **AI 커리큘럼 생성** | `/courses/:courseId/generate-curriculum` | 과목/주제/주차/수준 입력 → AI 자동 설계 |
+| **AI 자료 생성** | `/curriculum/:curriculumId/generate-material` | 강의/실습 자료 AI 자동 생성 (난이도 조절) |
+| **AI 퀴즈 출제** | `/curriculum/:curriculumId/generate-quiz` | 문제 수/난이도/유형 설정 → AI 자동 출제 |
+| **퀴즈 풀기** | `/quiz/:quizId` | 카운트다운 타이머, 진행률 바, 자동 제출, 정답/오답 시각적 표시, 해설 |
+| **학년별 AI 퀴즈** | `/grade-quiz` | 학년/과목 선택 → 오프라인 퀴즈 생성 → 풀기 → 결과 & 해설 확인 |
+| **맞춤 강의 추천** | `/recommend` | 학년별 검증된 유튜브 교육 영상 추천, 과목별 탭 |
+| **커뮤니티 피드** | `/sns/feed` | 전체/팔로잉 피드 전환, 카테고리 필터, 글쓰기 모달, 좋아요, 댓글 |
+| **프로필** | `/sns/profile/:userId` | 사용자 프로필 카드, 팔로워/팔로잉 수, 게시글 목록, 팔로우/언팔로우 |
 
 <br/>
 
@@ -407,14 +999,15 @@ docker-compose up --build
 | 항목 | 설명 |
 |------|------|
 | **반응형 레이아웃** | 모바일 햄버거 메뉴, 데스크톱 네비게이션 바 |
-| **로딩 스켈레톤** | 데이터 로딩 시 콘텐츠 형태의 스켈레톤 UI |
-| **에러 바운더리** | API 오류 시 재시도 버튼 제공 |
-| **실시간 유효성 검사** | 입력 중 즉시 피드백 (비밀번호 불일치, 필수 항목 등) |
-| **토스트 알림** | 성공/실패 액션에 대한 즉각적 피드백 (react-hot-toast) |
-| **로그아웃 확인 모달** | 실수 방지를 위한 확인 다이얼로그 |
-| **퀴즈 타이머** | 문항당 2분, 카운트다운 색상 변화, 시간 초과 자동 제출 |
-| **학년 자동 선택** | 학생 로그인 시 등록된 학년으로 자동 설정 |
-| **점수 색상 구분** | 80점+ 초록, 60점+ 노랑, 60점 미만 빨강 |
+| **로딩 스켈레톤** | 데이터 로딩 시 콘텐츠 형태의 스켈레톤 UI 표시 |
+| **에러 바운더리** | 컴포넌트 오류 시 전체 앱 크래시 방지, 재시도 버튼 제공 |
+| **실시간 유효성 검사** | 비밀번호 불일치 시 즉시 빨간 테두리 + 메시지 표시 |
+| **토스트 알림** | 성공/실패 액션에 대한 즉각적인 피드백 (react-hot-toast) |
+| **로그아웃 확인** | 실수 방지를 위한 모달 확인 다이얼로그 |
+| **퀴즈 타이머** | 남은 시간 카운트다운 + 색상 변화 + 시간 초과 시 자동 제출 |
+| **학년 자동 선택** | 학생 로그인 시 등록된 학년으로 퀴즈/추천 자동 설정 |
+| **점수 색상 구분** | 80점+ 초록, 60점+ 노랑, 60점 미만 빨강 시각적 표시 |
+| **접근성** | 시맨틱 HTML, 키보드 네비게이션, 포커스 링 표시 |
 
 <br/>
 
