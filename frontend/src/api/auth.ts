@@ -42,6 +42,15 @@ export const authApi = {
   socialLogin: (data: SocialLoginRequest) =>
     apiClient.post<{ success: boolean; data: AuthToken }>('/auth/social-login', data),
 
+  findEmail: (data: { name: string }) =>
+    apiClient.post<{ success: boolean; data: string[] }>('/auth/find-email', data),
+
+  resetPassword: (data: { email: string; name: string }) =>
+    apiClient.post<{ success: boolean; data: { tempPassword: string } }>('/auth/reset-password', data),
+
+  changePassword: (data: { email: string; tempPassword: string; newPassword: string }) =>
+    apiClient.post<{ success: boolean; data: null }>('/auth/change-password', data),
+
   me: () =>
     apiClient.get<{ success: boolean; data: UserInfo }>('/auth/me'),
 }

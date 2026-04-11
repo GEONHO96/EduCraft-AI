@@ -1,6 +1,5 @@
 package com.educraftai.domain.curriculum.service;
 
-import com.educraftai.domain.course.entity.Course;
 import com.educraftai.domain.course.repository.CourseRepository;
 import com.educraftai.domain.curriculum.dto.CurriculumRequest;
 import com.educraftai.domain.curriculum.dto.CurriculumResponse;

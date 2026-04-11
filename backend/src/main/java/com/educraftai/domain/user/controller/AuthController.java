@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -32,6 +35,23 @@ public class AuthController {
     @PostMapping("/social-login")
     public ApiResponse<AuthResponse.Token> socialLogin(@Valid @RequestBody SocialAuthRequest request) {
         return ApiResponse.ok(socialAuthService.socialLogin(request));
+    }
+
+    @PostMapping("/find-email")
+    public ApiResponse<List<String>> findEmail(@Valid @RequestBody AuthRequest.FindEmail request) {
+        return ApiResponse.ok(authService.findEmail(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ApiResponse<Map<String, String>> resetPassword(@Valid @RequestBody AuthRequest.ResetPassword request) {
+        String tempPassword = authService.resetPassword(request);
+        return ApiResponse.ok(Map.of("tempPassword", tempPassword));
+    }
+
+    @PostMapping("/change-password")
+    public ApiResponse<Void> changePassword(@Valid @RequestBody AuthRequest.ChangePassword request) {
+        authService.changePasswordWithTemp(request);
+        return ApiResponse.ok(null);
     }
 
     @GetMapping("/me")

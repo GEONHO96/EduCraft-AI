@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import SocialCallbackPage from './pages/auth/SocialCallbackPage'
+import FindAccountPage from './pages/auth/FindAccountPage'
 import TeacherDashboard from './pages/dashboard/TeacherDashboard'
 import StudentDashboard from './pages/dashboard/StudentDashboard'
 import CoursesPage from './pages/course/CoursesPage'
@@ -26,6 +27,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/auth/:provider/callback" element={<SocialCallbackPage />} />
+      <Route path="/find-account" element={<FindAccountPage />} />
       <Route
         path="/"
         element={

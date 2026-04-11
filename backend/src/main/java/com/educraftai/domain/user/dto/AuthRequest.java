@@ -34,4 +34,33 @@ public class AuthRequest {
         @NotBlank(message = "비밀번호는 필수입니다.")
         private String password;
     }
+
+    @Getter @Setter
+    public static class FindEmail {
+        @NotBlank(message = "이름은 필수입니다.")
+        private String name;
+    }
+
+    @Getter @Setter
+    public static class ResetPassword {
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Email(message = "올바른 이메일 형식이 아닙니다.")
+        private String email;
+
+        @NotBlank(message = "이름은 필수입니다.")
+        private String name;
+    }
+
+    @Getter @Setter
+    public static class ChangePassword {
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Email
+        private String email;
+
+        @NotBlank(message = "임시 비밀번호는 필수입니다.")
+        private String tempPassword;
+
+        @NotBlank(message = "새 비밀번호는 필수입니다.")
+        private String newPassword;
+    }
 }
