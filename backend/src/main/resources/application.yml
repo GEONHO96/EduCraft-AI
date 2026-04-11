@@ -28,6 +28,14 @@ server:
       enabled: true
       force: true
 
+# 파일 업로드 설정
+spring.servlet.multipart:
+  max-file-size: 10MB
+  max-request-size: 10MB
+
+file:
+  upload-dir: ./uploads
+
 ---
 # 로컬 개발 프로필
 spring:

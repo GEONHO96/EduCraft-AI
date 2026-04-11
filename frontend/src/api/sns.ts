@@ -64,6 +64,18 @@ export interface FollowResult {
   followerCount: number
 }
 
+/** 파일 업로드 API */
+export const fileApi = {
+  /** 이미지 파일 업로드 → URL 반환 */
+  upload: (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return apiClient.post<{ success: boolean; data: { url: string } }>('/files/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+}
+
 // ====== SNS API 메서드 ======
 export const snsApi = {
   // ---- 게시글 CRUD ----

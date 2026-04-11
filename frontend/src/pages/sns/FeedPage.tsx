@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { snsApi, PostInfo, CommentInfo } from '../../api/sns'
+import { snsApi, fileApi, PostInfo, CommentInfo } from '../../api/sns'
 import { useAuthStore } from '../../stores/authStore'
 import toast from 'react-hot-toast'
 
@@ -47,6 +47,9 @@ export default function FeedPage() {
   const [newImageUrl, setNewImageUrl] = useState('')
   const [newCategory, setNewCategory] = useState('FREE')
   const [expandedPost, setExpandedPost] = useState<number | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
 
   // 피드 데이터 조회 (전체/팔로잉/카테고리별 분기)
   const feedQuery = useQuery({
@@ -65,23 +68,62 @@ export default function FeedPage() {
     },
   })
 
-  // 게시글 작성 뮤테이션
+  // 파일 선택 핸들러 (미리보기 생성)
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast.error('이미지 파일만 업로드 가능합니다.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('파일 크기는 10MB 이하만 가능합니다.')
+      return
+    }
+    setSelectedFile(file)
+    setPreviewUrl(URL.createObjectURL(file))
+    setNewImageUrl('')
+  }
+
+  // 파일 선택 해제
+  const clearFile = () => {
+    setSelectedFile(null)
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    setPreviewUrl(null)
+  }
+
+  // 게시글 작성 뮤테이션 (파일 업로드 → 게시글 생성)
   const createMutation = useMutation({
-    mutationFn: () =>
-      snsApi.createPost({
+    mutationFn: async () => {
+      let imageUrl = newImageUrl || undefined
+
+      // 첨부파일이 있으면 먼저 업로드
+      if (selectedFile) {
+        setUploading(true)
+        const uploadRes = await fileApi.upload(selectedFile)
+        imageUrl = uploadRes.data.data.url
+        setUploading(false)
+      }
+
+      return snsApi.createPost({
         content: newContent,
-        imageUrl: newImageUrl || undefined,
+        imageUrl,
         category: newCategory,
-      }),
+      })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sns-feed'] })
       setShowCreate(false)
       setNewContent('')
       setNewImageUrl('')
       setNewCategory('FREE')
+      clearFile()
       toast.success('게시글이 작성되었습니다!')
     },
-    onError: () => toast.error('게시글 작성에 실패했습니다.'),
+    onError: () => {
+      setUploading(false)
+      toast.error('게시글 작성에 실패했습니다.')
+    },
   })
 
   const likeMutation = useMutation({
@@ -210,13 +252,57 @@ export default function FeedPage() {
               autoFocus
             />
 
-            <input
-              type="text"
-              value={newImageUrl}
-              onChange={(e) => setNewImageUrl(e.target.value)}
-              placeholder="이미지 URL (선택사항)"
-              className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm mt-3"
-            />
+            {/* 이미지 첨부 영역 */}
+            <div className="mt-3 space-y-2">
+              {/* 미리보기 */}
+              {(previewUrl || newImageUrl) && (
+                <div className="relative">
+                  <img
+                    src={previewUrl || newImageUrl}
+                    alt="미리보기"
+                    className="w-full max-h-48 object-cover rounded-xl border"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
+                  <button
+                    onClick={() => { clearFile(); setNewImageUrl('') }}
+                    className="absolute top-2 right-2 bg-black/50 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-black/70 transition"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {/* 파일 첨부 + URL 입력 */}
+              {!previewUrl && !newImageUrl && (
+                <div className="flex gap-2">
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 hover:border-primary-300 transition text-sm text-gray-500">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>사진 첨부</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              )}
+
+              {/* URL 직접 입력 (토글) */}
+              {!selectedFile && !previewUrl && (
+                <input
+                  type="text"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  placeholder="또는 이미지 URL 직접 입력"
+                  className="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                />
+              )}
+            </div>
 
             <div className="flex justify-end gap-2 mt-4">
               <button
@@ -227,10 +313,10 @@ export default function FeedPage() {
               </button>
               <button
                 onClick={() => createMutation.mutate()}
-                disabled={!newContent.trim() || createMutation.isPending}
+                disabled={!newContent.trim() || createMutation.isPending || uploading}
                 className="px-6 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 transition"
               >
-                {createMutation.isPending ? '게시 중...' : '게시'}
+                {uploading ? '업로드 중...' : createMutation.isPending ? '게시 중...' : '게시'}
               </button>
             </div>
           </div>
@@ -380,7 +466,11 @@ function PostCard({
       {/* 이미지 */}
       {post.imageUrl && (
         <div className="px-4 pb-3">
-          <img src={post.imageUrl} alt="" className="w-full rounded-xl object-cover max-h-96" />
+          <img
+            src={post.imageUrl.startsWith('/uploads') ? `http://localhost:8080${post.imageUrl}` : post.imageUrl}
+            alt=""
+            className="w-full rounded-xl object-cover max-h-96"
+          />
         </div>
       )}
 

@@ -1,6 +1,5 @@
 package com.educraftai.domain.sns.dto;
 
-import com.educraftai.domain.sns.entity.Follow;
 import com.educraftai.domain.sns.entity.Post;
 import com.educraftai.domain.sns.entity.PostComment;
 import com.educraftai.domain.user.entity.User;
