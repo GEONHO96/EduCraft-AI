@@ -116,8 +116,12 @@ export default function PricingPage() {
   const { data: subscription } = useQuery({
     queryKey: ['my-subscription'],
     queryFn: async () => {
-      const res = await subscriptionApi.getMySubscription()
-      return res.data.data
+      try {
+        const res = await subscriptionApi.getMySubscription()
+        return res.data.data
+      } catch {
+        return { plan: 'COMMUNITY' as const, status: 'ACTIVE' as const }
+      }
     },
   })
 
@@ -125,8 +129,12 @@ export default function PricingPage() {
   const { data: payments } = useQuery({
     queryKey: ['payment-history'],
     queryFn: async () => {
-      const res = await subscriptionApi.getPaymentHistory()
-      return res.data.data
+      try {
+        const res = await subscriptionApi.getPaymentHistory()
+        return res.data.data
+      } catch {
+        return []
+      }
     },
   })
 
@@ -278,11 +286,11 @@ export default function PricingPage() {
                 {plan.features.map((f, i) => (
                   <li key={i} className="flex items-center gap-2.5 text-sm">
                     {f.included ? (
-                      <svg className="w-4.5 h-4.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
                     ) : (
-                      <svg className="w-4.5 h-4.5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     )}
