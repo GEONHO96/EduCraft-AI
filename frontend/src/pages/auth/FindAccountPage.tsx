@@ -9,7 +9,7 @@ import { authApi } from '../../api/auth'
 import toast from 'react-hot-toast'
 
 type Tab = 'find-email' | 'reset-password'
-type ResetStep = 'request' | 'temp-issued' | 'change'
+type ResetStep = 'request' | 'temp-issued'
 
 export default function FindAccountPage() {
   const [tab, setTab] = useState<Tab>('find-email')
@@ -128,28 +128,26 @@ function FindEmailForm() {
   )
 }
 
-/** 비밀번호 재설정 폼 - 3단계 플로우 (요청 -> 임시 비밀번호 발급 -> 새 비밀번호 변경) */
+/** 비밀번호 재설정 폼 - 2단계 플로우 (이메일 발송 요청 -> 임시 비밀번호 입력 + 새 비밀번호 변경) */
 function ResetPasswordForm() {
   const navigate = useNavigate()
   const [step, setStep] = useState<ResetStep>('request')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
-  const [tempPassword, setTempPassword] = useState('')
   const [inputTempPw, setInputTempPw] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Step 1: 이메일+이름으로 임시 비밀번호 발급 요청
+  // Step 1: 이메일+이름으로 임시 비밀번호 이메일 발송 요청
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     try {
       const res = await authApi.resetPassword({ email, name })
       if (res.data.success) {
-        setTempPassword(res.data.data.tempPassword)
         setStep('temp-issued')
-        toast.success('임시 비밀번호가 발급되었습니다.')
+        toast.success('임시 비밀번호가 이메일로 발송되었습니다.')
       } else {
         toast.error((res.data as any).error?.message || '사용자를 찾을 수 없습니다.')
       }
@@ -160,7 +158,7 @@ function ResetPasswordForm() {
     }
   }
 
-  // Step 3: 임시 비밀번호 확인 후 새 비밀번호로 변경
+  // Step 2: 이메일로 받은 임시 비밀번호 입력 후 새 비밀번호로 변경
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {
@@ -195,7 +193,7 @@ function ResetPasswordForm() {
     return (
       <div>
         <p className="text-sm text-gray-500 mb-4">
-          가입한 이메일과 이름을 입력하면 임시 비밀번호를 발급해드립니다.
+          가입한 이메일과 이름을 입력하면 해당 이메일로 임시 비밀번호를 보내드립니다.
         </p>
         <form onSubmit={handleRequestReset} className="space-y-4">
           <div>
@@ -225,7 +223,7 @@ function ResetPasswordForm() {
             disabled={loading}
             className="w-full bg-primary-600 text-white py-2.5 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition font-medium text-sm"
           >
-            {loading ? '확인 중...' : '임시 비밀번호 발급'}
+            {loading ? '발송 중...' : '임시 비밀번호 발급'}
           </button>
         </form>
       </div>
@@ -235,82 +233,82 @@ function ResetPasswordForm() {
   if (step === 'temp-issued') {
     return (
       <div>
-        <div className="p-4 bg-green-50 border border-green-200 rounded-xl mb-5">
+        {/* 이메일 발송 완료 안내 */}
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl mb-5">
           <div className="flex items-center gap-2 mb-2">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <span className="text-sm font-semibold text-green-800">임시 비밀번호 발급 완료</span>
+            <span className="text-sm font-semibold text-blue-800">이메일 발송 완료</span>
           </div>
-          <div className="bg-white px-4 py-3 rounded-lg text-center">
-            <span className="text-lg font-mono font-bold text-green-700 tracking-widest select-all">{tempPassword}</span>
-          </div>
-          <p className="text-xs text-green-600 mt-2">위의 임시 비밀번호를 복사한 후, 아래에서 새 비밀번호로 변경하세요.</p>
+          <p className="text-sm text-blue-700 leading-relaxed">
+            <strong>{email}</strong>으로 임시 비밀번호를 발송했습니다.<br />
+            이메일을 확인한 후, 아래에서 새 비밀번호를 설정해주세요.
+          </p>
+          <p className="text-xs text-blue-500 mt-2">
+            메일이 도착하지 않으면 스팸함을 확인해주세요.
+          </p>
         </div>
 
+        {/* 비밀번호 변경 폼 */}
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">임시 비밀번호</label>
+            <input
+              type="text"
+              value={inputTempPw}
+              onChange={(e) => setInputTempPw(e.target.value)}
+              className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition font-mono"
+              placeholder="이메일로 받은 임시 비밀번호"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
+              placeholder="새 비밀번호 (6자 이상)"
+              minLength={6}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
+                confirmPassword && confirmPassword !== newPassword ? 'border-red-300 bg-red-50' : ''
+              }`}
+              placeholder="새 비밀번호 다시 입력"
+              required
+            />
+            {confirmPassword && confirmPassword !== newPassword && (
+              <p className="text-xs text-red-500 mt-1">비밀번호가 일치하지 않습니다.</p>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={loading || (confirmPassword !== '' && confirmPassword !== newPassword)}
+            className="w-full bg-primary-600 text-white py-2.5 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition font-medium text-sm"
+          >
+            {loading ? '변경 중...' : '비밀번호 변경'}
+          </button>
+        </form>
+
         <button
-          onClick={() => setStep('change')}
-          className="w-full bg-primary-600 text-white py-2.5 rounded-lg hover:bg-primary-700 transition font-medium text-sm"
+          onClick={() => { setStep('request'); setInputTempPw(''); setNewPassword(''); setConfirmPassword('') }}
+          className="w-full mt-3 text-sm text-gray-500 hover:text-gray-700 transition"
         >
-          새 비밀번호 설정하기
+          임시 비밀번호 다시 발급받기
         </button>
       </div>
     )
   }
 
-  return (
-    <div>
-      <p className="text-sm text-gray-500 mb-4">
-        임시 비밀번호를 입력하고 새 비밀번호를 설정하세요.
-      </p>
-      <form onSubmit={handleChangePassword} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">임시 비밀번호</label>
-          <input
-            type="text"
-            value={inputTempPw}
-            onChange={(e) => setInputTempPw(e.target.value)}
-            className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition font-mono"
-            placeholder="발급받은 임시 비밀번호"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            className="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition"
-            placeholder="새 비밀번호 (6자 이상)"
-            minLength={6}
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition ${
-              confirmPassword && confirmPassword !== newPassword ? 'border-red-300 bg-red-50' : ''
-            }`}
-            placeholder="새 비밀번호 다시 입력"
-            required
-          />
-          {confirmPassword && confirmPassword !== newPassword && (
-            <p className="text-xs text-red-500 mt-1">비밀번호가 일치하지 않습니다.</p>
-          )}
-        </div>
-        <button
-          type="submit"
-          disabled={loading || (confirmPassword !== '' && confirmPassword !== newPassword)}
-          className="w-full bg-primary-600 text-white py-2.5 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition font-medium text-sm"
-        >
-          {loading ? '변경 중...' : '비밀번호 변경'}
-        </button>
-      </form>
-    </div>
-  )
+  return null
 }

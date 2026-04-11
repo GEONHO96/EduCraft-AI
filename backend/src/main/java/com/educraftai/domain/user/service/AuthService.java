@@ -4,6 +4,7 @@ import com.educraftai.domain.user.dto.AuthRequest;
 import com.educraftai.domain.user.dto.AuthResponse;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
+import com.educraftai.global.common.EmailService;
 import com.educraftai.global.exception.BusinessException;
 import com.educraftai.global.exception.ErrorCode;
 import com.educraftai.global.security.JwtTokenProvider;
@@ -30,6 +31,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
     private static final SecureRandom random = new SecureRandom();
 
     /** 이메일 중복 확인 */
@@ -107,9 +109,9 @@ public class AuthService {
                 .collect(Collectors.toList());
     }
 
-    /** 비밀번호 초기화 - 임시 비밀번호 생성 후 저장 */
+    /** 비밀번호 초기화 - 임시 비밀번호 생성 후 이메일로 발송 */
     @Transactional
-    public String resetPassword(AuthRequest.ResetPassword request) {
+    public void resetPassword(AuthRequest.ResetPassword request) {
         User user = userRepository.findByEmailAndName(request.getEmail(), request.getName())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
@@ -120,7 +122,9 @@ public class AuthService {
         String tempPassword = generateTempPassword();
         user.setPassword(passwordEncoder.encode(tempPassword));
         log.info("[Auth] 임시 비밀번호 발급 - email: {}", request.getEmail());
-        return tempPassword;
+
+        // 임시 비밀번호를 이메일로 발송 (비동기)
+        emailService.sendTempPasswordEmail(request.getEmail(), user.getName(), tempPassword);
     }
 
     /** 임시 비밀번호 검증 후 새 비밀번호로 변경 */

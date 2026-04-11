@@ -57,11 +57,11 @@ public class AuthController {
         return ApiResponse.ok(authService.findEmail(request));
     }
 
-    /** 비밀번호 초기화 (임시 비밀번호 발급) */
+    /** 비밀번호 초기화 (임시 비밀번호를 이메일로 발송) */
     @PostMapping("/reset-password")
     public ApiResponse<Map<String, String>> resetPassword(@Valid @RequestBody AuthRequest.ResetPassword request) {
-        String tempPassword = authService.resetPassword(request);
-        return ApiResponse.ok(Map.of("tempPassword", tempPassword));
+        authService.resetPassword(request);
+        return ApiResponse.ok(Map.of("message", "임시 비밀번호가 이메일로 발송되었습니다."));
     }
 
     /** 임시 비밀번호로 새 비밀번호 변경 */

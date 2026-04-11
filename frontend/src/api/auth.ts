@@ -61,9 +61,9 @@ export const authApi = {
   findEmail: (data: { name: string }) =>
     apiClient.post<{ success: boolean; data: string[] }>('/auth/find-email', data),
 
-  /** 임시 비밀번호 발급 */
+  /** 임시 비밀번호 발급 (이메일로 발송) */
   resetPassword: (data: { email: string; name: string }) =>
-    apiClient.post<{ success: boolean; data: { tempPassword: string } }>('/auth/reset-password', data),
+    apiClient.post<{ success: boolean; data: { message: string } }>('/auth/reset-password', data),
 
   /** 임시 비밀번호로 새 비밀번호 설정 */
   changePassword: (data: { email: string; tempPassword: string; newPassword: string }) =>
