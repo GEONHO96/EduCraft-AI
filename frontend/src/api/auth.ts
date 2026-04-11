@@ -14,7 +14,7 @@ export interface LoginRequest {
 
 export interface SocialLoginRequest {
   accessToken: string
-  provider: 'GOOGLE' | 'KAKAO'
+  provider: 'GOOGLE' | 'KAKAO' | 'NAVER'
   role?: 'TEACHER' | 'STUDENT'
 }
 
@@ -24,7 +24,7 @@ export interface UserInfo {
   name: string
   role: 'TEACHER' | 'STUDENT'
   profileImage?: string
-  socialProvider?: 'LOCAL' | 'GOOGLE' | 'KAKAO'
+  socialProvider?: 'LOCAL' | 'GOOGLE' | 'KAKAO' | 'NAVER'
 }
 
 export interface AuthToken {

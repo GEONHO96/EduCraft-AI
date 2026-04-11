@@ -49,6 +49,30 @@ export default function SocialCallbackPage() {
           return
         }
       }
+    } else if (provider === 'naver') {
+      const code = searchParams.get('code')
+      const state = searchParams.get('state')
+      if (code && state) {
+        try {
+          const res = await fetch('https://nid.naver.com/oauth2.0/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+              grant_type: 'authorization_code',
+              client_id: import.meta.env.VITE_NAVER_CLIENT_ID || '',
+              client_secret: import.meta.env.VITE_NAVER_CLIENT_SECRET || '',
+              code,
+              state,
+            }),
+          })
+          const data = await res.json()
+          token = data.access_token || ''
+        } catch {
+          toast.error('네이버 인증에 실패했습니다.')
+          navigate('/login')
+          return
+        }
+      }
     }
 
     if (!token) {
@@ -65,7 +89,7 @@ export default function SocialCallbackPage() {
     try {
       const res = await authApi.socialLogin({
         accessToken,
-        provider: provider?.toUpperCase() as 'GOOGLE' | 'KAKAO',
+        provider: provider?.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
         role,
       })
       if (res.data.success) {

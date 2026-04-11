@@ -53,6 +53,18 @@ export default function LoginPage() {
     window.location.href = url
   }
 
+  const handleNaverLogin = () => {
+    const clientId = import.meta.env.VITE_NAVER_CLIENT_ID
+    if (!clientId) {
+      toast.error('Naver Client ID가 설정되지 않았습니다.')
+      return
+    }
+    const redirectUri = `${window.location.origin}/auth/naver/callback`
+    const state = Math.random().toString(36).substring(2)
+    const url = `https://nid.naver.com/oauth2.0/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&state=${state}`
+    window.location.href = url
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8">
@@ -121,6 +133,17 @@ export default function LoginPage() {
               <path fill="#3C1E1E" d="M12 3C6.48 3 2 6.36 2 10.44c0 2.62 1.75 4.93 4.37 6.24l-1.12 4.16c-.1.36.31.65.62.44l4.94-3.26c.39.04.78.06 1.19.06 5.52 0 10-3.36 10-7.64S17.52 3 12 3z"/>
             </svg>
             <span className="text-sm font-medium" style={{ color: '#3C1E1E' }}>카카오로 로그인</span>
+          </button>
+
+          <button
+            onClick={handleNaverLogin}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg hover:opacity-90 transition text-white"
+            style={{ backgroundColor: '#03C75A' }}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#fff" d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/>
+            </svg>
+            <span className="text-sm font-medium">네이버로 로그인</span>
           </button>
         </div>
 

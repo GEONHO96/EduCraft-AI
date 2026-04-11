@@ -33,6 +33,7 @@ public class SocialAuthService {
         SocialUserInfo socialUser = switch (request.getProvider()) {
             case GOOGLE -> getGoogleUserInfo(request.getAccessToken());
             case KAKAO -> getKakaoUserInfo(request.getAccessToken());
+            case NAVER -> getNaverUserInfo(request.getAccessToken());
             default -> throw new BusinessException(ErrorCode.INVALID_INPUT);
         };
 
@@ -116,6 +117,31 @@ public class SocialAuthService {
             return new SocialUserInfo(socialId, email, name, profileImage);
         } catch (Exception e) {
             log.error("Kakao 사용자 정보 조회 실패", e);
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+    }
+
+    private SocialUserInfo getNaverUserInfo(String accessToken) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    "https://openapi.naver.com/v1/nid/me",
+                    HttpMethod.GET, entity, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode responseNode = root.path("response");
+
+            String socialId = responseNode.path("id").asText();
+            String email = responseNode.path("email").asText(socialId + "@naver.com");
+            String name = responseNode.path("name").asText(responseNode.path("nickname").asText("네이버 사용자"));
+            String profileImage = responseNode.path("profile_image").asText(null);
+
+            return new SocialUserInfo(socialId, email, name, profileImage);
+        } catch (Exception e) {
+            log.error("Naver 사용자 정보 조회 실패", e);
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
     }

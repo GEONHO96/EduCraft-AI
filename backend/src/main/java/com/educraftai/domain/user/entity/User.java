@@ -46,6 +46,6 @@ public class User {
     }
 
     public enum SocialProvider {
-        LOCAL, GOOGLE, KAKAO
+        LOCAL, GOOGLE, KAKAO, NAVER
     }
 }
