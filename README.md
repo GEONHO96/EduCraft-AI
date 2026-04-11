@@ -82,23 +82,98 @@
 
 ## 아키텍처
 
-```
-┌──────────────┐      ┌───────────────────┐      ┌──────────┐
-│    React     │─────▶│  Spring Boot API  │─────▶│  MySQL   │
-│  (Vite)      │◀─────│  Spring Security  │◀─────│          │
-│  Port: 5173  │      │  Port: 8080       │      │ Port:3306│
-└──────────────┘      └────────┬──────────┘      └──────────┘
-                               │
-                      ┌────────┴──────────┐
-                      │      Redis        │
-                      │    Port: 6379     │
-                      └────────┬──────────┘
-                               │
-                      ┌────────┴──────────┐
-                      │   Claude API      │
-                      │   (Anthropic)     │
-                      └───────────────────┘
-```
+<div align="center">
+
+<table>
+<tr>
+<td align="center" colspan="5">
+<h3>🏗️ System Architecture</h3>
+</td>
+</tr>
+<tr>
+<td align="center" width="200">
+<h4>📱 Frontend</h4>
+<p>
+<img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/><br/>
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/><br/>
+<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/><br/>
+<img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind"/><br/>
+<img src="https://img.shields.io/badge/Zustand-433E38?style=for-the-badge&logo=react&logoColor=white" alt="Zustand"/>
+</p>
+<code>:5173</code>
+</td>
+<td align="center" width="60">
+<h2>⟷</h2>
+<sub>REST API</sub><br/>
+<sub>JSON</sub>
+</td>
+<td align="center" width="200">
+<h4>⚙️ Backend</h4>
+<p>
+<img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot"/><br/>
+<img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" alt="Spring Security"/><br/>
+<img src="https://img.shields.io/badge/Spring_Batch-6DB33F?style=for-the-badge&logo=spring&logoColor=white" alt="Spring Batch"/><br/>
+<img src="https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/><br/>
+<img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT"/>
+</p>
+<code>:8080</code>
+</td>
+<td align="center" width="60">
+<h2>⟷</h2>
+<sub>JPA</sub><br/>
+<sub>Query</sub>
+</td>
+<td align="center" width="200">
+<h4>🗄️ Database</h4>
+<p>
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL"/><br/>
+<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis"/><br/>
+<img src="https://img.shields.io/badge/H2_(Dev)-0000BB?style=for-the-badge&logoColor=white" alt="H2"/>
+</p>
+<code>:3306 / :6379</code>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="5">
+<br/>
+<h2>⬇️</h2>
+</td>
+</tr>
+<tr>
+<td align="center" colspan="2">
+<h4>🤖 AI Engine</h4>
+<p>
+<img src="https://img.shields.io/badge/Claude_API-191919?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude API"/><br/>
+<img src="https://img.shields.io/badge/Anthropic-D4A574?style=for-the-badge&logo=anthropic&logoColor=black" alt="Anthropic"/>
+</p>
+<sub>커리큘럼 · 자료 · 퀴즈 · 보충학습 생성</sub>
+</td>
+<td align="center">
+<h4>🔐 OAuth 2.0</h4>
+<p>
+<img src="https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google"/><br/>
+<img src="https://img.shields.io/badge/Kakao-FFCD00?style=for-the-badge&logo=kakaotalk&logoColor=black" alt="Kakao"/><br/>
+<img src="https://img.shields.io/badge/Naver-03C75A?style=for-the-badge&logo=naver&logoColor=white" alt="Naver"/>
+</p>
+<sub>소셜 로그인</sub>
+</td>
+<td align="center" colspan="2">
+<h4>🚀 Infra</h4>
+<p>
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/><br/>
+<img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx"/><br/>
+<img src="https://img.shields.io/badge/Docker_Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Compose"/>
+</p>
+<sub>컨테이너 배포</sub>
+</td>
+</tr>
+</table>
+
+<br/>
+
+> **Data Flow**: `Client` → `Nginx` → `Spring Boot API` → `MySQL / Redis` ↔ `Claude AI`
+
+</div>
 
 <br/>
 
