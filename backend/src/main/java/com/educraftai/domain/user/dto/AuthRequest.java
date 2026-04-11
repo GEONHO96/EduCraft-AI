@@ -23,6 +23,9 @@ public class AuthRequest {
 
         @NotNull(message = "역할은 필수입니다.")
         private User.Role role;
+
+        /** 학생 학년 (STUDENT일 때 필수, 예: ELEMENTARY_1 ~ HIGH_3) */
+        private String grade;
     }
 
     @Getter @Setter

@@ -10,6 +10,7 @@ export interface RegisterRequest {
   password: string
   name: string
   role: 'TEACHER' | 'STUDENT'
+  grade?: string
 }
 
 export interface LoginRequest {
@@ -30,6 +31,7 @@ export interface UserInfo {
   role: 'TEACHER' | 'STUDENT'
   profileImage?: string
   socialProvider?: 'LOCAL' | 'GOOGLE' | 'KAKAO' | 'NAVER'
+  grade?: string
 }
 
 export interface AuthToken {

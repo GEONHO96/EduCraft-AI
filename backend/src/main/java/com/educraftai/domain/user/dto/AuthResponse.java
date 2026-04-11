@@ -21,6 +21,7 @@ public class AuthResponse {
         private User.Role role;
         private String profileImage;
         private User.SocialProvider socialProvider;
+        private String grade;
 
         public static UserInfo from(User user) {
             return UserInfo.builder()
@@ -30,6 +31,7 @@ public class AuthResponse {
                     .role(user.getRole())
                     .profileImage(user.getProfileImage())
                     .socialProvider(user.getSocialProvider())
+                    .grade(user.getGrade())
                     .build();
         }
     }

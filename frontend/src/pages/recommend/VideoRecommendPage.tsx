@@ -2,7 +2,8 @@
  * VideoRecommendPage - 학년별 유튜브 강의 추천 페이지
  * 초등학교 1학년 ~ 고등학교 3학년까지 국어, 영어, 수학 유튜브 강의를 추천한다.
  */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAuthStore } from '../../stores/authStore'
 
 // ====== 학교급 & 학년 정의 ======
 type SchoolLevel = 'elementary' | 'middle' | 'high'
@@ -242,9 +243,23 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
 }
 
 export default function VideoRecommendPage() {
+  const { user } = useAuthStore()
   const [schoolLevel, setSchoolLevel] = useState<SchoolLevel>('elementary')
   const [grade, setGrade] = useState(1)
   const [subject, setSubject] = useState<Subject>('국어')
+
+  // 로그인한 학생의 학년 정보로 자동 선택
+  useEffect(() => {
+    if (user?.grade) {
+      const parts = user.grade.split('_') // e.g. "MIDDLE_2"
+      const level = parts[0].toLowerCase() as SchoolLevel
+      const g = parseInt(parts[1])
+      if (['elementary', 'middle', 'high'].includes(level) && !isNaN(g)) {
+        setSchoolLevel(level)
+        setGrade(g)
+      }
+    }
+  }, [user?.grade])
 
   const currentSchool = SCHOOL_LEVELS.find((s) => s.value === schoolLevel)!
   const key = `${schoolLevel}-${grade}`

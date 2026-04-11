@@ -47,6 +47,9 @@ public class User {
 
     private String profileImage;
 
+    /** 학생 학년 정보 (예: ELEMENTARY_1, MIDDLE_2, HIGH_3) */
+    private String grade;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

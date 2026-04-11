@@ -6,8 +6,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '../../api/dashboard'
 import { Link } from 'react-router-dom'
+import { useAuthStore } from '../../stores/authStore'
+
+/** 학년 코드를 표시용 텍스트로 변환 */
+function gradeLabel(grade?: string) {
+  if (!grade) return null
+  const map: Record<string, string> = {
+    ELEMENTARY_1: '초등학교 1학년', ELEMENTARY_2: '초등학교 2학년', ELEMENTARY_3: '초등학교 3학년',
+    ELEMENTARY_4: '초등학교 4학년', ELEMENTARY_5: '초등학교 5학년', ELEMENTARY_6: '초등학교 6학년',
+    MIDDLE_1: '중학교 1학년', MIDDLE_2: '중학교 2학년', MIDDLE_3: '중학교 3학년',
+    HIGH_1: '고등학교 1학년', HIGH_2: '고등학교 2학년', HIGH_3: '고등학교 3학년',
+  }
+  return map[grade] || grade
+}
 
 export default function StudentDashboard() {
+  const { user } = useAuthStore()
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['student-dashboard'],
     queryFn: async () => {
@@ -62,7 +76,11 @@ export default function StudentDashboard() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">학생 대시보드</h1>
-        <p className="text-sm text-gray-500 mt-1">나의 학습 현황을 확인하세요</p>
+        <p className="text-sm text-gray-500 mt-1">
+          {user?.grade ? (
+            <><span className="font-medium text-primary-600">{gradeLabel(user.grade)}</span> · 나의 학습 현황을 확인하세요</>
+          ) : '나의 학습 현황을 확인하세요'}
+        </p>
       </div>
 
       {/* ====== 학습 통계 카드 섹션 ====== */}
@@ -157,6 +175,16 @@ export default function StudentDashboard() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
           <span>내 강의 보기</span>
+        </Link>
+        <Link
+          to="/recommend"
+          className="inline-flex items-center space-x-2 bg-red-50 text-red-700 border border-red-200 px-5 py-2.5 rounded-lg hover:bg-red-100 transition text-sm font-medium"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>맞춤 강의 추천</span>
         </Link>
       </div>
     </div>

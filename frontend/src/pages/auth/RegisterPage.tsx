@@ -15,6 +15,7 @@ export default function RegisterPage() {
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [name, setName] = useState('')
   const [role, setRole] = useState<'TEACHER' | 'STUDENT'>('TEACHER')
+  const [grade, setGrade] = useState('')
   const [loading, setLoading] = useState(false)
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
@@ -62,7 +63,8 @@ export default function RegisterPage() {
     match: password === passwordConfirm && passwordConfirm.length > 0,
   }
   const isPasswordValid = passwordChecks.length && passwordChecks.letter && passwordChecks.number
-  const isFormValid = name.trim() && emailChecked && isPasswordValid && passwordChecks.match
+  const isGradeValid = role === 'TEACHER' || grade !== ''
+  const isFormValid = name.trim() && emailChecked && isPasswordValid && passwordChecks.match && isGradeValid
 
   // ====== 회원가입 폼 제출 ======
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,7 +85,7 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
-      const res = await authApi.register({ email, password, name, role })
+      const res = await authApi.register({ email, password, name, role, grade: role === 'STUDENT' ? grade : undefined })
       if (res.data.success) {
         setAuth(res.data.data.user, res.data.data.accessToken)
         toast.success('회원가입 성공!')
@@ -222,7 +224,7 @@ export default function RegisterPage() {
                   type="radio"
                   value="TEACHER"
                   checked={role === 'TEACHER'}
-                  onChange={() => setRole('TEACHER')}
+                  onChange={() => { setRole('TEACHER'); setGrade('') }}
                   className="text-primary-600"
                 />
                 <span>교강사</span>
@@ -239,6 +241,41 @@ export default function RegisterPage() {
               </label>
             </div>
           </div>
+
+          {/* 학년 선택 (학생일 때만 표시) */}
+          {role === 'STUDENT' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">학년 선택</label>
+              <select
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none ${
+                  !grade ? 'text-gray-400' : 'text-gray-900'
+                }`}
+              >
+                <option value="">학년을 선택하세요</option>
+                <optgroup label="🏫 초등학교">
+                  <option value="ELEMENTARY_1">초등학교 1학년</option>
+                  <option value="ELEMENTARY_2">초등학교 2학년</option>
+                  <option value="ELEMENTARY_3">초등학교 3학년</option>
+                  <option value="ELEMENTARY_4">초등학교 4학년</option>
+                  <option value="ELEMENTARY_5">초등학교 5학년</option>
+                  <option value="ELEMENTARY_6">초등학교 6학년</option>
+                </optgroup>
+                <optgroup label="🏢 중학교">
+                  <option value="MIDDLE_1">중학교 1학년</option>
+                  <option value="MIDDLE_2">중학교 2학년</option>
+                  <option value="MIDDLE_3">중학교 3학년</option>
+                </optgroup>
+                <optgroup label="🎓 고등학교">
+                  <option value="HIGH_1">고등학교 1학년</option>
+                  <option value="HIGH_2">고등학교 2학년</option>
+                  <option value="HIGH_3">고등학교 3학년</option>
+                </optgroup>
+              </select>
+              {!grade && <p className="text-xs text-gray-400 mt-1">맞춤 강의 추천을 위해 학년을 선택해주세요</p>}
+            </div>
+          )}
 
           {/* 가입 버튼 */}
           <button

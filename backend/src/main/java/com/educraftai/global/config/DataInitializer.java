@@ -1,6 +1,8 @@
 package com.educraftai.global.config;
 
 import com.educraftai.domain.course.entity.Course;
+import com.educraftai.domain.course.entity.CourseEnrollment;
+import com.educraftai.domain.course.repository.CourseEnrollmentRepository;
 import com.educraftai.domain.course.repository.CourseRepository;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
@@ -24,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
+    private final CourseEnrollmentRepository courseEnrollmentRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -102,7 +105,38 @@ public class DataInitializer implements CommandLineRunner {
         courseRepository.save(Course.builder().teacher(teacher5).title("알고리즘과 자료구조").subject("프로그래밍")
                 .description("코딩테스트 대비! 배열, 스택, 큐, 트리, 그래프와 정렬·탐색 알고리즘을 마스터합니다.").build());
 
-        log.info("[DataInitializer] 교강사 {}명, 강의 {}건 생성 완료!",
-                userRepository.count(), courseRepository.count());
+        // ====== 학생 계정 생성 (다양한 학년) ======
+        User student1 = userRepository.save(User.builder()
+                .email("student1@edu.com").name("홍길동").password(passwordEncoder.encode("1234"))
+                .role(User.Role.STUDENT).socialProvider(User.SocialProvider.LOCAL)
+                .grade("MIDDLE_1").build());
+
+        User student2 = userRepository.save(User.builder()
+                .email("student2@edu.com").name("김영희").password(passwordEncoder.encode("1234"))
+                .role(User.Role.STUDENT).socialProvider(User.SocialProvider.LOCAL)
+                .grade("HIGH_2").build());
+
+        User student3 = userRepository.save(User.builder()
+                .email("student3@edu.com").name("이철수").password(passwordEncoder.encode("1234"))
+                .role(User.Role.STUDENT).socialProvider(User.SocialProvider.LOCAL)
+                .grade("ELEMENTARY_5").build());
+
+        // ====== 샘플 수강 신청 (강의 탐색 페이지에서 수강생 수가 표시되도록) ======
+        var allCourses = courseRepository.findAll();
+        // student1: 수학, 영어 강의 수강
+        allCourses.stream().filter(c -> c.getSubject().equals("수학") || c.getSubject().equals("영어"))
+                .forEach(c -> courseEnrollmentRepository.save(
+                        CourseEnrollment.builder().course(c).student(student1).build()));
+        // student2: 프로그래밍 강의 수강
+        allCourses.stream().filter(c -> c.getSubject().equals("프로그래밍"))
+                .forEach(c -> courseEnrollmentRepository.save(
+                        CourseEnrollment.builder().course(c).student(student2).build()));
+        // student3: 국어, 과학 강의 수강
+        allCourses.stream().filter(c -> c.getSubject().equals("국어") || c.getSubject().equals("과학"))
+                .forEach(c -> courseEnrollmentRepository.save(
+                        CourseEnrollment.builder().course(c).student(student3).build()));
+
+        log.info("[DataInitializer] 교강사 {}명, 학생 {}명, 강의 {}건, 수강신청 {}건 생성 완료!",
+                userRepository.count() - 3, 3, courseRepository.count(), courseEnrollmentRepository.count());
     }
 }
