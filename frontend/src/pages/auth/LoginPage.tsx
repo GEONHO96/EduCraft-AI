@@ -28,8 +28,9 @@ export default function LoginPage() {
       } else {
         toast.error((res.data as any).error?.message || '로그인 실패')
       }
-    } catch {
-      toast.error('로그인에 실패했습니다.')
+    } catch (err: any) {
+      const msg = err?.response?.data?.error?.message || '로그인에 실패했습니다.'
+      toast.error(msg)
     } finally {
       setLoading(false)
     }

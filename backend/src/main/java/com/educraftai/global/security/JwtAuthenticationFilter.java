@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +20,7 @@ import java.util.List;
  * JWT 인증 필터
  * 매 요청마다 Authorization 헤더에서 JWT를 추출하고 검증하여 SecurityContext에 인증 정보를 설정한다.
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -38,9 +40,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
             var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.debug("[JWT 인증] userId={}, role={}, uri={}", userId, role, request.getRequestURI());
         }
 
         filterChain.doFilter(request, response);
+        log.debug("[요청 처리 완료] {} {} → {}", request.getMethod(), request.getRequestURI(), response.getStatus());
     }
 
     /** Authorization 헤더에서 "Bearer " 접두사를 제거하고 토큰 문자열 추출 */

@@ -30,12 +30,17 @@ public class SocialAuthService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public AuthResponse.Token socialLogin(SocialAuthRequest request) {
+        log.info("[소셜 로그인 요청] provider={}", request.getProvider());
+
         SocialUserInfo socialUser = switch (request.getProvider()) {
             case GOOGLE -> getGoogleUserInfo(request.getAccessToken());
             case KAKAO -> getKakaoUserInfo(request.getAccessToken());
             case NAVER -> getNaverUserInfo(request.getAccessToken());
             default -> throw new BusinessException(ErrorCode.INVALID_INPUT);
         };
+
+        log.debug("[소셜 사용자 정보] provider={}, socialId={}, email={}, name={}",
+                request.getProvider(), socialUser.socialId(), socialUser.email(), socialUser.name());
 
         Optional<User> existingUser = userRepository.findBySocialProviderAndSocialId(
                 request.getProvider(), socialUser.socialId());
@@ -45,6 +50,7 @@ public class SocialAuthService {
             user = existingUser.get();
             user.setName(socialUser.name());
             user.setProfileImage(socialUser.profileImage());
+            log.info("[소셜 로그인] 기존 사용자 로그인 - userId={}, email={}", user.getId(), user.getEmail());
         } else {
             Optional<User> emailUser = userRepository.findByEmail(socialUser.email());
             if (emailUser.isPresent()) {
@@ -52,6 +58,7 @@ public class SocialAuthService {
                 user.setSocialProvider(request.getProvider());
                 user.setSocialId(socialUser.socialId());
                 user.setProfileImage(socialUser.profileImage());
+                log.info("[소셜 로그인] 기존 계정에 소셜 연동 - userId={}, provider={}", user.getId(), request.getProvider());
             } else {
                 user = User.builder()
                         .email(socialUser.email())
@@ -62,6 +69,7 @@ public class SocialAuthService {
                         .profileImage(socialUser.profileImage())
                         .build();
                 userRepository.save(user);
+                log.info("[소셜 회원가입] 신규 사용자 생성 - userId={}, email={}, provider={}", user.getId(), user.getEmail(), request.getProvider());
             }
         }
 

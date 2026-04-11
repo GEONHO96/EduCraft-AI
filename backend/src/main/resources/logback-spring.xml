@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    EduCraft AI Logback 설정
+    - 콘솔 출력: 컬러 포맷으로 개발 시 가독성 향상
+    - 파일 출력: 일별 롤링, 최대 30일 보관, 최대 1GB
+    - 에러 전용 파일: 에러 로그만 별도 분리하여 빠른 장애 파악
+    - 프로필별 로그 레벨 분리 (local: DEBUG, docker: INFO)
+-->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- ==================== 공통 속성 ==================== -->
+    <!-- 로그 파일 저장 경로 -->
+    <property name="LOG_PATH" value="./logs"/>
+    <!-- 로그 파일명 -->
+    <property name="LOG_FILE_NAME" value="educraftai"/>
+    <!-- 로그 출력 패턴: 날짜 | 로그레벨 | 스레드명 | 클래스명 | 메시지 -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] [%thread] %logger{36} - %msg%n"/>
+    <!-- 콘솔 패턴: Spring Boot 컬러 변환 사용 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <property name="CONSOLE_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%-5level) %clr([%thread]){cyan} %clr(%logger{36}){magenta} - %msg%n"/>
+
+    <!-- ==================== 콘솔 Appender ==================== -->
+    <!-- 개발 시 터미널/IDE 콘솔에 로그 출력 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ==================== 파일 Appender (전체 로그) ==================== -->
+    <!-- 일별 롤링: 매일 자정에 새 파일 생성, 최대 30일 보관 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- 일별 롤링 정책: 날짜별 파일 분리 + 최대 보관 설정 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ==================== 에러 전용 Appender ==================== -->
+    <!-- ERROR 레벨만 별도 파일에 기록하여 빠른 장애 추적 가능 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}-error.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <!-- ERROR 레벨 이상만 필터링 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ==================== API 요청/응답 Appender ==================== -->
+    <!-- API 호출 이력을 별도 파일에 기록하여 디버깅 및 감사(audit) 용도 -->
+    <appender name="API_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_NAME}-api.log</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/${LOG_FILE_NAME}-api.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ==================== 로거 설정 ==================== -->
+
+    <!-- EduCraft AI 애플리케이션 로거 -->
+    <logger name="com.educraftai" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
+
+    <!-- API 컨트롤러 로거: API 전용 파일에도 기록 -->
+    <logger name="com.educraftai.domain.user.controller" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="API_FILE"/>
+    </logger>
+    <logger name="com.educraftai.domain.course.controller" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="API_FILE"/>
+    </logger>
+    <logger name="com.educraftai.domain.sns.controller" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="API_FILE"/>
+    </logger>
+
+    <!-- Spring Security 로거: 인증/인가 디버깅용 -->
+    <logger name="org.springframework.security" level="INFO"/>
+
+    <!-- Spring Web 로거: HTTP 요청 처리 추적 -->
+    <logger name="org.springframework.web" level="INFO"/>
+
+    <!-- Hibernate SQL 로거: 실행되는 쿼리 확인 -->
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <!-- Hibernate 바인딩 파라미터: 쿼리의 ? 파라미터 값 표시 -->
+    <logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
+
+    <!-- ==================== 프로필별 설정 ==================== -->
+
+    <!-- 로컬 개발 환경: 상세 로그 출력 -->
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- Docker/운영 환경: 콘솔 최소화, 파일 중심 로깅 -->
+    <springProfile name="docker">
+        <!-- 운영 환경에서는 Hibernate 쿼리 로그 비활성화 -->
+        <logger name="org.hibernate.SQL" level="INFO"/>
+        <logger name="org.hibernate.orm.jdbc.bind" level="INFO"/>
+        <logger name="com.educraftai" level="INFO"/>
+
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

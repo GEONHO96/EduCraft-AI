@@ -31,8 +31,9 @@ export default function RegisterPage() {
       } else {
         toast.error((res.data as any).error?.message || '회원가입 실패')
       }
-    } catch {
-      toast.error('회원가입에 실패했습니다.')
+    } catch (err: any) {
+      const msg = err?.response?.data?.error?.message || '회원가입에 실패했습니다.'
+      toast.error(msg)
     } finally {
       setLoading(false)
     }

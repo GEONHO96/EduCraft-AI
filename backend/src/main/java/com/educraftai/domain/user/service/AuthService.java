@@ -35,7 +35,10 @@ public class AuthService {
     /** 회원가입 - 이메일 중복 검사 후 사용자 생성 및 JWT 발급 */
     @Transactional
     public AuthResponse.Token register(AuthRequest.Register request) {
+        log.info("[회원가입 요청] email={}, name={}, role={}", request.getEmail(), request.getName(), request.getRole());
+
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("[회원가입 실패] 이메일 중복 - email={}", request.getEmail());
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
 
@@ -47,6 +50,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        log.info("[회원가입 성공] userId={}, email={}, role={}", user.getId(), user.getEmail(), user.getRole());
 
         String token = jwtTokenProvider.createToken(user.getId(), user.getEmail(), user.getRole().name());
         return AuthResponse.Token.builder()
@@ -57,13 +61,20 @@ public class AuthService {
 
     /** 로그인 - 이메일/비밀번호 검증 후 JWT 발급 */
     public AuthResponse.Token login(AuthRequest.Login request) {
+        log.info("[로그인 요청] email={}", request.getEmail());
+
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
+                .orElseThrow(() -> {
+                    log.warn("[로그인 실패] 존재하지 않는 이메일 - email={}", request.getEmail());
+                    return new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+                });
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            log.warn("[로그인 실패] 비밀번호 불일치 - email={}", request.getEmail());
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
+        log.info("[로그인 성공] userId={}, email={}, role={}", user.getId(), user.getEmail(), user.getRole());
         String token = jwtTokenProvider.createToken(user.getId(), user.getEmail(), user.getRole().name());
         return AuthResponse.Token.builder()
                 .accessToken(token)
