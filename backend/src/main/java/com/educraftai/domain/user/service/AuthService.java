@@ -32,6 +32,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private static final SecureRandom random = new SecureRandom();
 
+    /** 이메일 중복 확인 */
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     /** 회원가입 - 이메일 중복 검사 후 사용자 생성 및 JWT 발급 */
     @Transactional
     public AuthResponse.Token register(AuthRequest.Register request) {

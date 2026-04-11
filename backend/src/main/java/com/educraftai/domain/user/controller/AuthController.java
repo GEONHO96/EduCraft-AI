@@ -32,6 +32,13 @@ public class AuthController {
         return ApiResponse.ok(authService.register(request));
     }
 
+    /** 이메일 중복 확인 */
+    @GetMapping("/check-email")
+    public ApiResponse<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        boolean exists = authService.existsByEmail(email);
+        return ApiResponse.ok(Map.of("exists", exists));
+    }
+
     /** 이메일/비밀번호 로그인 후 JWT 토큰 발급 */
     @PostMapping("/login")
     public ApiResponse<AuthResponse.Token> login(@Valid @RequestBody AuthRequest.Login request) {

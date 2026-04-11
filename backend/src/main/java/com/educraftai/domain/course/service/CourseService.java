@@ -62,6 +62,27 @@ public class CourseService {
         }
     }
 
+    /** 전체 강의 목록 조회 (학생의 수강 여부 포함) */
+    public List<CourseResponse.Browse> browseAllCourses(Long userId) {
+        List<Course> courses = courseRepository.findAllByOrderByCreatedAtDesc();
+        return courses.stream().map(course -> {
+            long count = enrollmentRepository.countByCourseId(course.getId());
+            boolean enrolled = userId != null && enrollmentRepository.existsByCourseIdAndStudentId(course.getId(), userId);
+            return CourseResponse.Browse.from(course, count, enrolled);
+        }).toList();
+    }
+
+    /** 강의 검색 (제목 또는 과목) */
+    public List<CourseResponse.Browse> searchCourses(String keyword, Long userId) {
+        List<Course> courses = courseRepository
+                .findByTitleContainingIgnoreCaseOrSubjectContainingIgnoreCaseOrderByCreatedAtDesc(keyword, keyword);
+        return courses.stream().map(course -> {
+            long count = enrollmentRepository.countByCourseId(course.getId());
+            boolean enrolled = userId != null && enrollmentRepository.existsByCourseIdAndStudentId(course.getId(), userId);
+            return CourseResponse.Browse.from(course, count, enrolled);
+        }).toList();
+    }
+
     /** 강의 단건 조회 */
     public CourseResponse.Info getCourse(Long courseId) {
         Course course = courseRepository.findById(courseId)

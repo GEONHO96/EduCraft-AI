@@ -29,4 +29,30 @@ public class CourseResponse {
                     .build();
         }
     }
+
+    /** 강의 탐색용 DTO - 수강생 수, 수강 여부 포함 */
+    @Getter @Builder @AllArgsConstructor
+    public static class Browse {
+        private Long id;
+        private String title;
+        private String subject;
+        private String description;
+        private String teacherName;
+        private long studentCount;
+        private boolean enrolled;
+        private LocalDateTime createdAt;
+
+        public static Browse from(Course course, long studentCount, boolean enrolled) {
+            return Browse.builder()
+                    .id(course.getId())
+                    .title(course.getTitle())
+                    .subject(course.getSubject())
+                    .description(course.getDescription())
+                    .teacherName(course.getTeacher().getName())
+                    .studentCount(studentCount)
+                    .enrolled(enrolled)
+                    .createdAt(course.getCreatedAt())
+                    .build();
+        }
+    }
 }

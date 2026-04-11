@@ -39,6 +39,10 @@ export interface AuthToken {
 
 // ====== 인증 API 메서드 ======
 export const authApi = {
+  /** 이메일 중복 확인 */
+  checkEmail: (email: string) =>
+    apiClient.get<{ success: boolean; data: { exists: boolean } }>(`/auth/check-email?email=${encodeURIComponent(email)}`),
+
   /** 이메일 회원가입 */
   register: (data: RegisterRequest) =>
     apiClient.post<{ success: boolean; data: AuthToken }>('/auth/register', data),

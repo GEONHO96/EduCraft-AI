@@ -36,6 +36,17 @@ public class CourseController {
         return ApiResponse.ok(courseService.getMyCourses(AuthUtil.getCurrentUserId()));
     }
 
+    /** 전체 강의 탐색 (수강생 수, 수강 여부 포함) */
+    @GetMapping("/browse")
+    public ApiResponse<List<CourseResponse.Browse>> browseCourses(
+            @RequestParam(required = false) String keyword) {
+        Long userId = AuthUtil.getCurrentUserId();
+        if (keyword != null && !keyword.isBlank()) {
+            return ApiResponse.ok(courseService.searchCourses(keyword, userId));
+        }
+        return ApiResponse.ok(courseService.browseAllCourses(userId));
+    }
+
     /** 강의 단건 조회 */
     @GetMapping("/{courseId}")
     public ApiResponse<CourseResponse.Info> getCourse(@PathVariable Long courseId) {

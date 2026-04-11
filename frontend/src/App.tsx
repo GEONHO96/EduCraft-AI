@@ -12,6 +12,7 @@ import FindAccountPage from './pages/auth/FindAccountPage'
 import TeacherDashboard from './pages/dashboard/TeacherDashboard'
 import StudentDashboard from './pages/dashboard/StudentDashboard'
 import CoursesPage from './pages/course/CoursesPage'
+import BrowseCoursesPage from './pages/course/BrowseCoursesPage'
 import CourseDetailPage from './pages/course/CourseDetailPage'
 import CurriculumGeneratePage from './pages/curriculum/CurriculumGeneratePage'
 import MaterialGeneratePage from './pages/material/MaterialGeneratePage'
@@ -19,6 +20,7 @@ import QuizGeneratePage from './pages/quiz/QuizGeneratePage'
 import QuizTakePage from './pages/quiz/QuizTakePage'
 import FeedPage from './pages/sns/FeedPage'
 import ProfilePage from './pages/sns/ProfilePage'
+import VideoRecommendPage from './pages/recommend/VideoRecommendPage'
 
 /** 인증 가드 - 토큰 없으면 로그인 페이지로 리다이렉트 */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -55,6 +57,7 @@ function App() {
         />
         {/* 강의 관리 */}
         <Route path="courses" element={<CoursesPage />} />
+        <Route path="courses/browse" element={<BrowseCoursesPage />} />
         <Route path="courses/:courseId" element={<CourseDetailPage />} />
         {/* AI 생성 기능 */}
         <Route path="courses/:courseId/generate-curriculum" element={<CurriculumGeneratePage />} />
@@ -62,6 +65,8 @@ function App() {
         <Route path="curriculum/:curriculumId/generate-quiz" element={<QuizGeneratePage />} />
         {/* 퀴즈 풀기 */}
         <Route path="quiz/:quizId" element={<QuizTakePage />} />
+        {/* 강의 추천 */}
+        <Route path="recommend" element={<VideoRecommendPage />} />
         {/* SNS 커뮤니티 */}
         <Route path="sns/feed" element={<FeedPage />} />
         <Route path="sns/profile/:userId" element={<ProfilePage />} />
