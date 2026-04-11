@@ -19,6 +19,8 @@ public class AuthResponse {
         private String email;
         private String name;
         private User.Role role;
+        private String profileImage;
+        private User.SocialProvider socialProvider;
 
         public static UserInfo from(User user) {
             return UserInfo.builder()
@@ -26,6 +28,8 @@ public class AuthResponse {
                     .email(user.getEmail())
                     .name(user.getName())
                     .role(user.getRole())
+                    .profileImage(user.getProfileImage())
+                    .socialProvider(user.getSocialProvider())
                     .build();
         }
     }
