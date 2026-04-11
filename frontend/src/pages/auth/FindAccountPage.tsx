@@ -1,3 +1,8 @@
+/**
+ * FindAccountPage - 계정 찾기 페이지
+ * 탭 구조로 '이메일 찾기'와 '비밀번호 재설정' 기능을 제공한다.
+ * 비밀번호 재설정은 3단계 플로우: 임시 비밀번호 요청 -> 발급 확인 -> 새 비밀번호 설정
+ */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
@@ -51,6 +56,7 @@ export default function FindAccountPage() {
   )
 }
 
+/** 이메일 찾기 폼 - 이름으로 가입된 이메일을 조회 */
 function FindEmailForm() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -122,6 +128,7 @@ function FindEmailForm() {
   )
 }
 
+/** 비밀번호 재설정 폼 - 3단계 플로우 (요청 -> 임시 비밀번호 발급 -> 새 비밀번호 변경) */
 function ResetPasswordForm() {
   const navigate = useNavigate()
   const [step, setStep] = useState<ResetStep>('request')
@@ -133,6 +140,7 @@ function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // Step 1: 이메일+이름으로 임시 비밀번호 발급 요청
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -152,6 +160,7 @@ function ResetPasswordForm() {
     }
   }
 
+  // Step 3: 임시 비밀번호 확인 후 새 비밀번호로 변경
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPassword !== confirmPassword) {

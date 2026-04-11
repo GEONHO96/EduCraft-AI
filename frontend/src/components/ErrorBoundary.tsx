@@ -1,3 +1,8 @@
+/**
+ * ErrorBoundary - React 에러 바운더리 컴포넌트
+ * 하위 컴포넌트에서 발생하는 런타임 에러를 포착하여
+ * 앱 전체가 크래시되지 않도록 폴백 UI를 렌더링한다.
+ */
 import { Component, type ReactNode } from 'react'
 
 interface Props {
@@ -14,11 +19,13 @@ export default class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false }
   }
 
+  // 에러 발생 시 hasError 상태를 true로 전환
   static getDerivedStateFromError() {
     return { hasError: true }
   }
 
   render() {
+    // 에러 발생 시 새로고침 유도 폴백 UI 표시
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">

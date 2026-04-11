@@ -1,3 +1,8 @@
+/**
+ * TeacherDashboard - 교강사 대시보드
+ * 내 강의 수, 수강생 수, AI 생성 횟수, 절약한 시간 등 통계를 표시하고
+ * 빠른 시작(새 강의/자료 생성/퀴즈 출제) 바로가기를 제공한다.
+ */
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '../../api/dashboard'
 import { Link } from 'react-router-dom'
@@ -73,6 +78,7 @@ export default function TeacherDashboard() {
         </Link>
       </div>
 
+      {/* ====== 통계 카드 섹션 ====== */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashCard
           title="내 강의"
@@ -104,6 +110,7 @@ export default function TeacherDashboard() {
         />
       </div>
 
+      {/* ====== 빠른 시작 바로가기 섹션 ====== */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">빠른 시작</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -149,6 +156,7 @@ export default function TeacherDashboard() {
   )
 }
 
+/** DashCard - 대시보드 통계 카드 (색상별 아이콘 + 수치 표시) */
 function DashCard({
   title,
   value,

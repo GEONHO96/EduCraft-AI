@@ -1,3 +1,8 @@
+/**
+ * ProfilePage - 유저 프로필 페이지
+ * 프로필 정보(이름, 역할, 게시글/팔로워/팔로잉 수), 팔로우 버튼,
+ * 해당 유저의 게시글 목록을 표시한다.
+ */
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -28,6 +33,7 @@ export default function ProfilePage() {
   const targetId = Number(userId)
   const isMe = currentUser?.id === targetId
 
+  // 프로필 정보 조회
   const profileQuery = useQuery({
     queryKey: ['sns-profile', targetId],
     queryFn: async () => {
@@ -36,6 +42,7 @@ export default function ProfilePage() {
     },
   })
 
+  // 해당 유저의 게시글 목록 조회
   const postsQuery = useQuery({
     queryKey: ['sns-user-posts', targetId],
     queryFn: async () => {
@@ -44,6 +51,7 @@ export default function ProfilePage() {
     },
   })
 
+  // 팔로우/언팔로우 토글
   const followMutation = useMutation({
     mutationFn: () => snsApi.toggleFollow(targetId),
     onSuccess: (res) => {

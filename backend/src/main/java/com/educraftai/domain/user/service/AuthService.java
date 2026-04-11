@@ -17,6 +17,10 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 인증/인가 비즈니스 로직 서비스
+ * 회원가입, 로그인, 비밀번호 관리, 이메일 찾기 등을 담당한다.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private static final SecureRandom random = new SecureRandom();
 
+    /** 회원가입 - 이메일 중복 검사 후 사용자 생성 및 JWT 발급 */
     @Transactional
     public AuthResponse.Token register(AuthRequest.Register request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -50,6 +55,7 @@ public class AuthService {
                 .build();
     }
 
+    /** 로그인 - 이메일/비밀번호 검증 후 JWT 발급 */
     public AuthResponse.Token login(AuthRequest.Login request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_CREDENTIALS));
@@ -65,12 +71,14 @@ public class AuthService {
                 .build();
     }
 
+    /** 현재 사용자 정보 조회 */
     public AuthResponse.UserInfo getMyInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         return AuthResponse.UserInfo.from(user);
     }
 
+    /** 이름으로 이메일 찾기 (일부 마스킹 처리) */
     public List<String> findEmail(AuthRequest.FindEmail request) {
         List<User> users = userRepository.findByName(request.getName());
         if (users.isEmpty()) {
@@ -82,6 +90,7 @@ public class AuthService {
                 .collect(Collectors.toList());
     }
 
+    /** 비밀번호 초기화 - 임시 비밀번호 생성 후 저장 */
     @Transactional
     public String resetPassword(AuthRequest.ResetPassword request) {
         User user = userRepository.findByEmailAndName(request.getEmail(), request.getName())
@@ -97,6 +106,7 @@ public class AuthService {
         return tempPassword;
     }
 
+    /** 임시 비밀번호 검증 후 새 비밀번호로 변경 */
     @Transactional
     public void changePasswordWithTemp(AuthRequest.ChangePassword request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -109,6 +119,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
     }
 
+    /** 이메일 로컬 파트를 마스킹 (예: abc***@domain.com) */
     private String maskEmail(String email) {
         int atIndex = email.indexOf('@');
         if (atIndex <= 2) return email;
@@ -118,6 +129,7 @@ public class AuthService {
         return local.substring(0, showCount) + "*".repeat(local.length() - showCount) + domain;
     }
 
+    /** 8자리 임시 비밀번호 생성 (혼동 문자 제외) */
     private String generateTempPassword() {
         String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
         StringBuilder sb = new StringBuilder(8);

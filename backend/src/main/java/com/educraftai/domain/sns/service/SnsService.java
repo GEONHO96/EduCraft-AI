@@ -25,6 +25,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * SNS 비즈니스 로직 서비스
+ * 게시글, 좋아요, 댓글, 팔로우, 프로필 관련 핵심 로직을 담당한다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -38,6 +42,7 @@ public class SnsService {
 
     // ============ 게시글 ============
 
+    /** 게시글 생성 (카테고리 미지정 시 FREE로 기본값) */
     @Transactional
     public SnsResponse.PostInfo createPost(Long userId, SnsRequest.CreatePost request) {
         User user = findUser(userId);
@@ -53,12 +58,14 @@ public class SnsService {
         return SnsResponse.PostInfo.from(post, false);
     }
 
+    /** 전체 피드 조회 (최신순) */
     public SnsResponse.PostPage getFeed(Long userId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findAllByOrderByCreatedAtDesc(pageable);
         return toPostPage(postPage, userId);
     }
 
+    /** 팔로잉 피드 - 내가 팔로우한 사용자와 내 글만 조회 */
     public SnsResponse.PostPage getFollowingFeed(Long userId, int page, int size) {
         List<Long> followingIds = followRepository.findFollowingIdsByFollowerId(userId);
         followingIds.add(userId); // 내 글도 포함
@@ -68,12 +75,14 @@ public class SnsService {
         return toPostPage(postPage, userId);
     }
 
+    /** 카테고리별 게시글 목록 조회 */
     public SnsResponse.PostPage getPostsByCategory(Long userId, Post.Category category, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findByCategoryOrderByCreatedAtDesc(category, pageable);
         return toPostPage(postPage, userId);
     }
 
+    /** 게시글 상세 조회 (좋아요 여부 + 댓글 목록 포함) */
     public SnsResponse.PostDetail getPostDetail(Long userId, Long postId) {
         Post post = findPost(postId);
         boolean liked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
@@ -81,6 +90,7 @@ public class SnsService {
         return SnsResponse.PostDetail.from(post, liked, comments);
     }
 
+    /** 게시글 삭제 (작성자 본인만 가능) */
     @Transactional
     public void deletePost(Long userId, Long postId) {
         Post post = findPost(postId);
@@ -92,6 +102,7 @@ public class SnsService {
 
     // ============ 좋아요 ============
 
+    /** 좋아요 토글 - 이미 좋아요했으면 취소, 아니면 추가 */
     @Transactional
     public SnsResponse.LikeResult toggleLike(Long userId, Long postId) {
         Post post = findPost(postId);
@@ -124,6 +135,7 @@ public class SnsService {
 
     // ============ 댓글 ============
 
+    /** 댓글 작성 및 게시글 댓글 수 증가 */
     @Transactional
     public SnsResponse.CommentInfo addComment(Long userId, Long postId, SnsRequest.CreateComment request) {
         Post post = findPost(postId);
@@ -142,6 +154,7 @@ public class SnsService {
         return SnsResponse.CommentInfo.from(comment);
     }
 
+    /** 댓글 삭제 (작성자 본인만 가능) 및 게시글 댓글 수 감소 */
     @Transactional
     public void deleteComment(Long userId, Long commentId) {
         PostComment comment = postCommentRepository.findById(commentId)
@@ -159,6 +172,7 @@ public class SnsService {
 
     // ============ 팔로우 ============
 
+    /** 팔로우 토글 - 이미 팔로우 중이면 언팔로우, 아니면 팔로우 (자기 자신 불가) */
     @Transactional
     public SnsResponse.FollowResult toggleFollow(Long followerId, Long followingId) {
         if (followerId.equals(followingId)) {
@@ -193,6 +207,7 @@ public class SnsService {
 
     // ============ 프로필 ============
 
+    /** 사용자 프로필 조회 (게시글/팔로워/팔로잉 수 및 팔로우 여부) */
     public SnsResponse.ProfileInfo getProfile(Long currentUserId, Long targetUserId) {
         User user = findUser(targetUserId);
         long postCount = postRepository.countByAuthorId(targetUserId);
@@ -213,6 +228,7 @@ public class SnsService {
                 .build();
     }
 
+    /** 특정 사용자의 게시글 목록 페이징 조회 */
     public SnsResponse.PostPage getUserPosts(Long currentUserId, Long targetUserId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findByAuthorIdOrderByCreatedAtDesc(targetUserId, pageable);
@@ -221,6 +237,7 @@ public class SnsService {
 
     // ============ Helper ============
 
+    /** Post 페이지를 PostPage DTO로 변환 (좋아요 여부 일괄 조회) */
     private SnsResponse.PostPage toPostPage(Page<Post> postPage, Long userId) {
         List<Long> postIds = postPage.getContent().stream().map(Post::getId).toList();
         Set<Long> likedPostIds = postIds.isEmpty()

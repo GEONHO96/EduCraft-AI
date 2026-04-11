@@ -1,3 +1,9 @@
+/**
+ * CoursesPage - 강의 관리 페이지
+ * 교강사: 강의 생성 + 내 강의 목록 조회
+ * 학생: 수강 중인 강의 목록 조회
+ * 검색 필터와 강의 카드 그리드를 제공한다.
+ */
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { courseApi } from '../../api/courses'
@@ -14,6 +20,7 @@ export default function CoursesPage() {
   const isTeacher = useAuthStore((s) => s.isTeacher)()
   const queryClient = useQueryClient()
 
+  // 내 강의 목록 조회
   const { data: courses, isLoading, isError, refetch } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
@@ -22,6 +29,7 @@ export default function CoursesPage() {
     },
   })
 
+  // 새 강의 생성 뮤테이션
   const createMutation = useMutation({
     mutationFn: () => courseApi.create({ title, subject, description }),
     onSuccess: () => {
@@ -37,6 +45,7 @@ export default function CoursesPage() {
     },
   })
 
+  // 제목/과목 기준 클라이언트 사이드 검색 필터
   const filteredCourses = courses?.filter(
     (c) =>
       c.title.toLowerCase().includes(search.toLowerCase()) ||

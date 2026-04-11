@@ -1,3 +1,8 @@
+/**
+ * StudentDashboard - 학생 대시보드
+ * 수강 중인 강의 수, 완료한 퀴즈 수, 평균 점수 등 학습 현황을 표시하고
+ * 최근 퀴즈 결과를 점수 바 차트로 보여준다.
+ */
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '../../api/dashboard'
 import { Link } from 'react-router-dom'
@@ -60,6 +65,7 @@ export default function StudentDashboard() {
         <p className="text-sm text-gray-500 mt-1">나의 학습 현황을 확인하세요</p>
       </div>
 
+      {/* ====== 학습 통계 카드 섹션 ====== */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-blue-50 rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
@@ -96,6 +102,7 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      {/* ====== 최근 퀴즈 결과 섹션 ====== */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4 text-gray-800">최근 퀴즈 결과</h2>
         {data?.recentQuizResults && data.recentQuizResults.length > 0 ? (

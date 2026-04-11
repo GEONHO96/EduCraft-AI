@@ -1,3 +1,8 @@
+/**
+ * Layout - 인증된 사용자의 공통 레이아웃
+ * 상단 네비게이션 바(데스크톱/모바일), 유저 정보, 로그아웃 기능을 포함한다.
+ * 하위 라우트는 <Outlet />으로 렌더링된다.
+ */
 import { useState } from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
@@ -9,11 +14,13 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
+  // 로그아웃 처리: 상태 초기화 후 로그인 페이지로 이동
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
 
+  // 네비게이션 메뉴 항목 정의
   const navItems = [
     { path: '/', label: '대시보드', icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,6 +39,7 @@ export default function Layout() {
     )},
   ]
 
+  // 현재 경로와 메뉴 항목의 활성 상태를 비교
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/'
     if (path === '/sns/feed') return location.pathname.startsWith('/sns')
@@ -139,6 +147,7 @@ export default function Layout() {
         )}
       </nav>
 
+      {/* ====== 메인 콘텐츠 영역 (하위 라우트 렌더링) ====== */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Outlet />
       </main>

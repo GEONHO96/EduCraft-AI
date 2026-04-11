@@ -7,6 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * 팔로우 관계 엔티티
+ * 사용자 간 팔로우/팔로잉 관계를 저장한다. (follower -> following)
+ */
 @Entity
 @Table(name = "follows", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"follower_id", "following_id"})

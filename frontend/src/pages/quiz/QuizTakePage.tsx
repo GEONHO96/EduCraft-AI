@@ -1,9 +1,15 @@
+/**
+ * QuizTakePage - 퀴즈 풀기 페이지
+ * 퀴즈 데이터를 불러와 객관식/주관식 문제를 표시하고,
+ * 타이머(제한 시간), 진행률 바, 자동 제출, 채점 결과 + 해설을 제공한다.
+ */
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import apiClient from '../../api/client'
 import toast from 'react-hot-toast'
 
+// ====== 타입 정의 ======
 interface QuizInfo {
   id: number
   materialId: number
@@ -28,6 +34,7 @@ export default function QuizTakePage() {
   const [result, setResult] = useState<{ score: number; totalQuestions: number } | null>(null)
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null)
 
+  // 퀴즈 데이터 조회
   const { data: quiz, isLoading, isError } = useQuery({
     queryKey: ['quiz', quizId],
     queryFn: async () => {
@@ -58,6 +65,7 @@ export default function QuizTakePage() {
     return () => clearInterval(interval)
   }, [remainingSeconds, submitted])
 
+  // 퀴즈 답안 제출 뮤테이션
   const submitMutation = useMutation({
     mutationFn: () =>
       apiClient.post(`/quizzes/${quizId}/submit`, {
@@ -73,7 +81,7 @@ export default function QuizTakePage() {
     onError: () => toast.error('제출에 실패했습니다.'),
   })
 
-  // 시간 초과 시 자동 제출
+  // 타이머 만료 시 자동 제출 처리
   const handleAutoSubmit = useCallback(() => {
     if (!submitted && !submitMutation.isPending) {
       toast('시간이 초과되어 자동 제출됩니다.', { icon: '⏰' })
@@ -85,6 +93,7 @@ export default function QuizTakePage() {
     if (remainingSeconds === 0) handleAutoSubmit()
   }, [remainingSeconds, handleAutoSubmit])
 
+  // 초를 MM:SS 포맷으로 변환
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60)
     const s = seconds % 60

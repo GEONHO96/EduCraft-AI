@@ -1,3 +1,7 @@
+/**
+ * FeedPage - SNS 커뮤니티 피드 페이지
+ * 전체/팔로잉 피드 전환, 카테고리 필터, 게시글 작성/삭제/좋아요 기능을 제공한다.
+ */
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
@@ -5,6 +9,7 @@ import { snsApi, PostInfo, CommentInfo } from '../../api/sns'
 import { useAuthStore } from '../../stores/authStore'
 import toast from 'react-hot-toast'
 
+// ====== 카테고리 상수 정의 ======
 const CATEGORIES = [
   { value: '', label: '전체' },
   { value: 'FREE', label: '자유' },
@@ -43,6 +48,7 @@ export default function FeedPage() {
   const [newCategory, setNewCategory] = useState('FREE')
   const [expandedPost, setExpandedPost] = useState<number | null>(null)
 
+  // 피드 데이터 조회 (전체/팔로잉/카테고리별 분기)
   const feedQuery = useQuery({
     queryKey: ['sns-feed', feedType, category],
     queryFn: async () => {
@@ -59,6 +65,7 @@ export default function FeedPage() {
     },
   })
 
+  // 게시글 작성 뮤테이션
   const createMutation = useMutation({
     mutationFn: () =>
       snsApi.createPost({
@@ -260,6 +267,7 @@ export default function FeedPage() {
   )
 }
 
+/** PostCard - 개별 게시글 카드 컴포넌트 (좋아요, 댓글 펼치기, 삭제 기능 포함) */
 function PostCard({
   post,
   currentUserId,
@@ -280,6 +288,7 @@ function PostCard({
   const [comments, setComments] = useState<CommentInfo[]>([])
   const [loadingComments, setLoadingComments] = useState(false)
 
+  // 댓글 섹션 펼치기/접기 + 댓글 데이터 로드
   const handleExpand = async () => {
     onToggleExpand()
     if (!expanded) {
@@ -312,6 +321,7 @@ function PostCard({
     },
   })
 
+  // 상대 시간 표시 유틸 (방금 전, N분 전, N시간 전 등)
   const timeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime()
     const mins = Math.floor(diff / 60000)

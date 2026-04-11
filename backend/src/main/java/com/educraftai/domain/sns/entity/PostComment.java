@@ -7,6 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * 게시글 댓글 엔티티
+ * 게시글에 달리는 댓글을 저장하며, 작성자만 삭제 가능하다.
+ */
 @Entity
 @Table(name = "post_comments")
 @Getter

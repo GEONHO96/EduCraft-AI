@@ -3,6 +3,10 @@ package com.educraftai.global.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * 애플리케이션 에러 코드 정의
+ * 도메인별로 분류된 에러 코드와 한국어 메시지를 관리한다.
+ */
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {

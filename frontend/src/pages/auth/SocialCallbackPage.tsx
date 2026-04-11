@@ -1,3 +1,8 @@
+/**
+ * SocialCallbackPage - 소셜 로그인 콜백 처리 페이지
+ * OAuth 인증 후 리다이렉트되는 페이지로, 프로바이더별(Google/Kakao/Naver)
+ * 토큰을 추출한 뒤 역할 선택 UI를 표시하고 백엔드에 소셜 로그인을 요청한다.
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom'
 import { authApi } from '../../api/auth'
@@ -16,6 +21,7 @@ export default function SocialCallbackPage() {
     handleCallback()
   }, [])
 
+  // 프로바이더별 OAuth 토큰 추출 (Google: hash, Kakao/Naver: code 교환)
   const handleCallback = async () => {
     let token = ''
 
@@ -85,6 +91,7 @@ export default function SocialCallbackPage() {
     setShowRoleSelect(true)
   }
 
+  // 역할 선택 후 백엔드에 소셜 로그인 요청
   const handleRoleSelect = async (role: 'TEACHER' | 'STUDENT') => {
     try {
       const res = await authApi.socialLogin({

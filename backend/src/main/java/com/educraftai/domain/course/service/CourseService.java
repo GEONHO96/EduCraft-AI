@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * 강의 비즈니스 로직 서비스
+ * 강의 생성, 조회, 수강 신청 처리를 담당한다.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -25,6 +29,7 @@ public class CourseService {
     private final CourseEnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
 
+    /** 강의 생성 - 선생님 사용자가 새 강의를 개설 */
     @Transactional
     public CourseResponse.Info createCourse(Long teacherId, CourseRequest.Create request) {
         User teacher = userRepository.findById(teacherId)
@@ -41,6 +46,7 @@ public class CourseService {
         return CourseResponse.Info.from(course);
     }
 
+    /** 내 강의 조회 - 역할에 따라 개설 강의 또는 수강 강의 반환 */
     public List<CourseResponse.Info> getMyCourses(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -56,12 +62,14 @@ public class CourseService {
         }
     }
 
+    /** 강의 단건 조회 */
     public CourseResponse.Info getCourse(Long courseId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COURSE_NOT_FOUND));
         return CourseResponse.Info.from(course);
     }
 
+    /** 수강 신청 - 중복 수강 방지 후 등록 */
     @Transactional
     public void enrollStudent(Long courseId, Long studentId) {
         Course course = courseRepository.findById(courseId)

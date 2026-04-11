@@ -1,3 +1,7 @@
+/**
+ * LoginPage - 로그인 페이지
+ * 이메일/비밀번호 로그인과 소셜 로그인(Google, Kakao, Naver)을 지원한다.
+ */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
@@ -11,6 +15,7 @@ export default function LoginPage() {
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
 
+  // 이메일/비밀번호 로그인 처리
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -30,6 +35,7 @@ export default function LoginPage() {
     }
   }
 
+  // Google OAuth 로그인 (Implicit Flow)
   const handleGoogleLogin = () => {
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
     if (!clientId) {
@@ -42,6 +48,7 @@ export default function LoginPage() {
     window.location.href = url
   }
 
+  // 카카오 OAuth 로그인 (Authorization Code Flow)
   const handleKakaoLogin = () => {
     const clientId = import.meta.env.VITE_KAKAO_CLIENT_ID
     if (!clientId) {
@@ -53,6 +60,7 @@ export default function LoginPage() {
     window.location.href = url
   }
 
+  // 네이버 OAuth 로그인 (Authorization Code Flow)
   const handleNaverLogin = () => {
     const clientId = import.meta.env.VITE_NAVER_CLIENT_ID
     if (!clientId) {

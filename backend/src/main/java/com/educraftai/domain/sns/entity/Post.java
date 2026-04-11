@@ -7,6 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * SNS 게시글 엔티티
+ * 카테고리별 게시판 기능을 제공하며, 좋아요/댓글 수를 비정규화하여 관리한다.
+ */
 @Entity
 @Table(name = "posts")
 @Getter
@@ -20,23 +24,29 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 작성자 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
+    /** 게시글 본문 */
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    /** 첨부 이미지 URL (선택) */
     private String imageUrl;
 
+    /** 게시판 카테고리 (기본값: FREE) */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private Category category = Category.FREE;
 
+    /** 좋아요 수 (비정규화 카운트) */
     @Builder.Default
     private int likeCount = 0;
 
+    /** 댓글 수 (비정규화 카운트) */
     @Builder.Default
     private int commentCount = 0;
 

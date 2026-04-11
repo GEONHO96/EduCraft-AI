@@ -1,3 +1,8 @@
+/**
+ * RegisterPage - 회원가입 페이지
+ * 이름, 이메일, 비밀번호, 역할(교강사/학생)을 입력받아 회원가입을 처리한다.
+ * 가입 성공 시 자동 로그인 후 대시보드로 이동한다.
+ */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
@@ -13,6 +18,7 @@ export default function RegisterPage() {
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
 
+  // 회원가입 폼 제출 핸들러
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
