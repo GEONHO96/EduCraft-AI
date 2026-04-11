@@ -50,16 +50,22 @@ export default function TeacherDashboard() {
             <div className="font-medium">새 강의 만들기</div>
             <div className="text-sm text-gray-500">강의를 생성하고 AI로 커리큘럼을 설계하세요</div>
           </Link>
-          <div className="p-4 border-2 border-dashed border-gray-200 rounded-xl text-center text-gray-400">
+          <Link
+            to="/courses"
+            className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-blue-400 hover:bg-blue-50 transition text-center"
+          >
             <div className="text-3xl mb-2">AI</div>
-            <div className="font-medium">AI 자료 생성</div>
-            <div className="text-sm">강의를 선택 후 자료를 생성하세요</div>
-          </div>
-          <div className="p-4 border-2 border-dashed border-gray-200 rounded-xl text-center text-gray-400">
+            <div className="font-medium text-gray-700">AI 자료 생성</div>
+            <div className="text-sm text-gray-500">강의를 선택 후 자료를 생성하세요</div>
+          </Link>
+          <Link
+            to="/courses"
+            className="p-4 border-2 border-dashed border-gray-300 rounded-xl hover:border-green-400 hover:bg-green-50 transition text-center"
+          >
             <div className="text-3xl mb-2">Q</div>
-            <div className="font-medium">AI 퀴즈 출제</div>
-            <div className="text-sm">커리큘럼 기반 퀴즈를 자동 생성하세요</div>
-          </div>
+            <div className="font-medium text-gray-700">AI 퀴즈 출제</div>
+            <div className="text-sm text-gray-500">커리큘럼 기반 퀴즈를 자동 생성하세요</div>
+          </Link>
         </div>
       </div>
     </div>
