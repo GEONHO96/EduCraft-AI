@@ -61,8 +61,17 @@ public class SocialAuthService {
         User user;
         if (existingUser.isPresent()) {
             user = existingUser.get();
-            user.setName(socialUser.name());
+            // 닉네임이 설정되지 않은 경우에만 이름 업데이트
+            if (user.getNickname() == null || user.getNickname().isBlank()) {
+                user.setName(socialUser.name());
+            }
             user.setProfileImage(socialUser.profileImage());
+
+            // 기존 이메일이 폴백(socialId@naver.com 등) 형태이고, 실제 이메일을 받은 경우 업데이트
+            if (isFallbackEmail(user.getEmail()) && !isFallbackEmail(socialUser.email())) {
+                log.info("[소셜 로그인] 이메일 업데이트: {} → {}", user.getEmail(), socialUser.email());
+                user.setEmail(socialUser.email());
+            }
             log.info("[소셜 로그인] 기존 사용자 로그인 - userId={}, email={}", user.getId(), user.getEmail());
         } else {
             Optional<User> emailUser = userRepository.findByEmail(socialUser.email());
@@ -248,16 +257,42 @@ public class SocialAuthService {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode responseNode = root.path("response");
 
+            log.info("[Naver API 응답] resultcode={}, fields={}", root.path("resultcode").asText(), responseNode.fieldNames());
+            log.debug("[Naver API 상세] response={}", responseNode.toString());
+
             String socialId = responseNode.path("id").asText();
-            String email = responseNode.path("email").asText(socialId + "@naver.com");
-            String name = responseNode.path("name").asText(responseNode.path("nickname").asText("네이버 사용자"));
+
+            // 이메일: email 필드 우선, 없으면 socialId 기반 폴백
+            String email = null;
+            if (responseNode.has("email") && !responseNode.path("email").asText("").isBlank()) {
+                email = responseNode.path("email").asText();
+            }
+            if (email == null || email.isBlank()) {
+                log.warn("[Naver] 이메일 미제공 — 네이버 개발자 콘솔에서 '이메일 주소' 권한을 '필수'로 설정하세요. socialId={}", socialId);
+                email = socialId + "@naver.com";
+            }
+
+            // 이름: nickname 우선 → name → 폴백
+            String nickname = responseNode.path("nickname").asText("");
+            String realName = responseNode.path("name").asText("");
+            String name = !nickname.isBlank() ? nickname : (!realName.isBlank() ? realName : "네이버 사용자");
+
             String profileImage = responseNode.path("profile_image").asText(null);
 
+            log.info("[Naver 사용자 정보] email={}, name={}, hasProfileImage={}", email, name, profileImage != null);
             return new SocialUserInfo(socialId, email, name, profileImage);
         } catch (Exception e) {
             log.error("Naver 사용자 정보 조회 실패", e);
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
+    }
+
+    /** 폴백 이메일 여부 판단 (socialId 기반 자동 생성 이메일) */
+    private boolean isFallbackEmail(String email) {
+        if (email == null) return true;
+        // 일반적인 이메일 형식이 아닌 긴 해시 문자열 기반 이메일 감지
+        String localPart = email.contains("@") ? email.substring(0, email.indexOf("@")) : email;
+        return localPart.length() > 30;
     }
 
     private record SocialUserInfo(String socialId, String email, String name, String profileImage) {}
