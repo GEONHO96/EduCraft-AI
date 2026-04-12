@@ -19,6 +19,8 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/release' }
 }
 
 dependencies {
@@ -31,6 +33,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Spring AI - Anthropic Claude 연동
+    implementation platform('org.springframework.ai:spring-ai-bom:1.0.0')
+    implementation 'org.springframework.ai:spring-ai-starter-model-anthropic'
 
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'

@@ -1,68 +1,66 @@
 package com.educraftai.infra.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * AiClient - Spring AI 기반 Claude API 클라이언트
+ * Spring AI의 ChatModel 추상화를 통해 Anthropic Claude와 통신한다.
+ * API 키가 미설정 시 isConfigured()가 false를 반환하여 오프라인 폴백을 유도한다.
+ *
+ * 기존 RestTemplate 직접 호출 방식에서 Spring AI ChatModel로 마이그레이션하여,
+ * 모델 교체(GPT, Gemini 등)가 설정 변경만으로 가능해졌다.
+ */
 @Slf4j
 @Component
 public class AiClient {
 
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
+    private final ChatModel chatModel;
     private final String apiKey;
-    private final String model;
 
     public AiClient(
-            @Value("${ai.api-key}") String apiKey,
-            @Value("${ai.model}") String model,
-            ObjectMapper objectMapper) {
-        this.restTemplate = new RestTemplate();
-        this.objectMapper = objectMapper;
+            @Nullable ChatModel chatModel,
+            @Value("${spring.ai.anthropic.api-key:your-api-key-here}") String apiKey) {
+        this.chatModel = chatModel;
         this.apiKey = apiKey;
-        this.model = model;
+
+        if (isConfigured()) {
+            log.info("[Spring AI] Anthropic ChatModel 활성화 (온라인 모드)");
+        } else {
+            log.info("[Spring AI] API 키 미설정 → 오프라인 모드로 동작합니다");
+        }
     }
 
     /** AI API 키가 유효하게 설정되었는지 확인 */
     public boolean isConfigured() {
-        return apiKey != null
+        return chatModel != null
+                && apiKey != null
                 && !apiKey.isBlank()
                 && !apiKey.equals("your-api-key-here");
     }
 
+    /**
+     * Spring AI ChatModel을 통한 AI 응답 생성
+     * SystemMessage + UserMessage로 프롬프트를 구성하여 Claude API를 호출한다.
+     */
     public String generate(String systemPrompt, String userPrompt) {
         try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("x-api-key", apiKey);
-            headers.set("anthropic-version", "2023-06-01");
+            Prompt prompt = new Prompt(List.of(
+                    new SystemMessage(systemPrompt),
+                    new UserMessage(userPrompt)
+            ));
 
-            Map<String, Object> body = Map.of(
-                "model", model,
-                "max_tokens", 4096,
-                "system", systemPrompt,
-                "messages", List.of(
-                    Map.of("role", "user", "content", userPrompt)
-                )
-            );
-
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<String> response = restTemplate.exchange(
-                "https://api.anthropic.com/v1/messages",
-                HttpMethod.POST,
-                entity,
-                String.class
-            );
-
-            JsonNode root = objectMapper.readTree(response.getBody());
-            return root.path("content").get(0).path("text").asText();
+            ChatResponse response = chatModel.call(prompt);
+            return response.getResult().getOutput().getText();
 
         } catch (Exception e) {
             log.error("AI API 호출 실패", e);

@@ -5,7 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @EnableAsync
-@SpringBootApplication
+@SpringBootApplication(excludeName = {
+        "org.springframework.ai.model.anthropic.autoconfigure.AnthropicChatAutoConfiguration"
+})
 public class EduCraftAiApplication {
 
     public static void main(String[] args) {
