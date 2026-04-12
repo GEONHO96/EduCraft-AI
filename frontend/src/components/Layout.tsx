@@ -108,17 +108,25 @@ export default function Layout() {
 
             {/* 유저 정보 + 로그아웃 */}
             <div className="flex items-center space-x-3">
-              <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gray-50 rounded-full">
-                <div className="w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
-                  {user?.name?.charAt(0)}
-                </div>
+              <Link
+                to="/profile/edit"
+                className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition cursor-pointer"
+                title="프로필 수정"
+              >
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt="" className="w-7 h-7 rounded-full object-cover" />
+                ) : (
+                  <div className="w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
+                    {user?.name?.charAt(0)}
+                  </div>
+                )}
                 <div className="text-sm">
                   <span className="font-medium text-gray-700">{user?.name}</span>
                   <span className="ml-1 text-xs text-gray-400">
                     {user?.role === 'TEACHER' ? '교강사' : '학생'}
                   </span>
                 </div>
-              </div>
+              </Link>
               <button
                 onClick={() => setShowLogoutConfirm(true)}
                 className="text-sm text-gray-400 hover:text-gray-600 transition p-2 rounded-lg hover:bg-gray-100"
@@ -164,12 +172,23 @@ export default function Layout() {
                 <span>{item.label}</span>
               </Link>
             ))}
-            <div className="flex items-center space-x-2 px-3 py-2.5 text-sm text-gray-500">
-              <div className="w-6 h-6 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
-                {user?.name?.charAt(0)}
-              </div>
+            <Link
+              to="/profile/edit"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center space-x-2 px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-100 rounded-lg"
+            >
+              {user?.profileImage ? (
+                <img src={user.profileImage} alt="" className="w-6 h-6 rounded-full object-cover" />
+              ) : (
+                <div className="w-6 h-6 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
+                  {user?.name?.charAt(0)}
+                </div>
+              )}
               <span>{user?.name} ({user?.role === 'TEACHER' ? '교강사' : '학생'})</span>
-            </div>
+              <svg className="w-4 h-4 ml-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </Link>
           </div>
         )}
       </nav>

@@ -37,10 +37,16 @@ export interface UserInfo {
   id: number
   email: string
   name: string
+  nickname?: string
   role: 'TEACHER' | 'STUDENT'
   profileImage?: string
   socialProvider?: 'LOCAL' | 'GOOGLE' | 'KAKAO' | 'NAVER'
   grade?: string
+}
+
+export interface ProfileUpdateRequest {
+  nickname?: string
+  profileImage?: string
 }
 
 export interface AuthToken {
@@ -85,4 +91,8 @@ export const authApi = {
   /** 현재 로그인된 유저 정보 조회 */
   me: () =>
     apiClient.get<ApiResponse<UserInfo>>('/auth/me'),
+
+  /** 프로필 수정 (닉네임, 프로필 이미지) */
+  updateProfile: (data: ProfileUpdateRequest) =>
+    apiClient.put<ApiResponse<UserInfo>>('/auth/profile', data),
 }

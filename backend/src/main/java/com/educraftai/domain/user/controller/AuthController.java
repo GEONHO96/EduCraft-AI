@@ -3,6 +3,7 @@ package com.educraftai.domain.user.controller;
 import com.educraftai.domain.user.dto.AuthRequest;
 import com.educraftai.domain.user.dto.AuthResponse;
 import com.educraftai.domain.user.dto.SocialAuthRequest;
+import com.educraftai.domain.user.dto.ProfileUpdateRequest;
 import com.educraftai.domain.user.dto.SocialCodeRequest;
 import com.educraftai.domain.user.service.AuthService;
 import com.educraftai.domain.user.service.SocialAuthService;
@@ -82,5 +83,11 @@ public class AuthController {
     @GetMapping("/me")
     public ApiResponse<AuthResponse.UserInfo> getMyInfo() {
         return ApiResponse.ok(authService.getMyInfo(AuthUtil.getCurrentUserId()));
+    }
+
+    /** 프로필 수정 (닉네임, 프로필 이미지) */
+    @PutMapping("/profile")
+    public ApiResponse<AuthResponse.UserInfo> updateProfile(@RequestBody ProfileUpdateRequest request) {
+        return ApiResponse.ok(authService.updateProfile(AuthUtil.getCurrentUserId(), request));
     }
 }

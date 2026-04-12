@@ -2,6 +2,7 @@ package com.educraftai.domain.user.service;
 
 import com.educraftai.domain.user.dto.AuthRequest;
 import com.educraftai.domain.user.dto.AuthResponse;
+import com.educraftai.domain.user.dto.ProfileUpdateRequest;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.common.EmailService;
@@ -94,6 +95,23 @@ public class AuthService {
     public AuthResponse.UserInfo getMyInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        return AuthResponse.UserInfo.from(user);
+    }
+
+    /** 프로필 수정 — 닉네임, 프로필 이미지 변경 */
+    @Transactional
+    public AuthResponse.UserInfo updateProfile(Long userId, ProfileUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        if (request.getNickname() != null) {
+            user.setNickname(request.getNickname().isBlank() ? null : request.getNickname().trim());
+        }
+        if (request.getProfileImage() != null) {
+            user.setProfileImage(request.getProfileImage().isBlank() ? null : request.getProfileImage());
+        }
+
+        log.info("[프로필 수정] userId={}, nickname={}", userId, user.getNickname());
         return AuthResponse.UserInfo.from(user);
     }
 

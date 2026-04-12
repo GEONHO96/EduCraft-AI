@@ -33,6 +33,9 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    /** 사용자가 직접 설정한 닉네임 (null이면 name 사용) */
+    private String nickname;
+
     /** 사용자 역할: TEACHER 또는 STUDENT */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

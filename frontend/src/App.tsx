@@ -23,6 +23,7 @@ import ProfilePage from './pages/sns/ProfilePage'
 import VideoRecommendPage from './pages/recommend/VideoRecommendPage'
 import GradeQuizPage from './pages/quiz/GradeQuizPage'
 import PricingPage from './pages/subscription/PricingPage'
+import ProfileEditPage from './pages/auth/ProfileEditPage'
 
 /** 인증 가드 - 토큰 없으면 로그인 페이지로 리다이렉트 */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -73,6 +74,8 @@ function App() {
         <Route path="grade-quiz" element={<GradeQuizPage />} />
         {/* 요금제 */}
         <Route path="pricing" element={<PricingPage />} />
+        {/* 프로필 */}
+        <Route path="profile/edit" element={<ProfileEditPage />} />
         {/* SNS 커뮤니티 */}
         <Route path="sns/feed" element={<FeedPage />} />
         <Route path="sns/profile/:userId" element={<ProfilePage />} />

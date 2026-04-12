@@ -9,6 +9,7 @@ interface AuthState {
   user: UserInfo | null
   token: string | null
   setAuth: (user: UserInfo, token: string) => void
+  updateUser: (user: UserInfo) => void
   logout: () => void
   isLoggedIn: () => boolean
   isTeacher: () => boolean
@@ -35,6 +36,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     localStorage.setItem('accessToken', token)
     localStorage.setItem('user', JSON.stringify(user))
     set({ user, token })
+  },
+
+  // 프로필 수정 후 유저 정보 갱신 (토큰은 유지)
+  updateUser: (user) => {
+    localStorage.setItem('user', JSON.stringify(user))
+    set({ user })
   },
 
   // 로그아웃: 로컬 스토리지 + 상태 초기화
