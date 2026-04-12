@@ -365,76 +365,46 @@ erDiagram
 
 ```mermaid
 flowchart LR
-    subgraph Actors
-        T(("👨‍🏫<br/>교강사"))
-        S(("👨‍🎓<br/>학생"))
+    T(("👨‍🏫<br/>교강사"))
+
+    subgraph System["🏫 EduCraft AI"]
+        direction TB
+
+        subgraph TOnly["교강사 전용"]
+            T1["강의 생성 · 관리"]
+            T2["AI 커리큘럼 설계"]
+            T3["AI 수업 자료 생성"]
+            T4["AI 퀴즈 출제"]
+            T5["교강사 대시보드<br/>수강생 성취도 · 시간 절약 통계"]
+            T6["배치 작업 실행"]
+        end
+
+        subgraph Common["공통 기능"]
+            C1["회원가입 · 로그인<br/>소셜 로그인 (Google · Kakao · Naver)"]
+            C2["프로필 수정<br/>비밀번호 재설정"]
+            C3["강의 탐색"]
+            C4["에듀봇 AI 챗봇"]
+            C5["커뮤니티<br/>게시글 · 좋아요 · 댓글 · 팔로우"]
+            C6["구독 결제<br/>요금제 비교 · 변경 · 취소"]
+        end
+
+        subgraph SOnly["학생 전용"]
+            S1["수강 신청"]
+            S2["커리큘럼 · 학습자료 열람"]
+            S3["퀴즈 풀기 · 자동 채점"]
+            S4["학년별 AI 퀴즈<br/>초등~고등 12학년 × 국/영/수"]
+            S5["맞춤 강의 추천<br/>학년별 유튜브 영상"]
+            S6["AI 보충학습<br/>오답 기반 맞춤 자료"]
+            S7["학생 대시보드<br/>성적 · 수강 현황"]
+        end
     end
 
-    subgraph Auth["🔐 인증"]
-        A1[회원가입]
-        A2[로그인]
-        A3[소셜 로그인<br/>Google · Kakao · Naver]
-        A4[비밀번호 재설정]
-        A5[프로필 수정]
-    end
+    S(("👨‍🎓<br/>학생"))
 
-    subgraph Course["📚 강의 관리"]
-        C1[강의 생성]
-        C2[강의 탐색]
-        C3[수강 신청]
-    end
-
-    subgraph AIGen["🤖 AI 생성"]
-        AI1[AI 커리큘럼 설계]
-        AI2[AI 수업 자료 생성]
-        AI3[AI 퀴즈 출제]
-        AI4[AI 보충학습 생성]
-        AI5[에듀봇 챗봇 대화]
-    end
-
-    subgraph Learning["📝 학습"]
-        L1[커리큘럼 열람]
-        L2[학습자료 열람]
-        L3[퀴즈 풀기 · 자동채점]
-        L4[학년별 AI 퀴즈]
-        L5[맞춤 강의 추천]
-    end
-
-    subgraph Social["💬 커뮤니티"]
-        S1[게시글 작성 · 조회]
-        S2[좋아요 · 댓글]
-        S3[팔로우]
-        S4[프로필 조회]
-    end
-
-    subgraph Dashboard["📊 대시보드"]
-        D1[교강사 대시보드<br/>강의·수강생·AI 통계]
-        D2[학생 대시보드<br/>성적·수강 현황]
-        D3[시간 절약 통계]
-    end
-
-    subgraph Sub["💳 구독"]
-        P1[요금제 비교]
-        P2[구독 결제]
-        P3[구독 취소 · 변경]
-    end
-
-    %% 교강사 연결
-    T --- A1 & A2 & A3 & A4 & A5
-    T --- C1 & C2
-    T --- AI1 & AI2 & AI3 & AI5
-    T --- D1 & D3
-    T --- S1 & S2 & S3 & S4
-    T --- P1 & P2 & P3
-
-    %% 학생 연결
-    S --- A1 & A2 & A3 & A4 & A5
-    S --- C2 & C3
-    S --- L1 & L2 & L3 & L4 & L5
-    S --- AI4 & AI5
-    S --- D2
-    S --- S1 & S2 & S3 & S4
-    S --- P1 & P2 & P3
+    T --> TOnly
+    T --> Common
+    S --> Common
+    S --> SOnly
 ```
 
 ---
