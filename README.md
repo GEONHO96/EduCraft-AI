@@ -152,6 +152,7 @@
 | Spring Security | 6.x | 인증/인가 (JWT) |
 | Spring Data JPA | 3.x | ORM |
 | Spring Batch | 5.x | 배치 작업 (통계 집계, 비활성 감지) |
+| Spring Mail | 3.x | 이메일 발송 (Gmail SMTP) |
 | QueryDSL | 5.1.0 | 타입 안전 쿼리 |
 | H2 Database | - | 개발용 인메모리 DB (샘플 데이터 자동 생성) |
 | MySQL | 8.0 | 운영 데이터베이스 |
@@ -308,7 +309,7 @@ EduCraft-AI/
 │       │   ├── batch/          # Spring Batch (통계 집계, 비활성 감지)
 │       │   └── dashboard/      # 대시보드 (강의+학년별 퀴즈 통합 통계)
 │       ├── global/
-│       │   ├── common/         # 공통 응답 (ApiResponse)
+│       │   ├── common/         # 공통 응답 (ApiResponse), 이메일 발송 (EmailService)
 │       │   ├── config/         # DataInitializer (샘플 데이터 자동 생성)
 │       │   ├── exception/      # 예외 처리
 │       │   └── security/       # JWT, Security 설정
@@ -343,7 +344,9 @@ EduCraft-AI/
 - Java 17+
 - Node.js 18+
 - Docker & Docker Compose (배포 시)
-- Anthropic API Key (선택 — 학년별 퀴즈/강의 추천은 API 키 없이 동작)
+- Anthropic API Key (선택 — 학년별 퀴즈/강의 추천/챗봇은 API 키 없이 동작)
+- Google Cloud OAuth Client ID (소셜 로그인 시)
+- Gmail 앱 비밀번호 (임시 비밀번호 이메일 발송 시)
 
 ### 로컬 개발 환경
 
@@ -355,10 +358,15 @@ cd EduCraft-AI
 # 2. 백엔드 실행 (H2 인메모리 DB, 샘플 데이터 자동 생성)
 cd backend
 ./gradlew bootRun
-# AI 생성 기능 사용 시: AI_API_KEY=your-key ./gradlew bootRun
+# AI 생성 + 이메일 발송 기능 사용 시:
+# AI_API_KEY=your-key MAIL_USERNAME=your@gmail.com MAIL_PASSWORD=your-app-password ./gradlew bootRun
 
-# 3. 프론트엔드 실행 (새 터미널)
+# 3. 프론트엔드 환경변수 설정 (새 터미널)
 cd frontend
+cp .env.example .env
+# .env 파일에 소셜 로그인 Client ID 입력
+
+# 4. 프론트엔드 실행
 npm install
 npm run dev
 ```
@@ -381,11 +389,41 @@ npm run dev
 
 > 총 5명의 교강사, 18개의 강의, 3명의 학생, 수강 등록 데이터가 자동 생성됩니다.
 
+### 환경변수 설정
+
+#### 프론트엔드 (`frontend/.env`)
+
+```env
+VITE_API_URL=http://localhost:8080/api
+VITE_GOOGLE_CLIENT_ID=your-google-client-id
+VITE_KAKAO_CLIENT_ID=your-kakao-client-id
+VITE_NAVER_CLIENT_ID=your-naver-client-id
+VITE_NAVER_CLIENT_SECRET=your-naver-client-secret
+```
+
+#### 백엔드 (환경변수)
+
+| 변수 | 용도 | 필수 |
+|------|------|------|
+| `AI_API_KEY` | Anthropic Claude API 키 | 선택 (AI 생성/챗봇 온라인 모드) |
+| `MAIL_USERNAME` | Gmail 계정 (이메일 발송용) | 선택 (임시 비밀번호 이메일 발송) |
+| `MAIL_PASSWORD` | Gmail 앱 비밀번호 | 선택 (임시 비밀번호 이메일 발송) |
+
+#### Google OAuth 설정 방법
+
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속
+2. **API 및 서비스** → **사용자 인증 정보** → **OAuth 클라이언트 ID** 생성
+3. 승인된 JavaScript 원본: `http://localhost:5173`
+4. 승인된 리디렉션 URI: `http://localhost:5173/auth/google/callback`
+5. 발급된 Client ID를 `frontend/.env`의 `VITE_GOOGLE_CLIENT_ID`에 입력
+
 ### Docker 배포
 
 ```bash
 # 환경변수 설정 (선택)
 export AI_API_KEY=your-anthropic-api-key
+export MAIL_USERNAME=your@gmail.com
+export MAIL_PASSWORD=your-gmail-app-password
 
 # Docker Compose 실행
 docker-compose up --build
