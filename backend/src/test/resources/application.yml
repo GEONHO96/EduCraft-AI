@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration
+  mail:
+    host: localhost
+    port: 3025
+  batch:
+    job:
+      enabled: false
+
+jwt:
+  secret: educraftai-test-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256-testing
+  expiration: 86400000
+
+ai:
+  api-key: test-key
+  model: test-model
