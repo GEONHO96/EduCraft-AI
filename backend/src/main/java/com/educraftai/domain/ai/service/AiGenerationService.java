@@ -19,6 +19,8 @@ import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.exception.BusinessException;
 import com.educraftai.global.exception.ErrorCode;
 import com.educraftai.infra.ai.AiClient;
+import com.educraftai.infra.ai.OfflineCurriculumData;
+import com.educraftai.infra.ai.OfflineCurriculumData.WeekEntry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +57,18 @@ public class AiGenerationService {
             throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
         }
 
+        // AI API가 설정된 경우 Claude API 호출, 아니면 오프라인 템플릿 사용
+        if (aiClient.isConfigured()) {
+            return generateCurriculumWithAi(userId, request, course);
+        } else {
+            log.info("[오프라인 커리큘럼 생성] AI API 키 미설정 → 내장 템플릿 사용 (subject={}, topic={})",
+                    request.getSubject(), request.getTopic());
+            return generateCurriculumOffline(userId, request, course);
+        }
+    }
+
+    /** Claude AI를 사용한 커리큘럼 생성 */
+    private AiResponse.CurriculumResult generateCurriculumWithAi(Long userId, AiRequest.GenerateCurriculum request, Course course) {
         String systemPrompt = """
                 당신은 교육 커리큘럼 설계 전문가입니다.
                 주어진 과목과 주제에 대해 주차별 커리큘럼을 설계해주세요.
@@ -128,6 +142,68 @@ public class AiGenerationService {
         }
     }
 
+    /**
+     * 오프라인 내장 템플릿 기반 커리큘럼 생성
+     * AI API 키 없이도 14개 주요 과목(Java/Python/Web/React/Spring/DB/자료구조/알고리즘/
+     * C언어/모바일/네트워크/운영체제/머신러닝/수학)에 대한 고품질 커리큘럼을 제공한다.
+     */
+    private AiResponse.CurriculumResult generateCurriculumOffline(Long userId, AiRequest.GenerateCurriculum request, Course course) {
+        List<WeekEntry> template = OfflineCurriculumData.findTemplate(request.getSubject(), request.getTopic());
+
+        int totalWeeks = request.getTotalWeeks();
+        List<AiResponse.WeekPlan> weekPlans = new ArrayList<>();
+
+        for (int i = 0; i < totalWeeks; i++) {
+            // 템플릿 길이에 맞게 순환하며 주차 배분
+            WeekEntry entry = template.get(i % template.size());
+
+            // 요청 주차가 템플릿보다 많으면 심화/프로젝트 주차로 확장
+            String topic = entry.topic();
+            String objectives = entry.objectives();
+            String content = entry.content();
+
+            if (i >= template.size()) {
+                topic = String.format("[심화] %s 응용 (%d주차)", request.getTopic(), i + 1);
+                objectives = String.format("%s의 심화 내용을 학습하고 실전에 적용한다", request.getTopic());
+                content = String.format("앞서 학습한 %s 내용을 바탕으로 심화 주제를 다룹니다. "
+                        + "실전 프로젝트 적용, 코드 리뷰, 최신 동향 분석, 종합 문제 풀이를 진행합니다. "
+                        + "%s 분야의 고급 기법과 최적화 방법론을 학습합니다.",
+                        entry.topic(), request.getSubject());
+            }
+
+            try {
+                Curriculum curriculum = Curriculum.builder()
+                        .course(course)
+                        .weekNumber(i + 1)
+                        .topic(topic)
+                        .objectives(objectives)
+                        .contentJson(objectMapper.writeValueAsString(Map.of("content", content)))
+                        .aiGenerated(true)
+                        .build();
+                curriculumRepository.save(curriculum);
+            } catch (JsonProcessingException e) {
+                throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
+            }
+
+            weekPlans.add(AiResponse.WeekPlan.builder()
+                    .weekNumber(i + 1)
+                    .topic(topic)
+                    .objectives(objectives)
+                    .content(content)
+                    .build());
+        }
+
+        int timeSaved = totalWeeks * 1800;
+        String logPrompt = String.format("[오프라인] 과목: %s, 주제: %s, %d주차", request.getSubject(), request.getTopic(), totalWeeks);
+        saveLog(userId, logPrompt, "CURRICULUM", timeSaved);
+
+        return AiResponse.CurriculumResult.builder()
+                .courseId(course.getId())
+                .weeks(weekPlans)
+                .timeSavedSeconds(timeSaved)
+                .build();
+    }
+
     public AiResponse.MaterialResult generateMaterial(Long userId, AiRequest.GenerateMaterial request) {
         Curriculum curriculum = curriculumRepository.findById(request.getCurriculumId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CURRICULUM_NOT_FOUND));
@@ -136,39 +212,46 @@ public class AiGenerationService {
             throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
         }
 
-        String systemPrompt = """
-                당신은 교육 자료 제작 전문가입니다.
-                주어진 커리큘럼 정보를 바탕으로 수업 자료를 생성해주세요.
-                반드시 아래 JSON 형식으로만 응답하세요.
-                {
-                  "title": "자료 제목",
-                  "sections": [
+        String jsonContent;
+
+        if (aiClient.isConfigured()) {
+            String systemPrompt = """
+                    당신은 교육 자료 제작 전문가입니다.
+                    주어진 커리큘럼 정보를 바탕으로 수업 자료를 생성해주세요.
+                    반드시 아래 JSON 형식으로만 응답하세요.
                     {
-                      "heading": "섹션 제목",
-                      "content": "섹션 내용 (마크다운 지원)",
-                      "keyPoints": ["핵심 포인트1", "핵심 포인트2"]
+                      "title": "자료 제목",
+                      "sections": [
+                        {
+                          "heading": "섹션 제목",
+                          "content": "섹션 내용 (마크다운 지원)",
+                          "keyPoints": ["핵심 포인트1", "핵심 포인트2"]
+                        }
+                      ],
+                      "summary": "전체 요약"
                     }
-                  ],
-                  "summary": "전체 요약"
-                }
-                """;
+                    """;
 
-        String userPrompt = String.format("""
-                주제: %s
-                학습 목표: %s
-                자료 유형: %s
-                난이도: %d/5
-                추가 요구사항: %s
-                """,
-                curriculum.getTopic(),
-                curriculum.getObjectives(),
-                request.getType(),
-                request.getDifficulty() != null ? request.getDifficulty() : 3,
-                request.getAdditionalRequirements() != null ? request.getAdditionalRequirements() : "없음"
-        );
+            String userPrompt = String.format("""
+                    주제: %s
+                    학습 목표: %s
+                    자료 유형: %s
+                    난이도: %d/5
+                    추가 요구사항: %s
+                    """,
+                    curriculum.getTopic(),
+                    curriculum.getObjectives(),
+                    request.getType(),
+                    request.getDifficulty() != null ? request.getDifficulty() : 3,
+                    request.getAdditionalRequirements() != null ? request.getAdditionalRequirements() : "없음"
+            );
 
-        String aiResult = aiClient.generate(systemPrompt, userPrompt);
-        String jsonContent = extractJson(aiResult);
+            String aiResult = aiClient.generate(systemPrompt, userPrompt);
+            jsonContent = extractJson(aiResult);
+        } else {
+            log.info("[오프라인 자료 생성] topic={}", curriculum.getTopic());
+            jsonContent = generateOfflineMaterial(curriculum.getTopic(), curriculum.getObjectives(), request.getType());
+        }
 
         Material.MaterialType materialType = Material.MaterialType.valueOf(request.getType().toUpperCase());
 
@@ -183,7 +266,7 @@ public class AiGenerationService {
         materialRepository.save(material);
 
         int timeSaved = 3600;
-        saveLog(userId, userPrompt, "MATERIAL", timeSaved);
+        saveLog(userId, String.format("[%s] 주제: %s", aiClient.isConfigured() ? "AI" : "오프라인", curriculum.getTopic()), "MATERIAL", timeSaved);
 
         return AiResponse.MaterialResult.builder()
                 .materialId(material.getId())
@@ -201,44 +284,51 @@ public class AiGenerationService {
             throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
         }
 
-        String systemPrompt = """
-                당신은 교육 평가 문제 출제 전문가입니다.
-                주어진 커리큘럼 정보를 바탕으로 퀴즈 문제를 생성해주세요.
-                반드시 아래 JSON 형식으로만 응답하세요.
-                {
-                  "questions": [
+        String jsonContent;
+
+        if (aiClient.isConfigured()) {
+            String systemPrompt = """
+                    당신은 교육 평가 문제 출제 전문가입니다.
+                    주어진 커리큘럼 정보를 바탕으로 퀴즈 문제를 생성해주세요.
+                    반드시 아래 JSON 형식으로만 응답하세요.
                     {
-                      "number": 1,
-                      "type": "MULTIPLE_CHOICE",
-                      "question": "문제 내용",
-                      "options": ["보기1", "보기2", "보기3", "보기4"],
-                      "answer": 0,
-                      "explanation": "해설"
+                      "questions": [
+                        {
+                          "number": 1,
+                          "type": "MULTIPLE_CHOICE",
+                          "question": "문제 내용",
+                          "options": ["보기1", "보기2", "보기3", "보기4"],
+                          "answer": 0,
+                          "explanation": "해설"
+                        }
+                      ]
                     }
-                  ]
-                }
-                type은 MULTIPLE_CHOICE(객관식) 또는 SHORT_ANSWER(주관식)입니다.
-                객관식의 answer는 정답 보기의 인덱스(0부터), 주관식의 answer는 정답 문자열입니다.
-                """;
+                    type은 MULTIPLE_CHOICE(객관식) 또는 SHORT_ANSWER(주관식)입니다.
+                    객관식의 answer는 정답 보기의 인덱스(0부터), 주관식의 answer는 정답 문자열입니다.
+                    """;
 
-        String userPrompt = String.format("""
-                주제: %s
-                학습 목표: %s
-                문제 수: %d개
-                난이도: %d/5
-                문제 유형: %s
-                추가 요구사항: %s
-                """,
-                curriculum.getTopic(),
-                curriculum.getObjectives(),
-                request.getQuestionCount(),
-                request.getDifficulty() != null ? request.getDifficulty() : 3,
-                request.getQuestionTypes() != null ? request.getQuestionTypes() : "객관식 위주",
-                request.getAdditionalRequirements() != null ? request.getAdditionalRequirements() : "없음"
-        );
+            String userPrompt = String.format("""
+                    주제: %s
+                    학습 목표: %s
+                    문제 수: %d개
+                    난이도: %d/5
+                    문제 유형: %s
+                    추가 요구사항: %s
+                    """,
+                    curriculum.getTopic(),
+                    curriculum.getObjectives(),
+                    request.getQuestionCount(),
+                    request.getDifficulty() != null ? request.getDifficulty() : 3,
+                    request.getQuestionTypes() != null ? request.getQuestionTypes() : "객관식 위주",
+                    request.getAdditionalRequirements() != null ? request.getAdditionalRequirements() : "없음"
+            );
 
-        String aiResult = aiClient.generate(systemPrompt, userPrompt);
-        String jsonContent = extractJson(aiResult);
+            String aiResult = aiClient.generate(systemPrompt, userPrompt);
+            jsonContent = extractJson(aiResult);
+        } else {
+            log.info("[오프라인 퀴즈 생성] topic={}, count={}", curriculum.getTopic(), request.getQuestionCount());
+            jsonContent = generateOfflineQuiz(curriculum.getTopic(), request.getQuestionCount());
+        }
 
         Material material = Material.builder()
                 .curriculum(curriculum)
@@ -258,7 +348,7 @@ public class AiGenerationService {
         quizRepository.save(quiz);
 
         int timeSaved = request.getQuestionCount() * 600;
-        saveLog(userId, userPrompt, "QUIZ", timeSaved);
+        saveLog(userId, String.format("[%s] 주제: %s, %d문제", aiClient.isConfigured() ? "AI" : "오프라인", curriculum.getTopic(), request.getQuestionCount()), "QUIZ", timeSaved);
 
         return AiResponse.QuizResult.builder()
                 .quizId(quiz.getId())
@@ -412,6 +502,85 @@ public class AiGenerationService {
                 .timeSavedSeconds(timeSaved)
                 .build();
         aiGenerationLogRepository.save(logEntry);
+    }
+
+    /** 오프라인 수업 자료 생성 (내장 템플릿) */
+    private String generateOfflineMaterial(String topic, String objectives, String type) {
+        String typeLabel = "LECTURE".equalsIgnoreCase(type) ? "강의 자료" : "실습 자료";
+        try {
+            Map<String, Object> material = Map.of(
+                "title", topic + " " + typeLabel,
+                "sections", List.of(
+                    Map.of(
+                        "heading", "1. " + topic + " 개요",
+                        "content", objectives + "\n\n이번 " + typeLabel + "에서는 " + topic + "의 핵심 개념을 체계적으로 학습합니다. 기본 원리부터 실전 활용까지 단계적으로 다루며, 각 섹션별 핵심 포인트를 정리합니다.",
+                        "keyPoints", List.of(topic + "의 정의와 필요성", "기본 구조와 동작 원리", "실제 활용 사례")
+                    ),
+                    Map.of(
+                        "heading", "2. 핵심 개념 정리",
+                        "content", topic + "을(를) 구성하는 핵심 요소들을 하나씩 살펴봅니다. 각 개념의 정의, 특징, 장단점을 비교 분석하고, 실제 코드나 예제를 통해 이해를 확인합니다.",
+                        "keyPoints", List.of("주요 용어 정리", "개념 간 관계 파악", "예제를 통한 이해 확인")
+                    ),
+                    Map.of(
+                        "heading", "3. 실전 예제와 연습",
+                        "content", "앞서 배운 개념을 바탕으로 실전 예제를 풀어봅니다. 단계별로 난이도를 높여가며 문제를 해결하고, 최종적으로 종합 과제를 수행합니다.",
+                        "keyPoints", List.of("기초 예제 풀이", "응용 문제 도전", "종합 과제 수행")
+                    )
+                ),
+                "summary", topic + "의 핵심 개념을 학습하고, 실전 예제를 통해 이해를 심화했습니다. 다음 주차에서는 이를 바탕으로 더 심화된 내용을 다룹니다."
+            );
+            return objectMapper.writeValueAsString(material);
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
+        }
+    }
+
+    /** 오프라인 퀴즈 생성 (범용 문제 템플릿) */
+    private String generateOfflineQuiz(String topic, int questionCount) {
+        List<Map<String, Object>> questions = new ArrayList<>();
+        String[][] templates = {
+            {"다음 중 %s에 대한 설명으로 올바른 것은?", "%s의 기본 개념에 해당한다", "%s와 관련이 없다", "%s에서 사용되지 않는다", "%s의 반대 개념이다"},
+            {"다음 중 %s의 주요 특징이 아닌 것은?", "효율적인 처리가 가능하다", "재사용성이 높다", "모든 경우에 항상 최적이다", "유지보수가 용이하다"},
+            {"다음 중 %s을(를) 활용하는 가장 적절한 상황은?", "해당 개념이 필요한 문제를 해결할 때", "관련 없는 작업을 수행할 때", "단순 반복 작업만 할 때", "어떤 상황에서도 사용하지 않을 때"},
+            {"%s에서 가장 중요한 원칙은?", "정확성과 효율성의 균형", "속도만 추구하는 것", "복잡성을 최대화하는 것", "가독성을 무시하는 것"},
+            {"%s의 장점으로 올바른 것은?", "코드의 재사용성과 유지보수성 향상", "항상 실행 속도가 빨라진다", "메모리를 무제한으로 사용할 수 있다", "디버깅이 불필요해진다"},
+        };
+
+        for (int i = 0; i < questionCount; i++) {
+            String[] tmpl = templates[i % templates.length];
+            if (i % 3 == 2) {
+                // 주관식
+                questions.add(Map.of(
+                    "number", i + 1,
+                    "type", "SHORT_ANSWER",
+                    "question", String.format("%s의 핵심 개념을 한 문장으로 설명하세요.", topic),
+                    "options", List.of(),
+                    "answer", topic + "의 기본 원리를 이해하고 적용하는 것",
+                    "explanation", topic + "은(는) 해당 분야의 핵심 개념으로, 기본 원리를 이해하는 것이 가장 중요합니다."
+                ));
+            } else {
+                // 객관식
+                questions.add(Map.of(
+                    "number", i + 1,
+                    "type", "MULTIPLE_CHOICE",
+                    "question", String.format(tmpl[0], topic),
+                    "options", List.of(
+                        String.format(tmpl[1], topic),
+                        String.format(tmpl[2], topic),
+                        String.format(tmpl[3], topic),
+                        String.format(tmpl[4], topic)
+                    ),
+                    "answer", 0,
+                    "explanation", topic + "에 대한 기본 개념을 정확히 이해하고 있어야 합니다. 정답은 첫 번째 보기입니다."
+                ));
+            }
+        }
+
+        try {
+            return objectMapper.writeValueAsString(Map.of("questions", questions));
+        } catch (JsonProcessingException e) {
+            throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
+        }
     }
 
     private String extractJson(String text) {

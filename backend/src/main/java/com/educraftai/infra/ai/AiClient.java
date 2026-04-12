@@ -30,6 +30,13 @@ public class AiClient {
         this.model = model;
     }
 
+    /** AI API 키가 유효하게 설정되었는지 확인 */
+    public boolean isConfigured() {
+        return apiKey != null
+                && !apiKey.isBlank()
+                && !apiKey.equals("your-api-key-here");
+    }
+
     public String generate(String systemPrompt, String userPrompt) {
         try {
             HttpHeaders headers = new HttpHeaders();
