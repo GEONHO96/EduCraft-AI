@@ -13,12 +13,14 @@ import com.educraftai.global.exception.ErrorCode;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -91,6 +93,7 @@ public class QuizService {
             }
             return correct;
         } catch (Exception e) {
+            log.warn("[Quiz] 점수 계산 실패: {}", e.getMessage());
             return 0;
         }
     }
@@ -101,6 +104,7 @@ public class QuizService {
             List<?> questionList = (List<?>) questions.get("questions");
             return questionList.size();
         } catch (Exception e) {
+            log.warn("[Quiz] 점수 계산 실패: {}", e.getMessage());
             return 0;
         }
     }

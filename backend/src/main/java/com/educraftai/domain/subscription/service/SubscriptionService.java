@@ -39,23 +39,9 @@ public class SubscriptionService {
 
     /** 현재 구독 정보 조회 */
     public SubscriptionDto.SubscriptionInfo getMySubscription(Long userId) {
-        Subscription sub = subscriptionRepository.findByUserId(userId)
-                .orElse(null);
-
-        if (sub == null) {
-            return SubscriptionDto.SubscriptionInfo.builder()
-                    .plan("COMMUNITY")
-                    .status("ACTIVE")
-                    .build();
-        }
-
-        return SubscriptionDto.SubscriptionInfo.builder()
-                .plan(sub.getPlan().name())
-                .status(sub.getStatus().name())
-                .startedAt(sub.getStartedAt() != null ? sub.getStartedAt().toString() : null)
-                .nextBillingAt(sub.getNextBillingAt() != null ? sub.getNextBillingAt().toString() : null)
-                .cancelledAt(sub.getCancelledAt() != null ? sub.getCancelledAt().toString() : null)
-                .build();
+        return subscriptionRepository.findByUserId(userId)
+                .map(this::toSubscriptionInfo)
+                .orElse(defaultCommunityInfo());
     }
 
     /** 결제 내역 조회 */
@@ -141,12 +127,7 @@ public class SubscriptionService {
         sub.setCancelledAt(LocalDateTime.now());
         subscriptionRepository.save(sub);
 
-        return SubscriptionDto.SubscriptionInfo.builder()
-                .plan(sub.getPlan().name())
-                .status("CANCELLED")
-                .startedAt(sub.getStartedAt() != null ? sub.getStartedAt().toString() : null)
-                .cancelledAt(sub.getCancelledAt().toString())
-                .build();
+        return toSubscriptionInfo(sub);
     }
 
     /** 플랜 다운그레이드 (Community로) */
@@ -160,6 +141,22 @@ public class SubscriptionService {
             sub.setCancelledAt(null);
             subscriptionRepository.save(sub);
         }
+        return defaultCommunityInfo();
+    }
+
+    /** Subscription → SubscriptionInfo 변환 (중복 제거) */
+    private SubscriptionDto.SubscriptionInfo toSubscriptionInfo(Subscription sub) {
+        return SubscriptionDto.SubscriptionInfo.builder()
+                .plan(sub.getPlan().name())
+                .status(sub.getStatus().name())
+                .startedAt(sub.getStartedAt() != null ? sub.getStartedAt().toString() : null)
+                .nextBillingAt(sub.getNextBillingAt() != null ? sub.getNextBillingAt().toString() : null)
+                .cancelledAt(sub.getCancelledAt() != null ? sub.getCancelledAt().toString() : null)
+                .build();
+    }
+
+    /** 기본 COMMUNITY 구독 정보 */
+    private SubscriptionDto.SubscriptionInfo defaultCommunityInfo() {
         return SubscriptionDto.SubscriptionInfo.builder()
                 .plan("COMMUNITY")
                 .status("ACTIVE")

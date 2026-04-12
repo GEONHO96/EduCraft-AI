@@ -42,9 +42,12 @@ public class DashboardService {
 
     public DashboardResponse.TeacherDashboard getTeacherDashboard(Long teacherId) {
         var courses = courseRepository.findByTeacherId(teacherId);
-        int totalStudents = courses.stream()
-                .mapToInt(c -> enrollmentRepository.findByCourseId(c.getId()).size())
-                .sum();
+        List<Long> courseIds = courses.stream().map(c -> c.getId()).toList();
+
+        // N+1 방지: 배치 쿼리로 한 번에 집계
+        long totalStudents = courseIds.isEmpty() ? 0 : enrollmentRepository.countByCourseIdIn(courseIds);
+        long totalMaterials = courseIds.isEmpty() ? 0 : materialRepository.countByCourseIds(courseIds);
+        long totalQuizzes = courseIds.isEmpty() ? 0 : quizRepository.countByCourseIds(courseIds);
 
         Integer totalTimeSaved = aiLogRepository.getTotalTimeSavedByTeacherId(teacherId);
         Long generationCount = aiLogRepository.getGenerationCountByTeacherId(teacherId);
@@ -61,9 +64,9 @@ public class DashboardService {
 
         return DashboardResponse.TeacherDashboard.builder()
                 .totalCourses(courses.size())
-                .totalStudents(totalStudents)
-                .totalMaterials(0)
-                .totalQuizzes(0)
+                .totalStudents((int) totalStudents)
+                .totalMaterials((int) totalMaterials)
+                .totalQuizzes((int) totalQuizzes)
                 .timeSaved(timeSaved)
                 .recentActivities(List.of())
                 .build();

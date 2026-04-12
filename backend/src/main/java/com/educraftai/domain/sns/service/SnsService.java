@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class SnsService {
 
     /** 팔로잉 피드 - 내가 팔로우한 사용자와 내 글만 조회 */
     public SnsResponse.PostPage getFollowingFeed(Long userId, int page, int size) {
-        List<Long> followingIds = followRepository.findFollowingIdsByFollowerId(userId);
+        List<Long> followingIds = new ArrayList<>(followRepository.findFollowingIdsByFollowerId(userId));
         followingIds.add(userId); // 내 글도 포함
 
         PageRequest pageable = PageRequest.of(page, size);

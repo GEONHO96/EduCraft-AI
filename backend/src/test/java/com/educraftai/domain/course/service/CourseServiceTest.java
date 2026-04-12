@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -185,11 +186,16 @@ class CourseServiceTest {
     }
 
     @Test
-    @DisplayName("전체 강의 탐색 시 수강생 수와 수강 여부를 포함한다")
+    @DisplayName("전체 강의 탐색 시 수강생 수와 수강 여부를 포함한다 (배치 쿼리)")
     void browseAllCourses() {
         given(courseRepository.findAllByOrderByCreatedAtDesc()).willReturn(List.of(course));
-        given(enrollmentRepository.countByCourseId(10L)).willReturn(5L);
-        given(enrollmentRepository.existsByCourseIdAndStudentId(10L, 2L)).willReturn(true);
+        Object[] row = new Object[]{10L, 5L};
+        List<Object[]> countResult = new ArrayList<>();
+        countResult.add(row);
+        given(enrollmentRepository.countGroupByCourseIds(List.of(10L)))
+                .willReturn(countResult);
+        given(enrollmentRepository.findEnrolledCourseIds(2L, List.of(10L)))
+                .willReturn(List.of(10L));
 
         List<CourseResponse.Browse> result = courseService.browseAllCourses(2L);
 

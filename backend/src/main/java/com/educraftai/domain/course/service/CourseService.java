@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 강의 비즈니스 로직 서비스
@@ -62,25 +65,39 @@ public class CourseService {
         }
     }
 
-    /** 전체 강의 목록 조회 (학생의 수강 여부 포함) */
+    /** 전체 강의 목록 조회 (학생의 수강 여부 포함) - N+1 방지 배치 쿼리 */
     public List<CourseResponse.Browse> browseAllCourses(Long userId) {
         List<Course> courses = courseRepository.findAllByOrderByCreatedAtDesc();
-        return courses.stream().map(course -> {
-            long count = enrollmentRepository.countByCourseId(course.getId());
-            boolean enrolled = userId != null && enrollmentRepository.existsByCourseIdAndStudentId(course.getId(), userId);
-            return CourseResponse.Browse.from(course, count, enrolled);
-        }).toList();
+        return toBrowseList(courses, userId);
     }
 
-    /** 강의 검색 (제목 또는 과목) */
+    /** 강의 검색 (제목 또는 과목) - N+1 방지 배치 쿼리 */
     public List<CourseResponse.Browse> searchCourses(String keyword, Long userId) {
         List<Course> courses = courseRepository
                 .findByTitleContainingIgnoreCaseOrSubjectContainingIgnoreCaseOrderByCreatedAtDesc(keyword, keyword);
-        return courses.stream().map(course -> {
-            long count = enrollmentRepository.countByCourseId(course.getId());
-            boolean enrolled = userId != null && enrollmentRepository.existsByCourseIdAndStudentId(course.getId(), userId);
-            return CourseResponse.Browse.from(course, count, enrolled);
-        }).toList();
+        return toBrowseList(courses, userId);
+    }
+
+    /** 강의 목록을 Browse DTO로 변환 (배치 쿼리로 N+1 방지) */
+    private List<CourseResponse.Browse> toBrowseList(List<Course> courses, Long userId) {
+        if (courses.isEmpty()) return List.of();
+
+        List<Long> courseIds = courses.stream().map(Course::getId).toList();
+
+        // 배치 쿼리로 수강생 수 한 번에 조회
+        Map<Long, Long> countMap = enrollmentRepository.countGroupByCourseIds(courseIds).stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
+
+        // 배치 쿼리로 수강 여부 한 번에 조회
+        Set<Long> enrolledIds = userId != null
+                ? Set.copyOf(enrollmentRepository.findEnrolledCourseIds(userId, courseIds))
+                : Set.of();
+
+        return courses.stream().map(course -> CourseResponse.Browse.from(
+                course,
+                countMap.getOrDefault(course.getId(), 0L),
+                enrolledIds.contains(course.getId())
+        )).toList();
     }
 
     /** 강의 단건 조회 */
