@@ -1,4 +1,5 @@
 import apiClient from './client'
+import type { ApiResponse } from '../types/api'
 
 export interface GenerateCurriculumRequest {
   courseId: number
@@ -84,17 +85,17 @@ export interface GradeQuizSubmissionResult {
 
 export const aiApi = {
   generateCurriculum: (data: GenerateCurriculumRequest) =>
-    apiClient.post<{ success: boolean; data: CurriculumResult }>('/ai/curriculum/generate', data),
+    apiClient.post<ApiResponse<CurriculumResult>>('/ai/curriculum/generate', data),
 
   generateMaterial: (data: GenerateMaterialRequest) =>
-    apiClient.post<{ success: boolean; data: MaterialResult }>('/ai/material/generate', data),
+    apiClient.post<ApiResponse<MaterialResult>>('/ai/material/generate', data),
 
   generateQuiz: (data: GenerateQuizRequest) =>
-    apiClient.post<{ success: boolean; data: QuizResult }>('/ai/quiz/generate', data),
+    apiClient.post<ApiResponse<QuizResult>>('/ai/quiz/generate', data),
 
   generateGradeQuiz: (data: GenerateGradeQuizRequest) =>
-    apiClient.post<{ success: boolean; data: GradeQuizResult }>('/ai/quiz/grade-quiz', data),
+    apiClient.post<ApiResponse<GradeQuizResult>>('/ai/quiz/grade-quiz', data),
 
   submitGradeQuiz: (data: SubmitGradeQuizRequest) =>
-    apiClient.post<{ success: boolean; data: GradeQuizSubmissionResult }>('/ai/quiz/grade-quiz/submit', data),
+    apiClient.post<ApiResponse<GradeQuizSubmissionResult>>('/ai/quiz/grade-quiz/submit', data),
 }

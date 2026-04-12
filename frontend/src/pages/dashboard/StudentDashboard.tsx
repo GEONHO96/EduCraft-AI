@@ -3,22 +3,12 @@
  * 수강 중인 강의 수, 완료한 퀴즈 수, 평균 점수 등 학습 현황을 표시하고
  * 최근 퀴즈 결과를 점수 바 차트로 보여준다.
  */
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '../../api/dashboard'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
-
-/** 학년 코드를 표시용 텍스트로 변환 */
-function gradeLabel(grade?: string) {
-  if (!grade) return null
-  const map: Record<string, string> = {
-    ELEMENTARY_1: '초등학교 1학년', ELEMENTARY_2: '초등학교 2학년', ELEMENTARY_3: '초등학교 3학년',
-    ELEMENTARY_4: '초등학교 4학년', ELEMENTARY_5: '초등학교 5학년', ELEMENTARY_6: '초등학교 6학년',
-    MIDDLE_1: '중학교 1학년', MIDDLE_2: '중학교 2학년', MIDDLE_3: '중학교 3학년',
-    HIGH_1: '고등학교 1학년', HIGH_2: '고등학교 2학년', HIGH_3: '고등학교 3학년',
-  }
-  return map[grade] || grade
-}
+import { gradeLabel } from '../../constants/grades'
 
 export default function StudentDashboard() {
   const { user } = useAuthStore()
@@ -70,7 +60,9 @@ export default function StudentDashboard() {
   }
 
   const scorePercent = data?.averageScore ?? 0
-  const scoreColor = scorePercent >= 80 ? 'text-green-600' : scorePercent >= 60 ? 'text-yellow-600' : 'text-red-500'
+  const scoreColor = useMemo(() =>
+    scorePercent >= 80 ? 'text-green-600' : scorePercent >= 60 ? 'text-yellow-600' : 'text-red-500'
+  , [scorePercent])
 
   return (
     <div>

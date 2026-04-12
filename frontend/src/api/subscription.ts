@@ -1,4 +1,5 @@
 import apiClient from './client'
+import type { ApiResponse } from '../types/api'
 
 export interface SubscriptionInfo {
   plan: 'COMMUNITY' | 'PRO' | 'MAX'
@@ -36,17 +37,17 @@ export interface SubscribeResult {
 
 export const subscriptionApi = {
   getMySubscription: () =>
-    apiClient.get<{ success: boolean; data: SubscriptionInfo }>('/subscription/me'),
+    apiClient.get<ApiResponse<SubscriptionInfo>>('/subscription/me'),
 
   getPaymentHistory: () =>
-    apiClient.get<{ success: boolean; data: PaymentInfo[] }>('/subscription/payments'),
+    apiClient.get<ApiResponse<PaymentInfo[]>>('/subscription/payments'),
 
   subscribe: (data: SubscribeRequest) =>
-    apiClient.post<{ success: boolean; data: SubscribeResult }>('/subscription/subscribe', data),
+    apiClient.post<ApiResponse<SubscribeResult>>('/subscription/subscribe', data),
 
   cancel: () =>
-    apiClient.post<{ success: boolean; data: SubscriptionInfo }>('/subscription/cancel'),
+    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscription/cancel'),
 
   downgrade: () =>
-    apiClient.post<{ success: boolean; data: SubscriptionInfo }>('/subscription/downgrade'),
+    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscription/downgrade'),
 }

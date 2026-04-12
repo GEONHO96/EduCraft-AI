@@ -1,4 +1,5 @@
 import apiClient from './client'
+import type { ApiResponse } from '../types/api'
 
 export interface Course {
   id: number
@@ -28,19 +29,19 @@ export interface BrowseCourse {
 
 export const courseApi = {
   create: (data: CreateCourseRequest) =>
-    apiClient.post<{ success: boolean; data: Course }>('/courses', data),
+    apiClient.post<ApiResponse<Course>>('/courses', data),
 
   getMyCourses: () =>
-    apiClient.get<{ success: boolean; data: Course[] }>('/courses'),
+    apiClient.get<ApiResponse<Course[]>>('/courses'),
 
   getCourse: (id: number) =>
-    apiClient.get<{ success: boolean; data: Course }>(`/courses/${id}`),
+    apiClient.get<ApiResponse<Course>>(`/courses/${id}`),
 
   /** 전체 강의 탐색 (검색 포함) */
   browse: (keyword?: string) =>
-    apiClient.get<{ success: boolean; data: BrowseCourse[] }>(`/courses/browse${keyword ? `?keyword=${encodeURIComponent(keyword)}` : ''}`),
+    apiClient.get<ApiResponse<BrowseCourse[]>>('/courses/browse', keyword ? { params: { keyword } } : undefined),
 
   /** 수강 신청 */
   enroll: (courseId: number) =>
-    apiClient.post(`/courses/${courseId}/enroll`),
+    apiClient.post<ApiResponse<null>>(`/courses/${courseId}/enroll`),
 }

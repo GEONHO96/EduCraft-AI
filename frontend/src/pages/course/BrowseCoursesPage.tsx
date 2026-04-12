@@ -2,24 +2,28 @@
  * BrowseCoursesPage - 강의 탐색 페이지
  * 학생이 전체 강의를 검색하고 수강 신청할 수 있다.
  */
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { courseApi, BrowseCourse } from '../../api/courses'
 import { useAuthStore } from '../../stores/authStore'
+import { getSubjectColor } from '../../constants/subjects'
+import { timeAgo } from '../../utils/date'
+import { getErrorMessage } from '../../utils/error'
+import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import toast from 'react-hot-toast'
 
 export default function BrowseCoursesPage() {
   const queryClient = useQueryClient()
   const user = useAuthStore((s) => s.user)
   const [search, setSearch] = useState('')
-  const [keyword, setKeyword] = useState('')
+  const debouncedSearch = useDebouncedValue(search, 400)
 
-  // 강의 목록 조회
+  // 강의 목록 조회 (디바운스 적용으로 타이핑 중 불필요한 API 호출 방지)
   const { data: courses, isLoading } = useQuery({
-    queryKey: ['browse-courses', keyword],
+    queryKey: ['browse-courses', debouncedSearch],
     queryFn: async () => {
-      const res = await courseApi.browse(keyword || undefined)
+      const res = await courseApi.browse(debouncedSearch || undefined)
       return res.data.data
     },
   })
@@ -31,42 +35,15 @@ export default function BrowseCoursesPage() {
       queryClient.invalidateQueries({ queryKey: ['browse-courses'] })
       toast.success('수강 신청이 완료되었습니다!')
     },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.error?.message || '수강 신청에 실패했습니다.'
-      toast.error(msg)
+    onError: (err: unknown) => {
+      toast.error(getErrorMessage(err, '수강 신청에 실패했습니다.'))
     },
   })
 
-  // 검색 핸들러
-  const handleSearch = (e: React.FormEvent) => {
+  // 검색 핸들러 (Enter 키 즉시 반영용)
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault()
-    setKeyword(search)
-  }
-
-  // 상대 시간 표시
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime()
-    const days = Math.floor(diff / 86400000)
-    if (days < 1) return '오늘'
-    if (days < 7) return `${days}일 전`
-    if (days < 30) return `${Math.floor(days / 7)}주 전`
-    return new Date(dateStr).toLocaleDateString('ko-KR')
-  }
-
-  // 과목별 아이콘 색상
-  const subjectColor = (subject: string) => {
-    const colors: Record<string, string> = {
-      '수학': 'from-blue-400 to-blue-600',
-      '영어': 'from-green-400 to-green-600',
-      '과학': 'from-purple-400 to-purple-600',
-      '국어': 'from-red-400 to-red-600',
-      '사회': 'from-yellow-400 to-yellow-600',
-      '프로그래밍': 'from-cyan-400 to-cyan-600',
-      '음악': 'from-pink-400 to-pink-600',
-      '미술': 'from-orange-400 to-orange-600',
-    }
-    return colors[subject] || 'from-gray-400 to-gray-600'
-  }
+  }, [])
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -97,10 +74,10 @@ export default function BrowseCoursesPage() {
           >
             검색
           </button>
-          {keyword && (
+          {debouncedSearch && (
             <button
               type="button"
-              onClick={() => { setSearch(''); setKeyword('') }}
+              onClick={() => setSearch('')}
               className="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition text-sm"
             >
               초기화
@@ -110,9 +87,9 @@ export default function BrowseCoursesPage() {
       </form>
 
       {/* 검색 결과 정보 */}
-      {keyword && (
+      {debouncedSearch && (
         <p className="text-sm text-gray-500 mb-4">
-          "<span className="font-medium text-gray-700">{keyword}</span>" 검색 결과 {courses?.length || 0}개
+          "<span className="font-medium text-gray-700">{debouncedSearch}</span>" 검색 결과 {courses?.length || 0}개
         </p>
       )}
 
@@ -140,10 +117,10 @@ export default function BrowseCoursesPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
           <p className="text-gray-400 font-medium">
-            {keyword ? '검색 결과가 없습니다.' : '아직 개설된 강의가 없습니다.'}
+            {debouncedSearch ? '검색 결과가 없습니다.' : '아직 개설된 강의가 없습니다.'}
           </p>
           <p className="text-gray-400 text-sm mt-1">
-            {keyword ? '다른 키워드로 검색해보세요.' : '교강사가 강의를 개설하면 여기에 표시됩니다.'}
+            {debouncedSearch ? '다른 키워드로 검색해보세요.' : '교강사가 강의를 개설하면 여기에 표시됩니다.'}
           </p>
         </div>
       )}
@@ -155,7 +132,7 @@ export default function BrowseCoursesPage() {
             key={course.id}
             course={course}
             isStudent={user?.role === 'STUDENT'}
-            subjectColor={subjectColor(course.subject)}
+            subjectColor={getSubjectColor(course.subject)}
             timeAgo={timeAgo(course.createdAt)}
             onEnroll={() => enrollMutation.mutate(course.id)}
             enrolling={enrollMutation.isPending}
@@ -166,8 +143,8 @@ export default function BrowseCoursesPage() {
   )
 }
 
-/** 강의 카드 컴포넌트 */
-function CourseCard({
+/** 강의 카드 컴포넌트 (React.memo로 불필요한 리렌더 방지) */
+const CourseCard = memo(function CourseCard({
   course,
   isStudent,
   subjectColor,
@@ -243,4 +220,4 @@ function CourseCard({
       </div>
     </div>
   )
-}
+})

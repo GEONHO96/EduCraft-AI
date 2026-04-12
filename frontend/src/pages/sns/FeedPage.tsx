@@ -2,38 +2,14 @@
  * FeedPage - SNS 커뮤니티 피드 페이지
  * 전체/팔로잉 피드 전환, 카테고리 필터, 게시글 작성/삭제/좋아요 기능을 제공한다.
  */
-import { useState } from 'react'
+import { useState, useCallback, memo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { snsApi, fileApi, PostInfo, CommentInfo } from '../../api/sns'
 import { useAuthStore } from '../../stores/authStore'
+import { CATEGORIES, CATEGORY_LABELS, CATEGORY_COLORS } from '../../constants/categories'
+import { timeAgo } from '../../utils/date'
 import toast from 'react-hot-toast'
-
-// ====== 카테고리 상수 정의 ======
-const CATEGORIES = [
-  { value: '', label: '전체' },
-  { value: 'FREE', label: '자유' },
-  { value: 'STUDY_TIP', label: '공부 팁' },
-  { value: 'CLASS_SHARE', label: '수업 공유' },
-  { value: 'QNA', label: 'Q&A' },
-  { value: 'RESOURCE', label: '자료 공유' },
-]
-
-const CATEGORY_LABELS: Record<string, string> = {
-  FREE: '자유',
-  STUDY_TIP: '공부 팁',
-  CLASS_SHARE: '수업 공유',
-  QNA: 'Q&A',
-  RESOURCE: '자료 공유',
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  FREE: 'bg-gray-100 text-gray-600',
-  STUDY_TIP: 'bg-yellow-100 text-yellow-700',
-  CLASS_SHARE: 'bg-blue-100 text-blue-700',
-  QNA: 'bg-purple-100 text-purple-700',
-  RESOURCE: 'bg-green-100 text-green-700',
-}
 
 type FeedType = 'all' | 'following'
 
@@ -354,7 +330,7 @@ export default function FeedPage() {
 }
 
 /** PostCard - 개별 게시글 카드 컴포넌트 (좋아요, 댓글 펼치기, 삭제 기능 포함) */
-function PostCard({
+const PostCard = memo(function PostCard({
   post,
   currentUserId,
   expanded,
@@ -406,19 +382,6 @@ function PostCard({
       queryClient.invalidateQueries({ queryKey: ['sns-feed'] })
     },
   })
-
-  // 상대 시간 표시 유틸 (방금 전, N분 전, N시간 전 등)
-  const timeAgo = (dateStr: string) => {
-    const diff = Date.now() - new Date(dateStr).getTime()
-    const mins = Math.floor(diff / 60000)
-    if (mins < 1) return '방금 전'
-    if (mins < 60) return `${mins}분 전`
-    const hours = Math.floor(mins / 60)
-    if (hours < 24) return `${hours}시간 전`
-    const days = Math.floor(hours / 24)
-    if (days < 7) return `${days}일 전`
-    return new Date(dateStr).toLocaleDateString('ko-KR')
-  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -568,4 +531,4 @@ function PostCard({
       )}
     </div>
   )
-}
+})

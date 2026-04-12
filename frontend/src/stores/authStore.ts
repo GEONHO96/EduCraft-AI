@@ -14,9 +14,20 @@ interface AuthState {
   isTeacher: () => boolean
 }
 
+/** localStorage에서 JSON 안전하게 파싱 (손상된 데이터 방어) */
+function safeParseUser(): UserInfo | null {
+  try {
+    const raw = localStorage.getItem('user')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    localStorage.removeItem('user')
+    return null
+  }
+}
+
 export const useAuthStore = create<AuthState>((set, get) => ({
-  // 초기값: localStorage에서 복원 (새로고침 시 로그인 유지)
-  user: JSON.parse(localStorage.getItem('user') || 'null'),
+  // 초기값: localStorage에서 복원 (새로고침 시 로그인 유지, 손상 데이터 방어)
+  user: safeParseUser(),
   token: localStorage.getItem('accessToken'),
 
   // 로그인 성공 시 유저 정보 + 토큰 저장

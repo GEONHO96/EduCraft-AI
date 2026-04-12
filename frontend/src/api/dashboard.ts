@@ -1,4 +1,5 @@
 import apiClient from './client'
+import type { ApiResponse } from '../types/api'
 
 export interface TimeSaved {
   totalSeconds: number
@@ -24,11 +25,11 @@ export interface StudentDashboard {
 
 export const dashboardApi = {
   teacher: () =>
-    apiClient.get<{ success: boolean; data: TeacherDashboard }>('/dashboard/teacher'),
+    apiClient.get<ApiResponse<TeacherDashboard>>('/dashboard/teacher'),
 
   student: () =>
-    apiClient.get<{ success: boolean; data: StudentDashboard }>('/dashboard/student'),
+    apiClient.get<ApiResponse<StudentDashboard>>('/dashboard/student'),
 
   timeSaved: () =>
-    apiClient.get<{ success: boolean; data: TimeSaved }>('/dashboard/time-saved'),
+    apiClient.get<ApiResponse<TimeSaved>>('/dashboard/time-saved'),
 }

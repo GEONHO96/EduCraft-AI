@@ -11,12 +11,14 @@ import App from './App'
 import ErrorBoundary from './components/ErrorBoundary'
 import './index.css'
 
-// React Query 글로벌 설정 (재시도 1회, 포커스 시 자동 refetch 비활성화)
+// React Query 글로벌 설정
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 2 * 60 * 1000,  // 2분간 데이터를 fresh로 취급 (불필요한 재요청 방지)
+      gcTime: 5 * 60 * 1000,     // 5분간 미사용 캐시 유지
     },
   },
 })
