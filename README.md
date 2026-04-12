@@ -142,28 +142,516 @@ API 키가 없거나 API가 응답하지 않을 때 **내장 템플릿 기반으
 
 ---
 
-## 아키텍처
+## 시스템 아키텍처
 
-```
-┌─────────────┐     REST API     ┌──────────────────┐     JPA      ┌──────────────┐
-│  Frontend   │ ───────────────> │    Backend       │ ──────────> │   Database   │
-│  React 18   │     JSON         │  Spring Boot     │   Query     │  MySQL / H2  │
-│  Vite       │ <─────────────── │  Spring Security │ <────────── │  Redis       │
-│  Tailwind   │                  │  Spring AI       │             │              │
-│  :5173      │                  │  :8080           │             │  :3306/:6379 │
-└─────────────┘                  └────────┬─────────┘             └──────────────┘
-                                          │
-                          ┌───────────────┼───────────────┐
-                          │               │               │
-                   ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
-                   │  AI Engine  │ │  OAuth 2.0  │ │   Infra     │
-                   │ Claude API  │ │ Google      │ │ Docker      │
-                   │ Spring AI   │ │ Kakao       │ │ Nginx       │
-                   │ 오프라인 폴백│ │ Naver       │ │ YouTube API │
-                   └─────────────┘ └─────────────┘ └─────────────┘
+```mermaid
+flowchart TB
+    subgraph Client["🖥️ Client"]
+        FE["<b>Frontend</b><br/>React 18 · TypeScript<br/>Vite · Tailwind CSS<br/>Zustand · TanStack Query<br/><code>:5173</code>"]
+    end
+
+    subgraph Backend["⚙️ Backend  :8080"]
+        direction TB
+        SEC["🔐 Spring Security<br/>JWT · OAuth 2.0"]
+        CTR["🎯 Controller Layer<br/>10 Controllers · 49 Endpoints"]
+        SVC["📦 Service Layer<br/>9 Services"]
+        REPO["💾 Repository Layer<br/>17 JPA Repositories · QueryDSL"]
+        BATCH["⏰ Spring Batch<br/>통계 집계 · 비활성 감지"]
+    end
+
+    subgraph Data["🗄️ Database"]
+        DB[("MySQL / H2<br/>17 Entities")]
+        REDIS[("Redis<br/>Cache")]
+    end
+
+    subgraph AI["🤖 AI Engine"]
+        SAI["Spring AI 1.0.0<br/>ChatModel 추상화"]
+        CLAUDE["Claude API<br/>Anthropic"]
+        OFFLINE["오프라인 폴백<br/>14과목 템플릿<br/>210+ 문제은행<br/>키워드 챗봇"]
+    end
+
+    subgraph Ext["🌐 External"]
+        OAUTH["OAuth 2.0<br/>Google · Kakao · Naver"]
+        YT["YouTube Embed API<br/>강의 추천"]
+        MAIL["Gmail SMTP<br/>이메일 발송"]
+    end
+
+    FE -- "REST API / JSON" --> SEC
+    SEC --> CTR --> SVC --> REPO
+    REPO --> DB
+    REPO --> REDIS
+    SVC --> SAI
+    SAI --> CLAUDE
+    SAI -. "API 키 없을 때" .-> OFFLINE
+    SVC --> OAUTH
+    SVC --> MAIL
+    FE --> YT
+    BATCH --> REPO
 ```
 
-> **Data Flow**: `Client` → `Nginx` → `Spring Boot API` → `MySQL / Redis` ↔ `Claude AI (Spring AI ChatModel)`
+---
+
+## ERD (Entity Relationship Diagram)
+
+```mermaid
+erDiagram
+    USER {
+        Long id PK
+        String email UK
+        String password
+        String name
+        String nickname
+        Role role "TEACHER | STUDENT"
+        SocialProvider socialProvider "LOCAL | GOOGLE | KAKAO | NAVER"
+        String socialId
+        String profileImage
+        String grade
+        LocalDateTime createdAt
+    }
+
+    COURSE {
+        Long id PK
+        Long teacher_id FK
+        String title
+        String subject
+        String description
+        LocalDateTime createdAt
+    }
+
+    COURSE_ENROLLMENT {
+        Long id PK
+        Long course_id FK
+        Long student_id FK
+        LocalDateTime enrolledAt
+    }
+
+    CURRICULUM {
+        Long id PK
+        Long course_id FK
+        Integer weekNumber
+        String topic
+        String objectives
+        String contentJson "LONGTEXT"
+        Boolean aiGenerated
+        LocalDateTime createdAt
+    }
+
+    MATERIAL {
+        Long id PK
+        Long curriculum_id FK
+        MaterialType type "LECTURE | QUIZ | EXERCISE"
+        String title
+        String contentJson "LONGTEXT"
+        Integer difficulty
+        Boolean aiGenerated
+        LocalDateTime createdAt
+    }
+
+    QUIZ {
+        Long id PK
+        Long material_id FK
+        String questionsJson "LONGTEXT"
+        Integer timeLimit
+        LocalDateTime createdAt
+    }
+
+    QUIZ_SUBMISSION {
+        Long id PK
+        Long quiz_id FK
+        Long student_id FK
+        String answersJson "LONGTEXT"
+        Integer score
+        Integer totalQuestions
+        LocalDateTime submittedAt
+    }
+
+    GRADE_QUIZ_SUBMISSION {
+        Long id PK
+        Long student_id FK
+        String grade
+        String subject
+        Integer score
+        Integer totalQuestions
+        LocalDateTime submittedAt
+    }
+
+    POST {
+        Long id PK
+        Long author_id FK
+        String content
+        String imageUrl
+        Category category "FREE | STUDY_TIP | CLASS_SHARE | QNA | RESOURCE"
+        int likeCount
+        int commentCount
+        LocalDateTime createdAt
+    }
+
+    POST_LIKE {
+        Long id PK
+        Long post_id FK
+        Long user_id FK
+        LocalDateTime createdAt
+    }
+
+    POST_COMMENT {
+        Long id PK
+        Long post_id FK
+        Long author_id FK
+        String content
+        LocalDateTime createdAt
+    }
+
+    FOLLOW {
+        Long id PK
+        Long follower_id FK
+        Long following_id FK
+        LocalDateTime createdAt
+    }
+
+    SUBSCRIPTION {
+        Long id PK
+        Long user_id FK "UNIQUE"
+        Plan plan "COMMUNITY | PRO | MAX"
+        Status status "ACTIVE | CANCELLED | EXPIRED"
+        LocalDateTime startedAt
+        LocalDateTime nextBillingAt
+        LocalDateTime cancelledAt
+    }
+
+    PAYMENT {
+        Long id PK
+        Long user_id FK
+        String orderId UK
+        Plan plan
+        Integer amount
+        PaymentMethod paymentMethod "CREDIT_CARD | TOSS_PAY | KAKAO_PAY | PAYPAL"
+        PaymentStatus status "COMPLETED | CANCELLED | REFUNDED"
+        LocalDateTime paidAt
+    }
+
+    AI_GENERATION_LOG {
+        Long id PK
+        Long teacher_id FK
+        String prompt
+        String resultType
+        Integer timeSavedSeconds
+        LocalDateTime createdAt
+    }
+
+    USER ||--o{ COURSE : "teaches"
+    USER ||--o{ COURSE_ENROLLMENT : "enrolls"
+    COURSE ||--o{ COURSE_ENROLLMENT : "has"
+    COURSE ||--o{ CURRICULUM : "contains"
+    CURRICULUM ||--o{ MATERIAL : "has"
+    MATERIAL ||--o| QUIZ : "generates"
+    QUIZ ||--o{ QUIZ_SUBMISSION : "receives"
+    USER ||--o{ QUIZ_SUBMISSION : "submits"
+    USER ||--o{ GRADE_QUIZ_SUBMISSION : "takes"
+    USER ||--o{ POST : "writes"
+    POST ||--o{ POST_LIKE : "has"
+    USER ||--o{ POST_LIKE : "likes"
+    POST ||--o{ POST_COMMENT : "has"
+    USER ||--o{ POST_COMMENT : "writes"
+    USER ||--o{ FOLLOW : "follower"
+    USER ||--o{ FOLLOW : "following"
+    USER ||--|| SUBSCRIPTION : "has"
+    USER ||--o{ PAYMENT : "pays"
+    USER ||--o{ AI_GENERATION_LOG : "generates"
+```
+
+---
+
+## 유스케이스 다이어그램
+
+```mermaid
+flowchart LR
+    subgraph Actors
+        T(("👨‍🏫<br/>교강사"))
+        S(("👨‍🎓<br/>학생"))
+    end
+
+    subgraph Auth["🔐 인증"]
+        A1[회원가입]
+        A2[로그인]
+        A3[소셜 로그인<br/>Google · Kakao · Naver]
+        A4[비밀번호 재설정]
+        A5[프로필 수정]
+    end
+
+    subgraph Course["📚 강의 관리"]
+        C1[강의 생성]
+        C2[강의 탐색]
+        C3[수강 신청]
+    end
+
+    subgraph AIGen["🤖 AI 생성"]
+        AI1[AI 커리큘럼 설계]
+        AI2[AI 수업 자료 생성]
+        AI3[AI 퀴즈 출제]
+        AI4[AI 보충학습 생성]
+        AI5[에듀봇 챗봇 대화]
+    end
+
+    subgraph Learning["📝 학습"]
+        L1[커리큘럼 열람]
+        L2[학습자료 열람]
+        L3[퀴즈 풀기 · 자동채점]
+        L4[학년별 AI 퀴즈]
+        L5[맞춤 강의 추천]
+    end
+
+    subgraph Social["💬 커뮤니티"]
+        S1[게시글 작성 · 조회]
+        S2[좋아요 · 댓글]
+        S3[팔로우]
+        S4[프로필 조회]
+    end
+
+    subgraph Dashboard["📊 대시보드"]
+        D1[교강사 대시보드<br/>강의·수강생·AI 통계]
+        D2[학생 대시보드<br/>성적·수강 현황]
+        D3[시간 절약 통계]
+    end
+
+    subgraph Sub["💳 구독"]
+        P1[요금제 비교]
+        P2[구독 결제]
+        P3[구독 취소 · 변경]
+    end
+
+    %% 교강사 연결
+    T --- A1 & A2 & A3 & A4 & A5
+    T --- C1 & C2
+    T --- AI1 & AI2 & AI3 & AI5
+    T --- D1 & D3
+    T --- S1 & S2 & S3 & S4
+    T --- P1 & P2 & P3
+
+    %% 학생 연결
+    S --- A1 & A2 & A3 & A4 & A5
+    S --- C2 & C3
+    S --- L1 & L2 & L3 & L4 & L5
+    S --- AI4 & AI5
+    S --- D2
+    S --- S1 & S2 & S3 & S4
+    S --- P1 & P2 & P3
+```
+
+---
+
+## 클래스 다이어그램
+
+```mermaid
+classDiagram
+    direction TB
+
+    class AuthController {
+        +register()
+        +login()
+        +socialLogin()
+        +socialLoginWithCode()
+        +findEmail()
+        +resetPassword()
+        +changePassword()
+        +getMyInfo()
+        +updateProfile()
+        +checkEmail()
+    }
+
+    class CourseController {
+        +createCourse()
+        +getMyCourses()
+        +browseCourses()
+        +getCourse()
+        +enrollStudent()
+    }
+
+    class CurriculumController {
+        +getCurriculums()
+        +updateCurriculum()
+        +deleteCurriculum()
+    }
+
+    class AiController {
+        +generateCurriculum()
+        +generateMaterial()
+        +generateQuiz()
+        +generateGradeQuiz()
+        +submitGradeQuiz()
+        +generateSupplement()
+    }
+
+    class ChatController {
+        +chat()
+    }
+
+    class QuizController {
+        +getQuiz()
+        +submitQuiz()
+        +getQuizResults()
+        +getMyResult()
+    }
+
+    class DashboardController {
+        +getTeacherDashboard()
+        +getStudentDashboard()
+        +getTimeSaved()
+    }
+
+    class SnsController {
+        +createPost()
+        +getFeed()
+        +getFollowingFeed()
+        +toggleLike()
+        +addComment()
+        +toggleFollow()
+        +getProfile()
+    }
+
+    class SubscriptionController {
+        +getMySubscription()
+        +subscribe()
+        +cancelSubscription()
+        +downgradeToFree()
+        +getPaymentHistory()
+    }
+
+    class BatchController {
+        +runJob()
+    }
+
+    class AuthService {
+        +register()
+        +login()
+        +getMyInfo()
+        +updateProfile()
+        +findEmail()
+        +resetPassword()
+    }
+
+    class SocialAuthService {
+        +socialLogin()
+        +socialLoginWithCode()
+        -getGoogleUserInfo()
+        -getKakaoUserInfo()
+        -getNaverUserInfo()
+    }
+
+    class CourseService {
+        +createCourse()
+        +getMyCourses()
+        +browseAllCourses()
+        +getCourse()
+        +enrollStudent()
+    }
+
+    class CurriculumService {
+        +getCurriculums()
+        +updateCurriculum()
+        +deleteCurriculum()
+    }
+
+    class AiGenerationService {
+        +generateCurriculum()
+        +generateMaterial()
+        +generateQuiz()
+        +generateGradeQuiz()
+        +generateSupplement()
+        -generateCurriculumOffline()
+        -generateOfflineMaterial()
+        -generateOfflineQuiz()
+    }
+
+    class QuizService {
+        +getQuiz()
+        +submitQuiz()
+        +getSubmissionResult()
+        +getQuizResults()
+    }
+
+    class DashboardService {
+        +getTeacherDashboard()
+        +getStudentDashboard()
+        +getTimeSaved()
+    }
+
+    class SnsService {
+        +createPost()
+        +getFeed()
+        +toggleLike()
+        +addComment()
+        +toggleFollow()
+        +getProfile()
+    }
+
+    class SubscriptionService {
+        +getMySubscription()
+        +subscribe()
+        +cancelSubscription()
+        +downgradeToFree()
+    }
+
+    class AiClient {
+        +isConfigured()
+        +generate()
+    }
+
+    class JwtTokenProvider {
+        +createToken()
+        +validateToken()
+        +getUserIdFromToken()
+    }
+
+    %% Controller → Service
+    AuthController --> AuthService
+    AuthController --> SocialAuthService
+    CourseController --> CourseService
+    CurriculumController --> CurriculumService
+    AiController --> AiGenerationService
+    QuizController --> QuizService
+    DashboardController --> DashboardService
+    SnsController --> SnsService
+    SubscriptionController --> SubscriptionService
+
+    %% Service → Infrastructure
+    AiGenerationService --> AiClient
+    AuthService --> JwtTokenProvider
+    SocialAuthService --> JwtTokenProvider
+
+    %% Service → Repository (simplified)
+    AuthService --> UserRepository
+    CourseService --> CourseRepository
+    CourseService --> CourseEnrollmentRepository
+    CurriculumService --> CurriculumRepository
+    AiGenerationService --> CurriculumRepository
+    AiGenerationService --> MaterialRepository
+    AiGenerationService --> QuizRepository
+    QuizService --> QuizRepository
+    QuizService --> QuizSubmissionRepository
+    DashboardService --> CourseRepository
+    SnsService --> PostRepository
+    SubscriptionService --> SubscriptionRepository
+
+    class UserRepository { }
+    class CourseRepository { }
+    class CourseEnrollmentRepository { }
+    class CurriculumRepository { }
+    class MaterialRepository { }
+    class QuizRepository { }
+    class QuizSubmissionRepository { }
+    class PostRepository { }
+    class SubscriptionRepository { }
+
+    <<interface>> UserRepository
+    <<interface>> CourseRepository
+    <<interface>> CourseEnrollmentRepository
+    <<interface>> CurriculumRepository
+    <<interface>> MaterialRepository
+    <<interface>> QuizRepository
+    <<interface>> QuizSubmissionRepository
+    <<interface>> PostRepository
+    <<interface>> SubscriptionRepository
+```
 
 ---
 
