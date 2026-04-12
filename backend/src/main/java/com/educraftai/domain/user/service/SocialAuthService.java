@@ -2,6 +2,7 @@ package com.educraftai.domain.user.service;
 
 import com.educraftai.domain.user.dto.AuthResponse;
 import com.educraftai.domain.user.dto.SocialAuthRequest;
+import com.educraftai.domain.user.dto.SocialCodeRequest;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.exception.BusinessException;
@@ -11,9 +12,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -28,6 +32,15 @@ public class SocialAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${social.naver.client-id:}")
+    private String naverClientId;
+
+    @Value("${social.naver.client-secret:}")
+    private String naverClientSecret;
+
+    @Value("${social.kakao.client-id:}")
+    private String kakaoClientId;
 
     public AuthResponse.Token socialLogin(SocialAuthRequest request) {
         log.info("[소셜 로그인 요청] provider={}", request.getProvider());
@@ -78,6 +91,99 @@ public class SocialAuthService {
                 .accessToken(token)
                 .user(AuthResponse.UserInfo.from(user))
                 .build();
+    }
+
+    /**
+     * Authorization Code 기반 소셜 로그인
+     * 프론트엔드에서 받은 code를 백엔드에서 access token으로 교환 후 로그인 처리
+     * (Naver/Kakao는 CORS로 인해 브라우저에서 직접 토큰 교환 불가)
+     */
+    public AuthResponse.Token socialLoginWithCode(SocialCodeRequest request) {
+        log.info("[소셜 코드 로그인 요청] provider={}", request.getProvider());
+
+        String accessToken = switch (request.getProvider()) {
+            case KAKAO -> exchangeKakaoCode(request.getCode(), request.getRedirectUri());
+            case NAVER -> exchangeNaverCode(request.getCode(), request.getState());
+            default -> throw new BusinessException(ErrorCode.INVALID_INPUT);
+        };
+
+        // 기존 socialLogin 로직 재사용
+        SocialAuthRequest authRequest = new SocialAuthRequest();
+        authRequest.setAccessToken(accessToken);
+        authRequest.setProvider(request.getProvider());
+        authRequest.setRole(request.getRole());
+        return socialLogin(authRequest);
+    }
+
+    /** 네이버 authorization code → access token 교환 */
+    private String exchangeNaverCode(String code, String state) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "authorization_code");
+            params.add("client_id", naverClientId);
+            params.add("client_secret", naverClientSecret);
+            params.add("code", code);
+            params.add("state", state);
+
+            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    "https://nid.naver.com/oauth2.0/token", entity, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            String accessToken = root.path("access_token").asText(null);
+
+            if (accessToken == null || accessToken.isEmpty()) {
+                log.error("Naver 토큰 교환 실패: {}", response.getBody());
+                throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            }
+
+            log.debug("[Naver 토큰 교환 성공]");
+            return accessToken;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Naver 토큰 교환 실패", e);
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+    }
+
+    /** 카카오 authorization code → access token 교환 */
+    private String exchangeKakaoCode(String code, String redirectUri) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "authorization_code");
+            params.add("client_id", kakaoClientId);
+            params.add("redirect_uri", redirectUri);
+            params.add("code", code);
+
+            HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(
+                    "https://kauth.kakao.com/oauth/token", entity, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            String accessToken = root.path("access_token").asText(null);
+
+            if (accessToken == null || accessToken.isEmpty()) {
+                log.error("Kakao 토큰 교환 실패: {}", response.getBody());
+                throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            }
+
+            log.debug("[Kakao 토큰 교환 성공]");
+            return accessToken;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Kakao 토큰 교환 실패", e);
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
     }
 
     private SocialUserInfo getGoogleUserInfo(String accessToken) {

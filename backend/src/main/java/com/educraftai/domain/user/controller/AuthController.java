@@ -3,6 +3,7 @@ package com.educraftai.domain.user.controller;
 import com.educraftai.domain.user.dto.AuthRequest;
 import com.educraftai.domain.user.dto.AuthResponse;
 import com.educraftai.domain.user.dto.SocialAuthRequest;
+import com.educraftai.domain.user.dto.SocialCodeRequest;
 import com.educraftai.domain.user.service.AuthService;
 import com.educraftai.domain.user.service.SocialAuthService;
 import com.educraftai.global.common.ApiResponse;
@@ -45,10 +46,16 @@ public class AuthController {
         return ApiResponse.ok(authService.login(request));
     }
 
-    /** 소셜 로그인 (Google, Kakao, Naver) */
+    /** 소셜 로그인 (Google, Kakao, Naver) - access token 방식 */
     @PostMapping("/social-login")
     public ApiResponse<AuthResponse.Token> socialLogin(@Valid @RequestBody SocialAuthRequest request) {
         return ApiResponse.ok(socialAuthService.socialLogin(request));
+    }
+
+    /** 소셜 로그인 - authorization code 방식 (Naver/Kakao CORS 우회) */
+    @PostMapping("/social-login/code")
+    public ApiResponse<AuthResponse.Token> socialLoginWithCode(@Valid @RequestBody SocialCodeRequest request) {
+        return ApiResponse.ok(socialAuthService.socialLoginWithCode(request));
     }
 
     /** 이름으로 이메일 찾기 (마스킹 처리하여 반환) */

@@ -84,6 +84,13 @@ jwt:
   secret: educraftai-local-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
   expiration: 86400000
 
+social:
+  naver:
+    client-id: ZsTK1qXQouaeK9jzWd6z
+    client-secret: PGTPS01rZZ
+  kakao:
+    client-id: "1429142"
+
 ai:
   api-key: ${AI_API_KEY:your-api-key-here}
   model: claude-sonnet-4-20250514

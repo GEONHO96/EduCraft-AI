@@ -25,6 +25,14 @@ export interface SocialLoginRequest {
   role?: 'TEACHER' | 'STUDENT'
 }
 
+export interface SocialCodeLoginRequest {
+  code: string
+  state?: string
+  provider: 'KAKAO' | 'NAVER'
+  role?: 'TEACHER' | 'STUDENT'
+  redirectUri: string
+}
+
 export interface UserInfo {
   id: number
   email: string
@@ -54,9 +62,13 @@ export const authApi = {
   login: (data: LoginRequest) =>
     apiClient.post<ApiResponse<AuthToken>>('/auth/login', data),
 
-  /** 소셜 로그인 (Google, Kakao, Naver) */
+  /** 소셜 로그인 - access token 방식 (Google) */
   socialLogin: (data: SocialLoginRequest) =>
     apiClient.post<ApiResponse<AuthToken>>('/auth/social-login', data),
+
+  /** 소셜 로그인 - authorization code 방식 (Kakao/Naver, CORS 우회) */
+  socialLoginWithCode: (data: SocialCodeLoginRequest) =>
+    apiClient.post<ApiResponse<AuthToken>>('/auth/social-login/code', data),
 
   /** 이름으로 가입된 이메일 찾기 */
   findEmail: (data: { name: string }) =>

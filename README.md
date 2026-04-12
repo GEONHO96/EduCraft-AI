@@ -52,7 +52,7 @@
 
 | 기능 | 설명 |
 |------|------|
-| **소셜 로그인** | Google, Kakao, Naver 소셜 계정으로 간편 로그인 |
+| **소셜 로그인** | Google, Kakao, Naver 소셜 계정으로 간편 로그인 (백엔드 프록시 토큰 교환) |
 | **학년 등록** | 회원가입 시 학년 선택 (초등 1학년 ~ 고등 3학년), 맞춤 콘텐츠 자동 제공 |
 | **아이디 찾기** | 이름으로 가입된 이메일 검색 (마스킹 처리) |
 | **비밀번호 재설정** | 임시 비밀번호 발급 → 새 비밀번호 설정 (3단계) |
@@ -320,8 +320,12 @@ EduCraft-AI/
     ├── package.json
     ├── Dockerfile
     └── src/
-        ├── api/                # API 클라이언트 (axios)
+        ├── api/                # API 클라이언트 (axios, ApiResponse<T> 공통 타입)
+        ├── types/              # 공통 타입 정의 (ApiResponse)
         ├── stores/             # Zustand 상태 관리 (인증 상태)
+        ├── hooks/              # 커스텀 훅 (useDebouncedValue)
+        ├── utils/              # 유틸리티 (timeAgo, getErrorMessage)
+        ├── constants/          # 상수 (카테고리, 과목, 학년 라벨/색상)
         ├── components/         # 공통 컴포넌트 (Layout, 네비게이션, ChatBot)
         └── pages/
             ├── auth/           # 로그인, 회원가입(학년 선택), 소셜로그인, 계정찾기
@@ -398,7 +402,19 @@ VITE_API_URL=http://localhost:8080/api
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 VITE_KAKAO_CLIENT_ID=your-kakao-client-id
 VITE_NAVER_CLIENT_ID=your-naver-client-id
-VITE_NAVER_CLIENT_SECRET=your-naver-client-secret
+```
+
+> Naver/Kakao Client Secret은 보안상 프론트엔드에 노출하지 않고, **백엔드 `application.yml`에서만 관리**합니다.
+
+#### 백엔드 (`application.yml` 소셜 로그인 설정)
+
+```yaml
+social:
+  naver:
+    client-id: your-naver-client-id
+    client-secret: your-naver-client-secret
+  kakao:
+    client-id: your-kakao-client-id
 ```
 
 #### 백엔드 (환경변수)
@@ -416,6 +432,26 @@ VITE_NAVER_CLIENT_SECRET=your-naver-client-secret
 3. 승인된 JavaScript 원본: `http://localhost:5173`
 4. 승인된 리디렉션 URI: `http://localhost:5173/auth/google/callback`
 5. 발급된 Client ID를 `frontend/.env`의 `VITE_GOOGLE_CLIENT_ID`에 입력
+
+#### Kakao OAuth 설정 방법
+
+1. [Kakao Developers](https://developers.kakao.com/) 접속
+2. **내 애플리케이션** → **앱 생성** → **카카오 로그인** 활성화
+3. **Redirect URI**: `http://localhost:5173/auth/kakao/callback`
+4. 앱 키(REST API 키)를 `frontend/.env`의 `VITE_KAKAO_CLIENT_ID`에 입력
+5. 동일 앱 키를 `backend/application.yml`의 `social.kakao.client-id`에 입력
+
+#### Naver OAuth 설정 방법
+
+1. [NAVER Developers](https://developers.naver.com/) 접속
+2. **Application** → **애플리케이션 등록** → 사용 API: **네이버 로그인**
+3. 서비스 환경: **PC 웹** 추가
+4. 서비스 URL: `http://localhost:5173`
+5. Callback URL: `http://localhost:5173/auth/naver/callback`
+6. 발급된 Client ID를 `frontend/.env`의 `VITE_NAVER_CLIENT_ID`에 입력
+7. Client ID/Secret을 `backend/application.yml`의 `social.naver.*`에 입력
+
+> **CORS 참고**: Naver/Kakao 토큰 교환 API는 브라우저 CORS를 차단하므로, 프론트엔드가 authorization code를 백엔드로 전달하고 백엔드에서 서버 간 통신으로 토큰을 교환합니다.
 
 ### Docker 배포
 
@@ -436,7 +472,7 @@ docker-compose up --build
 
 ## API 명세
 
-> 총 **46개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
+> 총 **47개** 엔드포인트 | 공통 응답 형식: `{ "success": true, "data": {...} }` 또는 `{ "success": false, "error": {"code": "...", "message": "..."} }`  
 > 인증: `Authorization: Bearer <JWT_TOKEN>` 헤더 필요 (공개 API 제외)
 
 ---
@@ -500,8 +536,8 @@ docker-compose up --build
 
 ---
 
-#### `POST /api/auth/social-login` — 소셜 로그인
-> 권한: 공개 | Google, Kakao, Naver 지원
+#### `POST /api/auth/social-login` — 소셜 로그인 (access token 방식)
+> 권한: 공개 | Google에서 사용 (implicit flow)
 
 **Request**
 ```json
@@ -518,6 +554,33 @@ docker-compose up --build
 | role | Enum | X | 최초 가입 시 역할 (기본: `STUDENT`) |
 
 **Response** — Token 형식 (profileImage, socialProvider 포함)
+
+---
+
+#### `POST /api/auth/social-login/code` — 소셜 로그인 (authorization code 방식)
+> 권한: 공개 | Kakao, Naver에서 사용 (CORS 우회, 백엔드 토큰 교환)
+
+**Request**
+```json
+{
+  "code": "OAuth 인증 후 받은 authorization code",
+  "state": "CSRF 방지용 상태값 (Naver만 필수)",
+  "provider": "NAVER",
+  "role": "STUDENT",
+  "redirectUri": "http://localhost:5173/auth/naver/callback"
+}
+```
+| 필드 | 타입 | 필수 | 설명 |
+|------|------|------|------|
+| code | String | O | OAuth authorization code |
+| state | String | X | CSRF 방지 상태값 (Naver 필수) |
+| provider | Enum | O | `KAKAO`, `NAVER` |
+| role | Enum | X | 최초 가입 시 역할 (기본: `STUDENT`) |
+| redirectUri | String | O | OAuth 콜백 URL |
+
+**Response** — Token 형식 (profileImage, socialProvider 포함)
+
+> 백엔드가 authorization code를 access token으로 교환한 뒤, 소셜 플랫폼 사용자 정보를 조회하여 로그인/가입 처리
 
 ---
 
@@ -1140,7 +1203,7 @@ docker-compose up --build
 
 | 카테고리 | 엔드포인트 수 | 권한 |
 |----------|-------------|------|
-| 인증 | 7개 | 공개 6 / 로그인 1 |
+| 인증 | 8개 | 공개 7 / 로그인 1 |
 | 강의 | 5개 | 교강사 1 / 학생 1 / 로그인 3 |
 | 커리큘럼 | 3개 | 교강사 2 / 로그인 1 |
 | AI 생성 | 6개 | 교강사 3 / 로그인 3 |
@@ -1150,7 +1213,7 @@ docker-compose up --build
 | SNS 커뮤니티 | 11개 | 로그인 9 / 작성자 2 |
 | AI 챗봇 | 1개 | 로그인 1 |
 | 구독 & 결제 | 5개 | 로그인 5 |
-| **합계** | **46개** | |
+| **합계** | **47개** | |
 
 <br/>
 

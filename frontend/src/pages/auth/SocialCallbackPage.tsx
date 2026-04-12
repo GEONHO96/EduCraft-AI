@@ -15,90 +15,82 @@ export default function SocialCallbackPage() {
   const navigate = useNavigate()
   const { setAuth } = useAuthStore()
   const [showRoleSelect, setShowRoleSelect] = useState(false)
+
+  // Google: access token 저장 / Kakao·Naver: authorization code 저장
   const [accessToken, setAccessToken] = useState('')
+  const [authCode, setAuthCode] = useState('')
+  const [authState, setAuthState] = useState('')
 
   useEffect(() => {
     handleCallback()
   }, [])
 
-  // 프로바이더별 OAuth 토큰 추출 (Google: hash, Kakao/Naver: code 교환)
+  /**
+   * 프로바이더별 OAuth 콜백 처리
+   * - Google: implicit flow → hash에서 access_token 추출
+   * - Kakao/Naver: authorization code flow → code를 백엔드로 전달 (CORS 우회)
+   */
   const handleCallback = async () => {
-    let token = ''
-
     if (provider === 'google') {
-      // Google은 implicit flow로 hash에 access_token이 옴
       const hash = window.location.hash.substring(1)
       const params = new URLSearchParams(hash)
-      token = params.get('access_token') || ''
-    } else if (provider === 'kakao') {
-      // Kakao는 authorization code flow
-      const code = searchParams.get('code')
-      if (code) {
-        // 카카오는 code를 서버로 보내서 access_token을 받아야 하지만,
-        // 간소화를 위해 프론트에서 직접 토큰 교환
-        try {
-          const res = await fetch('https://kauth.kakao.com/oauth/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-              grant_type: 'authorization_code',
-              client_id: import.meta.env.VITE_KAKAO_CLIENT_ID || '',
-              redirect_uri: `${window.location.origin}/auth/kakao/callback`,
-              code,
-            }),
-          })
-          const data = await res.json()
-          token = data.access_token || ''
-        } catch {
-          toast.error('카카오 인증에 실패했습니다.')
-          navigate('/login')
-          return
-        }
+      const token = params.get('access_token') || ''
+      if (!token) {
+        toast.error('인증 토큰을 받지 못했습니다.')
+        navigate('/login')
+        return
       }
+      setAccessToken(token)
+      setShowRoleSelect(true)
+    } else if (provider === 'kakao') {
+      const code = searchParams.get('code')
+      if (!code) {
+        toast.error('카카오 인증 코드를 받지 못했습니다.')
+        navigate('/login')
+        return
+      }
+      setAuthCode(code)
+      setShowRoleSelect(true)
     } else if (provider === 'naver') {
       const code = searchParams.get('code')
       const state = searchParams.get('state')
-      if (code && state) {
-        try {
-          const res = await fetch('https://nid.naver.com/oauth2.0/token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-              grant_type: 'authorization_code',
-              client_id: import.meta.env.VITE_NAVER_CLIENT_ID || '',
-              client_secret: import.meta.env.VITE_NAVER_CLIENT_SECRET || '',
-              code,
-              state,
-            }),
-          })
-          const data = await res.json()
-          token = data.access_token || ''
-        } catch {
-          toast.error('네이버 인증에 실패했습니다.')
-          navigate('/login')
-          return
-        }
+      if (!code || !state) {
+        toast.error('네이버 인증 코드를 받지 못했습니다.')
+        navigate('/login')
+        return
       }
-    }
-
-    if (!token) {
-      toast.error('인증 토큰을 받지 못했습니다.')
+      setAuthCode(code)
+      setAuthState(state)
+      setShowRoleSelect(true)
+    } else {
+      toast.error('지원하지 않는 소셜 로그인입니다.')
       navigate('/login')
-      return
     }
-
-    setAccessToken(token)
-    setShowRoleSelect(true)
   }
 
   // 역할 선택 후 백엔드에 소셜 로그인 요청
   const handleRoleSelect = async (role: 'TEACHER' | 'STUDENT') => {
     try {
-      const res = await authApi.socialLogin({
-        accessToken,
-        provider: provider?.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
-        role,
-      })
+      let res
+
+      if (provider === 'google') {
+        // Google은 access token을 직접 전달
+        res = await authApi.socialLogin({
+          accessToken,
+          provider: 'GOOGLE',
+          role,
+        })
+      } else {
+        // Kakao/Naver는 authorization code를 백엔드로 전달 (백엔드에서 토큰 교환)
+        res = await authApi.socialLoginWithCode({
+          code: authCode,
+          state: authState || undefined,
+          provider: provider?.toUpperCase() as 'KAKAO' | 'NAVER',
+          role,
+          redirectUri: `${window.location.origin}/auth/${provider}/callback`,
+        })
+      }
+
       if (res.data.success) {
         setAuth(res.data.data.user, res.data.data.accessToken)
         toast.success('로그인 성공!')
