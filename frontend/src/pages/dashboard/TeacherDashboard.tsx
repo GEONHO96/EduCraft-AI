@@ -1,6 +1,6 @@
 /**
  * TeacherDashboard - 교강사 대시보드
- * 내 강의 수, 수강생 수, AI 생성 횟수, 절약한 시간 등 통계를 표시하고
+ * 내 강의 수, 수강생 수, AI 생성 횟수, 이번 주 활동 등 통계를 표시하고
  * 빠른 시작(새 강의/자료 생성/퀴즈 출제) 바로가기를 제공한다.
  */
 import { useQuery } from '@tanstack/react-query'
@@ -49,8 +49,19 @@ export default function TeacherDashboard() {
     )
   }
 
-  const hours = data?.timeSaved?.formatted ?? '0시간'
   const genCount = Number(data?.timeSaved?.generationCount ?? 0)
+
+  // 이번 주 활동 횟수 계산
+  const weeklyActivity = (() => {
+    if (!data?.recentActivities) return 0
+    const now = new Date()
+    const startOfWeek = new Date(now)
+    startOfWeek.setDate(now.getDate() - now.getDay())
+    startOfWeek.setHours(0, 0, 0, 0)
+    return data.recentActivities.filter(
+      (a) => new Date(a.createdAt) >= startOfWeek
+    ).length
+  })()
 
   return (
     <div className="space-y-5">
@@ -106,10 +117,10 @@ export default function TeacherDashboard() {
             accent="from-violet-500 to-purple-400"
           />
           <StatPill
-            label="절약 시간"
-            value={hours}
+            label="이번 주 활동"
+            value={String(weeklyActivity)}
+            unit="회"
             accent="from-amber-500 to-orange-400"
-            isText
           />
         </div>
       </div>
