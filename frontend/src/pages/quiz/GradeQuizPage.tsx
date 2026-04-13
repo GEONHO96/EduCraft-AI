@@ -31,7 +31,7 @@ const GRADE_OPTIONS = [
   ]},
 ]
 
-const SUBJECTS = ['국어', '영어', '수학']
+const SUBJECTS = ['국어', '영어', '수학', '코딩']
 
 const GRADE_LABEL: Record<string, string> = {
   ELEMENTARY_1: '초등 1학년', ELEMENTARY_2: '초등 2학년', ELEMENTARY_3: '초등 3학년',
@@ -143,6 +143,7 @@ export default function GradeQuizPage() {
                     subject === s
                       ? s === '국어' ? 'bg-red-50 text-red-600 border-red-300'
                         : s === '영어' ? 'bg-green-50 text-green-600 border-green-300'
+                        : s === '코딩' ? 'bg-purple-50 text-purple-600 border-purple-300'
                         : 'bg-blue-50 text-blue-600 border-blue-300'
                       : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
                   }`}>{s}</button>

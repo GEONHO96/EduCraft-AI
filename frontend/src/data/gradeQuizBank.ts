@@ -37,6 +37,18 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:9, type:'SHORT_ANSWER', question:'"가나다라마바사"에서 세 번째 글자를 쓰세요.', answer:'다', explanation:'가-나-다 순서로 세 번째는 "다"입니다.', difficulty:'easy' },
       { number:10, type:'SHORT_ANSWER', question:'"사과"에서 첫 글자의 자음을 쓰세요.', answer:'ㅅ', explanation:'"사"의 자음은 ㅅ입니다.', difficulty:'hard' },
     ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'컴퓨터에게 일을 시키는 명령어 모음을 무엇이라 할까요?', options:['프로그램','마우스','모니터','키보드'], answer:0, explanation:'프로그램은 컴퓨터에게 일을 시키는 명령어 모음입니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'스크래치에서 고양이를 오른쪽으로 10칸 움직이게 하려면?', options:['10만큼 움직이기','10번 반복하기','10초 기다리기','10도 돌기'], answer:0, explanation:'"10만큼 움직이기" 블록을 사용합니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'같은 동작을 여러 번 반복하려면 어떤 블록을 쓸까요?', options:['만약~라면','반복하기','기다리기','멈추기'], answer:1, explanation:'반복하기 블록으로 같은 동작을 여러 번 실행합니다.', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'"만약 비가 오면 우산을 가져간다"는 어떤 개념?', options:['반복','조건','변수','함수'], answer:1, explanation:'조건에 따라 다른 행동을 하는 것은 조건문입니다.', difficulty:'medium' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'숫자를 저장하는 상자 같은 것을 프로그래밍에서 뭐라고 할까요?', options:['반복','조건','변수','출력'], answer:2, explanation:'변수는 값을 저장하는 이름 있는 공간입니다.', difficulty:'medium' },
+      { number:6, type:'SHORT_ANSWER', question:'스크래치에서 "안녕!" 이라고 말하게 하는 블록 이름은?', answer:'말하기', explanation:'"~을(를) 말하기" 블록입니다.', difficulty:'easy' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'1,2,3,4,5를 차례로 출력하려면 어떻게 할까요?', options:['5번 반복하며 숫자 1씩 늘리기','5번 조건문 사용하기','5개의 변수 만들기','프로그램 5번 실행하기'], answer:0, explanation:'반복문과 변수를 활용하여 1씩 증가시키며 출력합니다.', difficulty:'hard' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'버그(Bug)란 무엇인가요?', options:['새로운 기능','프로그램의 오류','컴퓨터 바이러스','프로그래밍 언어'], answer:1, explanation:'버그는 프로그램에 있는 오류(실수)를 말합니다.', difficulty:'medium' },
+      { number:9, type:'SHORT_ANSWER', question:'코딩에서 순서대로 명령을 나열하는 것을 무엇이라 하나요?', answer:'순차', explanation:'순차(sequence)는 명령을 순서대로 실행하는 것입니다.', difficulty:'easy' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'로봇에게 미로를 빠져나가게 하려면 어떤 개념들이 필요할까요?', options:['순차만','순차+반복','순차+조건+반복','조건만'], answer:2, explanation:'미로 탈출에는 순차, 조건(벽 확인), 반복(계속 이동)이 모두 필요합니다.', difficulty:'hard' },
+    ],
     '영어': [
       { number:1, type:'MULTIPLE_CHOICE', question:'알파벳 A 다음에 오는 글자는?', options:['C','B','D','E'], answer:1, explanation:'A-B-C-D-E 순서', difficulty:'easy' },
       { number:2, type:'MULTIPLE_CHOICE', question:'"Apple"은 무슨 뜻인가요?', options:['바나나','사과','포도','딸기'], answer:1, explanation:'Apple은 사과입니다.', difficulty:'easy' },
@@ -103,6 +115,18 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:9, type:'SHORT_ANSWER', question:'9 × 9 = ?', answer:'81', explanation:'9 × 9 = 81', difficulty:'easy' },
       { number:10, type:'SHORT_ANSWER', question:'72 ÷ 9 = ?', answer:'8', explanation:'72 ÷ 9 = 8', difficulty:'medium' },
     ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'스크래치에서 "10번 반복하기" 블록은 안의 코드를 몇 번 실행하나요?', options:['1번','5번','10번','무한번'], answer:2, explanation:'10번 반복하기는 안의 코드를 정확히 10번 실행합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'"변수 x를 5로 정하기" 후 x의 값은?', options:['0','3','5','10'], answer:2, explanation:'변수 x에 5를 저장했으므로 x=5입니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'조건문 "만약 x>3이라면"에서 x가 2일 때 실행되나요?', options:['실행된다','실행 안 된다','오류가 난다','무한 반복한다'], answer:1, explanation:'2는 3보다 크지 않으므로 조건이 거짓이라 실행되지 않습니다.', difficulty:'medium' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'알고리즘이란 무엇인가요?', options:['프로그래밍 언어','문제를 해결하는 절차','컴퓨터 부품','인터넷 주소'], answer:1, explanation:'알고리즘은 문제를 해결하기 위한 단계적 절차입니다.', difficulty:'easy' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'x=3일 때, x=x+2를 실행하면 x는?', options:['3','2','5','6'], answer:2, explanation:'x+2=3+2=5이므로 x에 5가 저장됩니다.', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'"10번 반복: x=x+1" 실행 후 x는? (초기 x=0)', options:['1','5','10','100'], answer:2, explanation:'0에서 시작해 1씩 10번 더하면 10입니다.', difficulty:'medium' },
+      { number:7, type:'SHORT_ANSWER', question:'코딩에서 오류를 찾아 고치는 과정을 영어로 뭐라 하나요?', answer:'디버깅', explanation:'디버깅(Debugging)은 버그를 찾아 수정하는 과정입니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'다음 중 입력(Input)에 해당하는 것은?', options:['화면에 글자 표시','키보드로 이름 입력','스피커에서 소리 출력','프린터로 인쇄'], answer:1, explanation:'키보드 입력은 컴퓨터에 데이터를 넣는 입력입니다.', difficulty:'easy' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'1부터 10까지 합을 구하려면?\nx=0, 반복(i=1~10): x=x+i\n결과 x는?', options:['10','45','55','100'], answer:2, explanation:'1+2+3+...+10 = 55', difficulty:'hard' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'엔트리에서 "만약~라면/아니면" 블록의 역할은?', options:['무조건 실행','조건이 참이면 A, 거짓이면 B 실행','두 가지를 동시에 실행','프로그램을 멈춤'], answer:1, explanation:'조건에 따라 다른 코드를 실행하는 if-else 구조입니다.', difficulty:'hard' },
+    ],
   },
 
   // ══════════════════════════════════════════════
@@ -144,6 +168,18 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:8, type:'MULTIPLE_CHOICE', question:'밑변 8cm, 높이 5cm인 삼각형의 넓이는?', options:['13cm²','20cm²','40cm²','80cm²'], answer:1, explanation:'삼각형 넓이 = 밑변×높이÷2 = 20', difficulty:'hard' },
       { number:9, type:'SHORT_ANSWER', question:'3/4를 소수로 나타내세요.', answer:'0.75', explanation:'3÷4 = 0.75', difficulty:'hard' },
       { number:10, type:'SHORT_ANSWER', question:'2, 4, 8, 16, ___의 빈칸을 채우세요.', answer:'32', explanation:'×2 규칙: 16×2=32', difficulty:'medium' },
+    ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'Python에서 "Hello"를 출력하는 코드는?', options:['echo "Hello"','print("Hello")','printf("Hello")','cout << "Hello"'], answer:1, explanation:'Python에서는 print() 함수로 출력합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'Python에서 변수 x에 10을 저장하는 코드는?', options:['var x = 10','int x = 10','x = 10','let x = 10'], answer:2, explanation:'Python은 x = 10으로 변수를 선언합니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'Python: x = 7, y = 3일 때 x % y의 결과는?', options:['2','1','3','0'], answer:1, explanation:'% 는 나머지 연산자입니다. 7÷3=2...1', difficulty:'medium' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'for i in range(5): 는 i가 어떻게 변하나요?', options:['1,2,3,4,5','0,1,2,3,4','0,1,2,3,4,5','1,2,3,4'], answer:1, explanation:'range(5)는 0부터 4까지 5개의 수를 생성합니다.', difficulty:'medium' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'리스트 a = [10, 20, 30]에서 a[1]은?', options:['10','20','30','오류'], answer:1, explanation:'리스트 인덱스는 0부터 시작하므로 a[1]=20입니다.', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'HTML에서 글자를 굵게 만드는 태그는?', options:['<i>','<b>','<u>','<a>'], answer:1, explanation:'<b>는 bold(굵게) 태그입니다.', difficulty:'easy' },
+      { number:7, type:'SHORT_ANSWER', question:'Python에서 "참"을 나타내는 값은? (영어 대문자로)', answer:'True', explanation:'Python에서 참은 True(첫 글자 대문자)입니다.', difficulty:'easy' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\nfor i in range(3):\n    print(i * 2)', options:['0 2 4','2 4 6','0 1 2','1 2 3'], answer:0, explanation:'i=0→0, i=1→2, i=2→4 출력', difficulty:'hard' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'함수(function)를 사용하는 가장 큰 이유는?', options:['프로그램을 느리게 하려고','같은 코드를 반복해서 쓰지 않으려고','변수를 많이 만들려고','오류를 만들려고'], answer:1, explanation:'함수는 코드 재사용을 위해 사용합니다.', difficulty:'medium' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'다음 코드의 결과는?\nresult = 0\nfor i in range(1, 6):\n    if i % 2 == 0:\n        result += i\nprint(result)', options:['6','9','15','10'], answer:0, explanation:'짝수만 더함: 2+4=6', difficulty:'hard' },
     ],
   },
 
@@ -187,6 +223,18 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:9, type:'SHORT_ANSWER', question:'(-2)³ = ?', answer:'-8', explanation:'(-2)×(-2)×(-2) = 4×(-2) = -8', difficulty:'medium' },
       { number:10, type:'SHORT_ANSWER', question:'1/2 + 1/3 + 1/6 = ?', answer:'1', explanation:'3/6 + 2/6 + 1/6 = 6/6 = 1', difficulty:'hard' },
     ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'Python에서 리스트 [3,1,4,1,5]를 정렬하려면?', options:['sort([3,1,4,1,5])','[3,1,4,1,5].sort()','order([3,1,4,1,5])','[3,1,4,1,5].arrange()'], answer:1, explanation:'.sort() 메서드로 리스트를 정렬합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'변수의 자료형 중 "문자열"은 영어로?', options:['int','float','string','bool'], answer:2, explanation:'문자열은 string(str)입니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'Python: len("Hello")의 결과는?', options:['4','5','6','Hello'], answer:1, explanation:'len()은 문자열의 길이를 반환합니다. "Hello"는 5글자.', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'while문과 for문의 차이점은?', options:['while은 반복 못 함','for은 조건 반복 못 함','while은 조건 기반, for은 횟수/순회 기반','차이 없음'], answer:2, explanation:'while은 조건이 참인 동안, for은 정해진 횟수/컬렉션 순회에 적합합니다.', difficulty:'medium' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\nx = "Python"\nprint(x[0:3])', options:['Pyt','Pyth','ython','Python'], answer:0, explanation:'슬라이싱: 인덱스 0~2까지 → "Pyt"', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'딕셔너리 d = {"name": "Kim", "age": 14}에서 d["age"]는?', options:['"Kim"','14','"age"','오류'], answer:1, explanation:'딕셔너리는 키로 값을 조회합니다. d["age"]=14', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'다음 함수의 반환값은?\ndef add(a, b):\n    return a + b\nprint(add(3, 7))', options:['37','10','(3,7)','오류'], answer:1, explanation:'add(3,7)은 3+7=10을 반환합니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'HTML+CSS에서 글자 색상을 빨간색으로 바꾸는 CSS 속성은?', options:['background-color: red','font-size: red','color: red','text-align: red'], answer:2, explanation:'color 속성으로 글자 색상을 지정합니다.', difficulty:'easy' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\nnums = [1,2,3,4,5]\nresult = [x**2 for x in nums if x > 2]\nprint(result)', options:['[1,4,9,16,25]','[9,16,25]','[4,9,16,25]','[3,4,5]'], answer:1, explanation:'x>2인 것만 필터링(3,4,5) 후 제곱: [9,16,25]', difficulty:'hard' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'재귀함수란?', options:['반복문만 사용하는 함수','자기 자신을 호출하는 함수','입력이 없는 함수','한 번만 실행되는 함수'], answer:1, explanation:'재귀함수는 함수 내부에서 자기 자신을 다시 호출하는 함수입니다.', difficulty:'hard' },
+    ],
   },
 
   // ══════════════════════════════════════════════
@@ -194,28 +242,63 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
   // ══════════════════════════════════════════════
   'MIDDLE_3': {
     '국어': [
+      // ── 기본: 단순 용어/개념 확인 ──
       { number:1, type:'MULTIPLE_CHOICE', question:'다음 중 "시적 화자"의 설명으로 옳은 것은?', options:['시를 쓴 작가','시 속에서 말하는 존재','시를 읽는 독자','시를 분석하는 비평가'], answer:1, explanation:'시적 화자 = 시 속에서 말하는 존재', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'"역설"의 의미는?', options:['같은 말 반복','겉과 속이 반대','모순 속에 진리','과장된 표현'], answer:2, explanation:'역설은 모순처럼 보이지만 깊은 진리를 담고 있습니다.', difficulty:'medium' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'논설문에서 "논거"란?', options:['글의 제목','주장을 뒷받침하는 근거','결론 요약','서론의 첫 문장'], answer:1, explanation:'논거 = 주장의 근거', difficulty:'easy' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'"이중 모음"에 해당하지 않는 것은?', options:['ㅘ','ㅚ','ㅏ','ㅢ'], answer:2, explanation:'ㅏ는 단모음입니다.', difficulty:'hard' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'소설의 3요소가 아닌 것은?', options:['인물','사건','배경','운율'], answer:3, explanation:'소설의 3요소: 인물, 사건, 배경. 운율은 시의 요소.', difficulty:'medium' },
-      { number:6, type:'SHORT_ANSWER', question:'"봄이 오면 꽃이 핀다"에서 종속절을 쓰세요.', answer:'봄이 오면', explanation:'"봄이 오면"은 조건의 종속절입니다.', difficulty:'hard' },
-      { number:7, type:'SHORT_ANSWER', question:'형태소 "먹었다"를 분석하세요 (형태소 수).', answer:'3', explanation:'먹- + -었- + -다 = 3개', difficulty:'hard' },
-      { number:8, type:'MULTIPLE_CHOICE', question:'문학의 갈래 중 "서사"에 해당하는 것은?', options:['시','소설','수필','희곡'], answer:1, explanation:'서사 갈래: 소설, 신화, 전설 등', difficulty:'medium' },
-      { number:9, type:'MULTIPLE_CHOICE', question:'"미디어 리터러시"란?', options:['미디어 기기 사용법','미디어 정보를 비판적으로 이해하는 능력','미디어 콘텐츠 제작 기술','SNS 활용법'], answer:1, explanation:'미디어 리터러시 = 미디어를 비판적으로 이해하고 활용하는 능력', difficulty:'medium' },
-      { number:10, type:'MULTIPLE_CHOICE', question:'다음 중 "피동 표현"은?', options:['철수가 밥을 먹는다','꽃이 바람에 꺾였다','나는 학교에 간다','그는 노래를 부른다'], answer:1, explanation:'"꺾였다"는 피동 표현(-이-+었)입니다.', difficulty:'hard' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'논설문에서 "논거"란?', options:['글의 제목','주장을 뒷받침하는 근거','결론 요약','서론의 첫 문장'], answer:1, explanation:'논거 = 주장의 근거', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'소설의 3요소가 아닌 것은?', options:['인물','사건','배경','운율'], answer:3, explanation:'소설의 3요소: 인물, 사건, 배경. 운율은 시의 요소.', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'"분사"의 종류 2가지는?', options:['현재분사, 과거분사','동명사, 부정사','능동, 피동','주격, 목적격'], answer:0, explanation:'분사: 현재분사(-ing), 과거분사(-ed/p.p.)', difficulty:'easy' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'문학의 갈래 중 "서사"에 해당하는 것은?', options:['시','소설','수필','희곡'], answer:1, explanation:'서사 갈래: 소설, 신화, 전설 등', difficulty:'easy' },
+
+      // ── 보통: 개념 적용/분석 필요 ──
+      { number:6, type:'MULTIPLE_CHOICE', question:'"역설"의 의미는?', options:['같은 말 반복','겉과 속이 반대','모순 속에 진리','과장된 표현'], answer:2, explanation:'역설은 모순처럼 보이지만 깊은 진리를 담고 있습니다.', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'"미디어 리터러시"란?', options:['미디어 기기 사용법','미디어 정보를 비판적으로 이해하는 능력','미디어 콘텐츠 제작 기술','SNS 활용법'], answer:1, explanation:'미디어 리터러시 = 미디어를 비판적으로 이해하고 활용하는 능력', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'"접속부사"의 기능으로 올바른 것은?\n① 그러나-역접  ② 그리고-나열  ③ 따라서-인과  ④ 즉-환언', options:['①만 맞다','①②만 맞다','①②③만 맞다','①②③④ 모두 맞다'], answer:3, explanation:'그러나(역접), 그리고(나열), 따라서(인과), 즉(환언) 모두 맞습니다.', difficulty:'medium' },
+      { number:9, type:'SHORT_ANSWER', question:'형태소 "먹었다"를 분석하세요 (형태소 수).', answer:'3', explanation:'먹-(어근)+-었-(선어말어미)+-다(종결어미) = 3개', difficulty:'medium' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'"은유법"이 사용된 것은?', options:['"내 마음은 호수요"','"마치 거울 같은 호수"','"호수가 웃는다"','"호수는 매우 깊다"'], answer:0, explanation:'"A는 B이다" 형식의 은유법입니다. "마치~같은"은 직유법.', difficulty:'medium' },
+
+      // ── 심화: 복합 추론/다단계 분석 ──
+      { number:11, type:'MULTIPLE_CHOICE', question:'다음 중 "이중 모음"에 해당하지 않는 것은?', options:['ㅘ','ㅚ','ㅏ','ㅢ'], answer:2, explanation:'ㅏ는 단모음입니다. ㅘ(ㅗ+ㅏ), ㅚ(ㅗ+ㅣ), ㅢ(ㅡ+ㅣ)는 이중모음.', difficulty:'hard' },
+      { number:12, type:'SHORT_ANSWER', question:'"봄이 오면 꽃이 핀다"에서 종속절을 쓰세요.', answer:'봄이 오면', explanation:'"봄이 오면"은 조건의 종속절(부사절)입니다.', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', question:'다음 중 "피동 표현"은?', options:['철수가 밥을 먹는다','꽃이 바람에 꺾였다','나는 학교에 간다','그는 노래를 부른다'], answer:1, explanation:'"꺾였다"는 피동 표현(-이-+었)입니다.', difficulty:'hard' },
+      { number:14, type:'MULTIPLE_CHOICE', question:'"높다→높이, 넓다→넓이"에서 공통적으로 일어나는 단어 형성 방법은?', options:['합성','파생 (접미사)','준말 만들기','어근 교체'], answer:1, explanation:'형용사 어근 + 접미사 "-이"로 명사가 만들어지는 파생법입니다.', difficulty:'hard' },
+      { number:15, type:'MULTIPLE_CHOICE', question:'"아침 이슬처럼 맑은 네 눈동자"에서 사용된 표현법을 모두 고르면?', options:['직유법만','직유법+은유법','직유법+영탄법','은유법+의인법'], answer:0, explanation:'"~처럼"은 직유법이며, 눈동자를 이슬에 비유한 것입니다.', difficulty:'hard' },
     ],
     '영어': [
+      // ── 기본: 단어/기초 문법 ──
       { number:1, type:'MULTIPLE_CHOICE', question:'"The book ___ on the table when I came back."', options:['is','was','were','been'], answer:1, explanation:'과거 시점 → was', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'"I wish I ___ a bird."', options:['am','was','were','be'], answer:2, explanation:'가정법 과거: I wish + were', difficulty:'medium' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'"She asked me ___ I was from."', options:['what','where','who','which'], answer:1, explanation:'출신지를 묻는 간접의문문 → where', difficulty:'medium' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'"He ___ English for 5 years."', options:['study','studies','has studied','studied'], answer:2, explanation:'for 5 years → 현재완료(has studied)', difficulty:'medium' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'"분사"의 종류 2가지는?', options:['현재분사, 과거분사','동명사, 부정사','능동, 피동','주격, 목적격'], answer:0, explanation:'분사: 현재분사(-ing), 과거분사(-ed/p.p.)', difficulty:'easy' },
-      { number:6, type:'MULTIPLE_CHOICE', question:'"The man ___ is tall is my father." (관계대명사)', options:['who','which','what','whom'], answer:0, explanation:'사람 선행사 + 주격 관계대명사 = who', difficulty:'medium' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'"If I had studied harder, I ___ the exam." (가정법 과거완료)', options:['will pass','would pass','would have passed','had passed'], answer:2, explanation:'가정법 과거완료: would have + p.p.', difficulty:'hard' },
-      { number:8, type:'SHORT_ANSWER', question:'"too ~ to" 구문을 "so ~ that"으로 바꿀 수 있습니다. "He is too young to drive."를 바꾸세요.', answer:'He is so young that he cannot drive.', explanation:'too~to = so~that+cannot', difficulty:'hard' },
-      { number:9, type:'SHORT_ANSWER', question:'"write"의 과거분사를 쓰세요.', answer:'written', explanation:'write-wrote-written', difficulty:'medium' },
-      { number:10, type:'MULTIPLE_CHOICE', question:'"Neither A nor B" 구문의 동사 수일치는?', options:['항상 단수','항상 복수','A에 일치','B에 일치'], answer:3, explanation:'Neither A nor B에서 동사는 B에 수일치', difficulty:'hard' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'"분사"의 종류 2가지는?', options:['현재분사, 과거분사','동명사, 부정사','능동, 피동','주격, 목적격'], answer:0, explanation:'분사: 현재분사(-ing), 과거분사(-ed/p.p.)', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'"He ___ English for 5 years."', options:['study','studies','has studied','studied'], answer:2, explanation:'for 5 years → 현재완료(has studied)', difficulty:'easy' },
+      { number:4, type:'SHORT_ANSWER', question:'"write"의 과거분사를 쓰세요.', answer:'written', explanation:'write-wrote-written', difficulty:'easy' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'"The man ___ is tall is my father." (관계대명사)', options:['who','which','what','whom'], answer:0, explanation:'사람 선행사 + 주격 관계대명사 = who', difficulty:'easy' },
+
+      // ── 보통: 문법 적용 + 짧은 독해 ──
+      { number:6, type:'MULTIPLE_CHOICE', question:'"I wish I ___ a bird."', options:['am','was','were','be'], answer:2, explanation:'가정법 과거: I wish + were', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'"She asked me ___ I was from."', options:['what','where','who','which'], answer:1, explanation:'출신지를 묻는 간접의문문 → where', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'Plastic pollution has become one of the most pressing environmental issues. Every year, approximately 8 million tons of plastic end up in the ocean, harming marine life and entering the food chain.',
+        question:'이 글의 주제로 가장 적절한 것은?',
+        options:['해양 생물의 종류','플라스틱 오염의 심각성','음식물 쓰레기 문제','재활용 방법'],
+        answer:1, explanation:'매년 800만 톤의 플라스틱이 해양에 유입되는 오염 문제를 다룹니다.' },
+      { number:9, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'The marshmallow experiment, conducted at Stanford University, tested children\'s ability to delay gratification. Children who waited for a second marshmallow were found to have better life outcomes years later.',
+        question:'"delay gratification"의 의미로 적절한 것은?',
+        options:['즉시 보상을 받는 것','만족을 지연시키는 것','보상을 거부하는 것','다른 사람에게 양보하는 것'],
+        answer:1, explanation:'즉각적 보상을 참고 기다려 더 큰 보상을 얻는 것입니다.' },
+
+      // ── 심화: 복합 문법 + 장문 독해 추론 ──
+      { number:10, type:'MULTIPLE_CHOICE', question:'"If I had studied harder, I ___ the exam." (가정법 과거완료)', options:['will pass','would pass','would have passed','had passed'], answer:2, explanation:'가정법 과거완료: would have + p.p.', difficulty:'hard' },
+      { number:11, type:'SHORT_ANSWER', question:'"too ~ to" 구문을 "so ~ that"으로 바꾸세요. "He is too young to drive."', answer:'He is so young that he cannot drive.', explanation:'too~to = so~that+cannot', difficulty:'hard' },
+      { number:12, type:'MULTIPLE_CHOICE', question:'"Neither A nor B" 구문의 동사 수일치는?', options:['항상 단수','항상 복수','A에 일치','B에 일치'], answer:3, explanation:'Neither A nor B에서 동사는 B에 수일치', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'The bystander effect suggests that individuals are less likely to offer help in an emergency when other people are present. The diffusion of responsibility means each bystander assumes someone else will act. Psychologists Darley and Latané demonstrated this after the murder of Kitty Genovese, where allegedly 38 witnesses failed to intervene. However, recent research has challenged the accuracy of the original account, suggesting that fewer witnesses were actually aware of the event.',
+        question:'이 글의 내용과 일치하는 것은?',
+        options:['방관자 효과는 최근에 반증되었다','38명의 목격자 이야기는 정확하지 않을 수 있다','사람이 많을수록 도움 행동이 증가한다','책임 분산은 긍정적 효과를 낳는다'],
+        answer:1, explanation:'최근 연구가 원래 보고(38명 목격자)의 정확성에 의문을 제기했습니다.' },
+      { number:14, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'Neuroplasticity refers to the brain\'s ability to reorganize itself by forming new neural connections throughout life. This ability is not limited to childhood; adults can also develop new skills and recover from brain injuries thanks to neuroplasticity. However, the rate of change decreases with age, making early intervention crucial for developmental disorders.',
+        question:'빈칸에 가장 적절한 것은? "Neuroplasticity demonstrates that the brain is not ___ but can change throughout our lives."',
+        options:['flexible','static','powerful','complex'],
+        answer:1, explanation:'뇌가 고정적(static)이 아니라 변화할 수 있다는 것이 요지입니다.' },
     ],
     '수학': [
       { number:1, type:'MULTIPLE_CHOICE', question:'이차방정식 x²-5x+6=0의 해는?', options:['x=1, x=6','x=2, x=3','x=-2, x=-3','x=1, x=5'], answer:1, explanation:'(x-2)(x-3)=0 → x=2, x=3', difficulty:'easy' },
@@ -229,6 +312,18 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:9, type:'SHORT_ANSWER', question:'이차방정식 x²-9=0의 해를 구하세요 (양수).', answer:'3', explanation:'x²=9 → x=±3, 양수는 3', difficulty:'easy' },
       { number:10, type:'SHORT_ANSWER', question:'cos60°= ?', answer:'1/2', explanation:'cos60°=1/2', difficulty:'hard' },
     ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'Python에서 클래스를 정의할 때 사용하는 키워드는?', options:['def','class','struct','object'], answer:1, explanation:'class 키워드로 클래스를 정의합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'다음 중 Python의 자료구조가 아닌 것은?', options:['list','tuple','dictionary','array'], answer:3, explanation:'Python 기본 자료구조는 list, tuple, dict, set입니다. array는 별도 모듈이 필요합니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'시간 복잡도 O(n)이란?', options:['입력 크기와 상관없이 일정한 시간','입력 크기에 비례하는 시간','입력 크기의 제곱에 비례','로그에 비례하는 시간'], answer:1, explanation:'O(n)은 입력 크기 n에 비례하여 실행 시간이 증가합니다.', difficulty:'medium' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'정렬 알고리즘 중 평균 시간복잡도가 O(n log n)인 것은?', options:['버블 정렬','선택 정렬','퀵 정렬','삽입 정렬'], answer:2, explanation:'퀵 정렬의 평균 시간복잡도는 O(n log n)입니다.', difficulty:'medium' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'스택(Stack)의 특징은?', options:['선입선출(FIFO)','후입선출(LIFO)','랜덤 접근','양방향 접근'], answer:1, explanation:'스택은 나중에 넣은 것을 먼저 꺼내는 LIFO 구조입니다.', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\ndef fib(n):\n    if n <= 1: return n\n    return fib(n-1) + fib(n-2)\nprint(fib(6))', options:['5','8','13','21'], answer:1, explanation:'피보나치: 0,1,1,2,3,5,8 → fib(6)=8', difficulty:'hard' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'이진 탐색(Binary Search)의 전제 조건은?', options:['데이터가 정렬되어 있어야 한다','데이터가 짝수개여야 한다','리스트만 사용 가능하다','데이터가 10개 이상이어야 한다'], answer:0, explanation:'이진 탐색은 정렬된 데이터에서만 사용 가능합니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'Git에서 변경사항을 저장하는 명령어는?', options:['git push','git commit','git pull','git clone'], answer:1, explanation:'git commit은 변경사항을 로컬 저장소에 저장합니다.', difficulty:'easy' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'다음 코드에서 result의 값은?\ndef solve(arr):\n    result = []\n    for x in arr:\n        if x not in result:\n            result.append(x)\n    return result\nprint(solve([1,2,2,3,3,3,4]))', options:['[1,2,3,4]','[1,2,2,3,3,3,4]','[2,3]','[1,4]'], answer:0, explanation:'중복을 제거하고 고유한 값만 남깁니다: [1,2,3,4]', difficulty:'hard' },
+      { number:10, type:'SHORT_ANSWER', question:'10개의 정렬된 데이터에서 이진 탐색으로 값을 찾을 때 최대 비교 횟수는?', answer:'4', explanation:'⌈log₂10⌉ = 4번. 10→5→3→2→1', difficulty:'hard' },
+    ],
   },
 
   // ══════════════════════════════════════════════
@@ -236,28 +331,62 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
   // ══════════════════════════════════════════════
   'HIGH_1': {
     '국어': [
+      // ── 기본: 단순 암기/용어 확인 ──
       { number:1, type:'MULTIPLE_CHOICE', question:'다음 중 "화법"에 해당하는 것은?', options:['글쓰기','발표와 토론','독서','문법 분석'], answer:1, explanation:'화법은 말하기와 듣기입니다.', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'"봄봄" (김유정)의 서술 시점은?', options:['1인칭 관찰자','1인칭 주인공','3인칭 전지적','3인칭 관찰자'], answer:1, explanation:'1인칭 주인공 시점입니다.', difficulty:'medium' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'다음 중 현대시에서 "심상"의 종류가 아닌 것은?', options:['시각적 심상','청각적 심상','미각적 심상','논리적 심상'], answer:3, explanation:'심상은 감각적 이미지입니다.', difficulty:'medium' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'다음 형태소 분석에서 "먹었다"의 형태소 개수는?', options:['1개','2개','3개','4개'], answer:2, explanation:'먹-+-었-+-다 = 3개', difficulty:'hard' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'"갈래"에 따른 문학 분류에서, "수필"이 속하는 갈래는?', options:['서정','서사','교술','극'], answer:2, explanation:'수필은 교술 갈래입니다.', difficulty:'medium' },
-      { number:6, type:'MULTIPLE_CHOICE', question:'다음 중 음운 변동의 예로 올바른 것은?', options:['"국물"→[궁물]은 비음화','"같이"→[가치]는 구개음화','"꽃잎"→[꼰닙]은 된소리되기','"밥물"→[밤물]은 유음화'], answer:0, explanation:'ㄱ+ㅁ→ㅇ+ㅁ 비음화', difficulty:'hard' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'다음 중 "매체 언어"의 특성이 아닌 것은?', options:['복합 양식성','상호작용성','일방향성','즉시성'], answer:2, explanation:'매체 언어는 쌍방향적입니다.', difficulty:'medium' },
-      { number:8, type:'SHORT_ANSWER', question:'비문학에서 두 대상의 공통점과 차이점을 제시하는 방법은?', answer:'비교와 대조', explanation:'비교(공통점)와 대조(차이점)', difficulty:'easy' },
-      { number:9, type:'SHORT_ANSWER', question:'문학의 기능 중, 독자에게 즐거움을 주는 기능은?', answer:'쾌락적 기능', explanation:'문학의 기능: 쾌락적, 교훈적, 인식적', difficulty:'hard' },
-      { number:10, type:'SHORT_ANSWER', question:'"윤동주"의 대표 시 제목을 쓰세요.', answer:'서시', explanation:'"죽는 날까지 하늘을 우러러..."', difficulty:'medium' },
+      { number:2, type:'SHORT_ANSWER', question:'비문학에서 두 대상의 공통점과 차이점을 제시하는 방법은?', answer:'비교와 대조', explanation:'비교(공통점)와 대조(차이점)', difficulty:'easy' },
+      { number:3, type:'SHORT_ANSWER', question:'"윤동주"의 대표 시 제목을 쓰세요.', answer:'서시', explanation:'"죽는 날까지 하늘을 우러러..."', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'다음 중 현대시에서 "심상"의 종류가 아닌 것은?', options:['시각적 심상','청각적 심상','미각적 심상','논리적 심상'], answer:3, explanation:'심상은 감각적 이미지입니다. 논리적 심상은 없습니다.', difficulty:'easy' },
+
+      // ── 보통: 개념 적용/분석 ──
+      { number:5, type:'MULTIPLE_CHOICE', question:'"봄봄" (김유정)의 서술 시점은?', options:['1인칭 관찰자','1인칭 주인공','3인칭 전지적','3인칭 관찰자'], answer:1, explanation:'1인칭 주인공 시점으로 "나"가 직접 겪는 이야기입니다.', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'"갈래"에 따른 문학 분류에서, "수필"이 속하는 갈래는?', options:['서정','서사','교술','극'], answer:2, explanation:'수필은 교술 갈래입니다.', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'다음 중 "매체 언어"의 특성이 아닌 것은?', options:['복합 양식성','상호작용성','일방향성','즉시성'], answer:2, explanation:'매체 언어는 쌍방향적(상호작용적)입니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'"은유법"과 "직유법"의 차이는?', options:['은유는 "A는 B다", 직유는 "A는 B같다"','둘 다 같은 표현법이다','직유는 과장법의 일종이다','은유는 산문에서만 쓴다'], answer:0, explanation:'은유법은 직접 동일시(A=B), 직유법은 비교 표지 사용(~처럼, ~같이).', difficulty:'medium' },
+      { number:9, type:'SHORT_ANSWER', question:'문학의 기능 중, 독자에게 즐거움을 주는 기능은?', answer:'쾌락적 기능', explanation:'문학의 기능: 쾌락적, 교훈적, 인식적', difficulty:'medium' },
+
+      // ── 심화: 다단계 분석/적용 ──
+      { number:10, type:'MULTIPLE_CHOICE', question:'다음 중 음운 변동의 예로 올바른 것은?', options:['"국물"→[궁물]은 비음화','"같이"→[가치]는 구개음화','"꽃잎"→[꼰닙]은 된소리되기','"밥물"→[밤물]은 유음화'], answer:0, explanation:'ㄱ+ㅁ→ㅇ+ㅁ 비음화. "같이"→[가치]는 구개음화가 맞음.', difficulty:'hard' },
+      { number:11, type:'MULTIPLE_CHOICE', question:'다음 형태소 분석에서 "먹었다"의 형태소 개수는?', options:['1개','2개','3개','4개'], answer:2, explanation:'먹-(어근)+-었-(선어말어미)+-다(종결어미) = 3개', difficulty:'hard' },
+      { number:12, type:'MULTIPLE_CHOICE', question:'"같이"→[가치]에서 일어나는 음운 변동은?', options:['비음화','유음화','구개음화','된소리되기'], answer:2, explanation:'ㄱ+이→ㅈ+이 구개음화(형태소 경계에서 ㄷ,ㅌ이 ㅈ,ㅊ으로 변함). "같이"의 경우 ㅌ→ㅊ.', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', question:'"사랑하는 나의 하나님, 당신은 / 늙은 비애다"(서정주)에서 사용된 표현법을 모두 고르면?', options:['직유법만','은유법만','은유법+도치법','직유법+역설법'], answer:2, explanation:'"하나님=늙은 비애"는 은유법, "사랑하는~당신은"이 도치된 구조입니다.', difficulty:'hard' },
+      { number:14, type:'MULTIPLE_CHOICE', question:'"놀부전"에서 놀부가 박을 타자 재앙이 쏟아지는 장면의 기능은?', options:['단순 재미','인과응보의 주제 강화','시간적 배경 제시','인물 심리 묘사'], answer:1, explanation:'탐욕에 대한 징벌로 인과응보 주제를 강화하는 기능입니다.', difficulty:'hard' },
     ],
     '영어': [
-      { number:1, type:'MULTIPLE_CHOICE', question:'"If I ___ rich, I would travel the world."', options:['am','was','were','be'], answer:2, explanation:'가정법 과거: were', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'관계부사 "where"을 쓸 수 있는 선행사는?', options:['시간','장소','이유','방법'], answer:1, explanation:'where = 장소 선행사', difficulty:'medium' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'"Not only A but also B"의 뜻은?', options:['A뿐만 아니라 B도','A가 아니라 B','A 또는 B','A와 B 둘 다 아닌'], answer:0, explanation:'A뿐만 아니라 B도', difficulty:'easy' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'"The building ___ in 1990."', options:['built','was built','is built','has built'], answer:1, explanation:'수동태 과거: was built', difficulty:'medium' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'"분사구문"이란?', options:['명사를 수식하는 구문','부사절을 줄인 구문','형용사를 강조하는 구문','의문문을 만드는 구문'], answer:1, explanation:'분사구문 = 부사절 축약', difficulty:'medium' },
-      { number:6, type:'MULTIPLE_CHOICE', question:'"I regret ___ that." (과거의 행동 후회)', options:['say','to say','saying','said'], answer:2, explanation:'regret + ~ing = 과거 행동 후회', difficulty:'hard' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'5형식 "I found the book interesting."에서 interesting의 역할은?', options:['주어','목적어','목적격 보어','부사'], answer:2, explanation:'S+V+O+OC → interesting = 목적격 보어', difficulty:'hard' },
-      { number:8, type:'SHORT_ANSWER', question:'"She has been studying for 3 hours."의 시제를 쓰세요.', answer:'현재완료진행', explanation:'has been ~ing = 현재완료진행', difficulty:'medium' },
-      { number:9, type:'SHORT_ANSWER', question:'"가정법 현재: It is important that he ___ hard." 빈칸을 쓰세요.', answer:'study', explanation:'that절에서 동사원형 사용', difficulty:'hard' },
-      { number:10, type:'SHORT_ANSWER', question:'"강조구문: I met Tom yesterday."에서 Tom을 강조하세요.', answer:'It is Tom that I met yesterday.', explanation:'It is/was ~ that 강조구문', difficulty:'hard' },
+      // ── 기본: 핵심 문법/어휘 확인 ──
+      { number:1, type:'MULTIPLE_CHOICE', question:'"Not only A but also B"의 뜻은?', options:['A뿐만 아니라 B도','A가 아니라 B','A 또는 B','A와 B 둘 다 아닌'], answer:0, explanation:'A뿐만 아니라 B도', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'관계부사 "where"을 쓸 수 있는 선행사는?', options:['시간','장소','이유','방법'], answer:1, explanation:'where = 장소 선행사', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'"If I ___ rich, I would travel the world."', options:['am','was','were','be'], answer:2, explanation:'가정법 과거: were (be동사는 주어에 관계없이 were)', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'"분사구문"이란?', options:['명사를 수식하는 구문','부사절을 줄인 구문','형용사를 강조하는 구문','의문문을 만드는 구문'], answer:1, explanation:'분사구문 = 부사절 축약', difficulty:'easy' },
+
+      // ── 보통: 문법 적용 + 짧은 독해 ──
+      { number:5, type:'MULTIPLE_CHOICE', question:'"The building ___ in 1990."', options:['built','was built','is built','has built'], answer:1, explanation:'수동태 과거: was built', difficulty:'medium' },
+      { number:6, type:'SHORT_ANSWER', question:'"She has been studying for 3 hours."의 시제를 쓰세요.', answer:'현재완료진행', explanation:'has been ~ing = 현재완료진행', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'Sleep plays a crucial role in memory consolidation. During deep sleep, the brain replays experiences from the day, strengthening neural connections and transferring information from short-term to long-term memory.',
+        question:'이 글에 따르면 깊은 수면 중 뇌는 무엇을 하는가?',
+        options:['새로운 정보를 학습한다','낮의 경험을 재생하며 기억을 강화한다','단기 기억을 삭제한다','운동 능력을 향상시킨다'],
+        answer:1, explanation:'깊은 수면 중 뇌가 경험을 재생(replay)하며 기억을 강화합니다.' },
+      { number:8, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'The anchoring effect is a cognitive bias where people rely too heavily on the first piece of information they encounter. For example, if a shirt is initially priced at $100 but marked down to $50, people perceive it as a better deal than if it had always been priced at $50.',
+        question:'"anchoring effect"의 핵심은?',
+        options:['첫 번째 정보가 이후 판단에 과도한 영향을 미침','가격이 낮을수록 좋은 거래','사람들은 항상 합리적 판단을 함','할인은 항상 좋은 것'],
+        answer:0, explanation:'처음 접한 정보(앵커)가 이후 판단에 과도한 영향을 미치는 인지 편향입니다.' },
+
+      // ── 심화: 복합 문법 + 장문 독해 ──
+      { number:9, type:'MULTIPLE_CHOICE', question:'"I regret ___ that." (과거의 행동 후회)', options:['say','to say','saying','said'], answer:2, explanation:'regret + ~ing = 과거 행동 후회 / regret + to = 지금 유감', difficulty:'hard' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'5형식 "I found the book interesting."에서 interesting의 역할은?', options:['주어','목적어','목적격 보어','부사'], answer:2, explanation:'S+V+O+OC → interesting = 목적격 보어', difficulty:'hard' },
+      { number:11, type:'SHORT_ANSWER', question:'"가정법 현재: It is important that he ___ hard." 빈칸을 쓰세요.', answer:'study', explanation:'that절에서 동사원형 사용 (가정법 현재)', difficulty:'hard' },
+      { number:12, type:'SHORT_ANSWER', question:'"강조구문: I met Tom yesterday."에서 Tom을 강조하세요.', answer:'It is Tom that I met yesterday.', explanation:'It is/was ~ that 강조구문', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'The Flynn effect describes the substantial and sustained increase in IQ scores throughout the 20th century. However, recent studies in some countries suggest that this trend may be reversing. Possible explanations include changes in education systems, nutrition, and the increasing influence of technology on cognitive development. Some researchers argue that while certain types of intelligence are declining, others—particularly those related to technology use—may be increasing.',
+        question:'이 글을 통해 추론할 수 있는 것은?',
+        options:['IQ 점수는 항상 상승한다','플린 효과는 모든 나라에서 역전되었다','지능의 유형에 따라 변화 양상이 다를 수 있다','기술 발전은 모든 유형의 지능을 감소시킨다'],
+        answer:2, explanation:'일부 지능은 감소하고 기술 관련 지능은 증가할 수 있다는 내용입니다.' },
+      { number:14, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'Social loafing occurs when individuals put in less effort when working in a group compared to working alone. This phenomenon increases with group size and decreases when individual contributions are identifiable. Strategies to reduce social loafing include making tasks more engaging, assigning specific responsibilities, and establishing accountability mechanisms.',
+        question:'빈칸에 적절한 것은? "Social loafing can be reduced when individual contributions are ___."',
+        options:['anonymous','ignored','identifiable','equal'],
+        answer:2, explanation:'개인의 기여가 식별 가능(identifiable)할 때 사회적 태만이 줄어듭니다.' },
     ],
     '수학': [
       { number:1, type:'MULTIPLE_CHOICE', question:'(x+2)(x-3)을 전개하면?', options:['x²-x-6','x²+x-6','x²-x+6','x²+x+6'], answer:0, explanation:'x²-3x+2x-6=x²-x-6', difficulty:'easy' },
@@ -271,147 +400,174 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
       { number:9, type:'SHORT_ANSWER', question:'x²+5x+6을 인수분해하세요.', answer:'(x+2)(x+3)', explanation:'합5, 곱6 → 2, 3', difficulty:'easy' },
       { number:10, type:'SHORT_ANSWER', question:'|x-3|=5의 해를 모두 구하세요 (작은 수부터).', answer:'-2, 8', explanation:'x-3=5→x=8, x-3=-5→x=-2', difficulty:'hard' },
     ],
+    '코딩': [
+      { number:1, type:'MULTIPLE_CHOICE', question:'Python에서 예외 처리에 사용하는 구문은?', options:['if-else','for-in','try-except','while-do'], answer:2, explanation:'try-except 구문으로 예외를 처리합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'객체지향 프로그래밍(OOP)의 4대 특성이 아닌 것은?', options:['캡슐화','상속','다형성','반복성'], answer:3, explanation:'OOP 4대 특성: 캡슐화, 상속, 다형성, 추상화', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'배열 [5,3,8,1,9,2]를 버블 정렬 1회전 후 가장 뒤로 가는 값은?', options:['5','9','2','8'], answer:1, explanation:'버블 정렬 1회전에서 가장 큰 값 9가 맨 뒤로 이동합니다.', difficulty:'medium' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'자바스크립트에서 === 과 == 의 차이는?', options:['같은 의미','===는 타입까지 비교, ==는 값만 비교','===는 값만, ==는 타입까지','문법 오류'], answer:1, explanation:'===는 엄격 비교(타입+값), ==는 느슨한 비교(값만)입니다.', difficulty:'medium' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'연결 리스트(Linked List)와 배열(Array)의 차이로 틀린 것은?', options:['배열은 인덱스로 O(1) 접근','연결 리스트는 삽입/삭제가 O(1)','배열은 크기가 고정적','연결 리스트는 인덱스 접근이 O(1)'], answer:3, explanation:'연결 리스트는 순차 접근이라 인덱스 접근이 O(n)입니다.', difficulty:'medium' },
+      { number:6, type:'MULTIPLE_CHOICE', question:'다음 코드의 시간 복잡도는?\nfor i in range(n):\n    for j in range(n):\n        print(i, j)', options:['O(n)','O(n log n)','O(n²)','O(2ⁿ)'], answer:2, explanation:'이중 반복문으로 n×n번 실행 → O(n²)', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'다음 코드의 결과는?\nclass Dog:\n    def __init__(self, name):\n        self.name = name\n    def bark(self):\n        return f"{self.name}: 멍멍!"\nd = Dog("바둑이")\nprint(d.bark())', options:['"멍멍!"','"바둑이"','"바둑이: 멍멍!"','오류'], answer:2, explanation:'self.name="바둑이"이므로 "바둑이: 멍멍!" 출력', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'HTTP 상태 코드 404는 무엇을 의미하나요?', options:['요청 성공','서버 오류','페이지를 찾을 수 없음','권한 없음'], answer:2, explanation:'404 = Not Found (페이지를 찾을 수 없음)', difficulty:'easy' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'BFS(너비 우선 탐색)에서 사용하는 자료구조는?', options:['스택','큐','힙','트리'], answer:1, explanation:'BFS는 큐(Queue)를 사용하여 너비 우선으로 탐색합니다.', difficulty:'hard' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\ndef merge_sort_count(arr):\n    if len(arr) <= 1: return arr, 0\n    mid = len(arr)//2\n    left, lc = merge_sort_count(arr[:mid])\n    right, rc = merge_sort_count(arr[mid:])\n    # merge 과정 생략...\nprint(merge_sort_count([3,1,4,1,5])[1])\n이 코드에서 분할(divide)이 일어나는 최대 깊이는?', options:['1','2','3','4'], answer:2, explanation:'5→(3,2)→(2,1)(1,1)→(1,1) 최대 깊이 3단계', difficulty:'hard' },
+      { number:11, type:'MULTIPLE_CHOICE', question:'동적 프로그래밍(DP)을 사용하는 가장 큰 이유는?', options:['코드가 짧아서','중복 계산을 피하기 위해','메모리를 많이 쓰기 위해','정렬을 위해'], answer:1, explanation:'DP는 중복되는 부분 문제의 결과를 저장하여 재계산을 방지합니다.', difficulty:'hard' },
+      { number:12, type:'SHORT_ANSWER', question:'시간 복잡도에서 O(1)은 무엇을 의미하나요?', answer:'상수 시간', explanation:'O(1)은 입력 크기에 관계없이 일정한 시간이 걸립니다.', difficulty:'easy' },
+    ],
   },
 
   // ══════════════════════════════════════════════
-  //  고등학교 3학년 (수능 대비) — 대폭 확장
+  //  고등학교 3학년 (수능 대비) — 난이도 확실히 차등
+  //  easy = 개념 확인/공식 대입 1단계
+  //  medium = 2~3단계 풀이, 분석 필요
+  //  hard = 수능 킬러급 4단계+, 복합 추론
   // ══════════════════════════════════════════════
   'HIGH_3': {
     '국어': [
-      { number:1, type:'MULTIPLE_CHOICE', question:'수능 국어에서 "화작문"이 의미하는 것은?', options:['화법과 작문','화학과 문학','화법과 문법','화학과 문법'], answer:0, explanation:'화작문 = 화법과 작문', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'비문학 지문에서 "역접" 접속어는?', options:['그리고','따라서','하지만','예를 들어'], answer:2, explanation:'"하지만"은 역접입니다.', difficulty:'easy' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'다음 중 "음운의 축약"에 해당하는 것은?', options:['놓다→[노타]','국물→[궁물]','굳이→[구지]','좋다→[조타]'], answer:3, explanation:'ㅎ+ㄷ→ㅌ 거센소리되기(축약)', difficulty:'medium' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'고전소설 "홍길동전"의 작가는?', options:['김시습','허균','박지원','정약용'], answer:1, explanation:'허균 작, 최초의 한글 소설', difficulty:'easy' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'수능 언어에서 "형태소"의 정의는?', options:['뜻을 가진 가장 작은 단위','소리의 최소 단위','문장의 최소 단위','단어의 최소 단위'], answer:0, explanation:'형태소 = 뜻의 최소 단위', difficulty:'medium' },
-      { number:6, type:'MULTIPLE_CHOICE', question:'수능 독서에서 "추론적 읽기"란?', options:['직접 나타난 정보만 파악','나타나지 않은 내용을 짐작','형식만 분석','오류를 찾는 것'], answer:1, explanation:'추론적 읽기 = 문맥에서 짐작', difficulty:'medium' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'"사미인곡"의 작가는?', options:['윤선도','정철','이황','이이'], answer:1, explanation:'정철(호: 송강)의 가사', difficulty:'medium' },
-      { number:8, type:'MULTIPLE_CHOICE', question:'수능 비문학에서 "전제"란?', options:['글의 결론','주장의 근거가 되는 가정','예시 자료','반론'], answer:1, explanation:'전제 = 주장의 바탕이 되는 가정', difficulty:'hard' },
-      { number:9, type:'MULTIPLE_CHOICE', question:'"님의 침묵"(한용운)에서 "님"이 상징하는 것은?', options:['연인만','조국/절대적 가치','친구','부모'], answer:1, explanation:'"님"은 조국, 불교적 절대 가치 등 다의적 상징입니다.', difficulty:'hard' },
-      { number:10, type:'MULTIPLE_CHOICE', question:'고전문학에서 "가사"의 형식은?', options:['3·4조 연속체','4·4조 연속체','자유시','시조 형식'], answer:1, explanation:'가사는 4·4조(또는 3·4조) 연속체입니다.', difficulty:'hard' },
-      { number:11, type:'SHORT_ANSWER', question:'수능 문학에서 외적 준거에 의한 감상이란?', answer:'작품 외부의 사회 역사적 맥락으로 감상하는 것', explanation:'외적 준거: 작가론, 반영론, 수용론', difficulty:'hard' },
-      { number:12, type:'SHORT_ANSWER', question:'김소월의 "진달래꽃" 화자의 정서를 한 단어로?', answer:'이별', explanation:'임과의 이별을 노래한 시', difficulty:'medium' },
+      // ── 기본: 단순 암기/개념 확인 ──
+      { number:1, type:'MULTIPLE_CHOICE', question:'"홍길동전"의 작가는?', options:['김시습','허균','박지원','정약용'], answer:1, explanation:'허균 작, 최초의 한글 소설', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'비문학에서 "역접" 접속어는?', options:['그리고','따라서','하지만','예를 들어'], answer:2, explanation:'"하지만"은 역접 접속어입니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'시조의 형식은?', options:['초장-중장-종장','서론-본론-결론','기-승-전-결','발단-전개-위기-절정-결말'], answer:0, explanation:'시조는 초장-중장-종장 3장 구조입니다.', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'김소월 "진달래꽃"의 정서는?', options:['기쁨','분노','이별의 슬픔','공포'], answer:2, explanation:'임과의 이별을 노래한 시입니다.', difficulty:'easy' },
+      { number:5, type:'SHORT_ANSWER', question:'"형태소"의 정의를 쓰세요.', answer:'뜻을 가진 가장 작은 단위', explanation:'형태소 = 의미의 최소 단위', difficulty:'easy' },
+
+      // ── 보통: 개념 적용, 분석 필요 ──
+      { number:6, type:'MULTIPLE_CHOICE', question:'다음 중 "음운의 축약"에 해당하는 것은?', options:['놓다→[노타]','국물→[궁물]','굳이→[구지]','좋다→[조타]'], answer:3, explanation:'ㅎ+ㄷ→ㅌ 거센소리되기(축약)', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'"사미인곡"(정철)에 나타난 표현법은?', options:['직유법','풍자','충신연주지사(임금을 연인에 비유)','역설법'], answer:2, explanation:'임금에 대한 그리움을 연인과의 이별로 비유한 충신연주지사입니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'"먹었다"의 형태소 분석으로 올바른 것은?', options:['먹었다(1개)','먹-+-었다(2개)','먹-+-었-+-다(3개)','ㅁ-+-ㅓ-+-ㄱ-+-었-+-다(5개)'], answer:2, explanation:'먹-(어근)+-었-(선어말어미)+-다(종결어미) = 3개', difficulty:'medium' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'수능 비문학에서 "전제"와 "결론"의 관계는?', options:['전제가 결론을 뒷받침한다','결론이 전제를 부정한다','전제와 결론은 무관하다','전제가 결론보다 먼저 나올 수 없다'], answer:0, explanation:'논증에서 전제는 결론을 뒷받침하는 근거입니다.', difficulty:'medium' },
+      { number:10, type:'SHORT_ANSWER', question:'"님의 침묵"(한용운)에서 "님"이 상징하는 대상 2가지를 쓰세요.', answer:'조국, 부처', explanation:'"님"은 조국, 부처(절대적 가치) 등 다의적 상징입니다.', difficulty:'medium' },
+
+      // ── 심화: 수능 실전형 복합 문제 ──
+      { number:11, type:'MULTIPLE_CHOICE', question:'다음 중 <보기>의 음운 변동이 모두 일어나는 단어는?\n<보기> 비음화, 된소리되기', options:['국물[궁물]','법도[법또]','한글[한글]','닭볶음탕[닥뽁끔탕]'], answer:3, explanation:'"닭볶음탕"에서 ㄺ→ㄱ(자음군단순화), ㄱ+ㅂ→ㅇ+ㅂ(비음화), ㅂ+ㄱ→ㅂ+ㄲ(된소리되기) 모두 일어납니다.', difficulty:'hard' },
+      { number:12, type:'MULTIPLE_CHOICE', question:'<보기>를 참고할 때, "이 몸이 죽고 죽어 일백 번 고쳐 죽어"(정몽주)에서 화자의 태도와 가장 유사한 것은?', options:['"장진주사" - 술을 마시며 인생을 즐기자','"도산십이곡" - 학문에 정진하자','"단심가" - 충절을 끝까지 지키겠다','"만흥" - 자연 속에서 한가로이 살자'], answer:2, explanation:'정몽주의 단심가와 같이 죽어도 변치 않는 충절을 노래합니다.', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', question:'수능 언어 <보기>: "용언의 활용에서 어간의 끝소리가 바뀌는 것을 불규칙 활용이라 한다." 다음 중 불규칙 활용이 아닌 것은?', options:['돕다→도와','걷다→걸어','먹다→먹어','짓다→지어'], answer:2, explanation:'"먹다→먹어"는 어간 "먹-"이 변하지 않는 규칙 활용입니다.', difficulty:'hard' },
+      { number:14, type:'MULTIPLE_CHOICE', question:'수능 비문학: 어떤 과학 이론이 "반증 가능성"을 갖추어야 과학적이라고 주장한 학자는?', options:['토머스 쿤','칼 포퍼','임레 라카토슈','폴 파이어아벤트'], answer:1, explanation:'칼 포퍼의 반증주의: 과학 이론은 경험적으로 반증 가능해야 합니다.', difficulty:'hard' },
+      { number:15, type:'SHORT_ANSWER', question:'수능 문학에서 "내적 준거"와 "외적 준거" 감상의 차이를 간단히 쓰세요.', answer:'내적 준거는 작품 자체의 요소로, 외적 준거는 작품 밖 맥락으로 감상', explanation:'내적: 작품 구조/표현 분석 / 외적: 작가론, 반영론, 수용론 등', difficulty:'hard' },
     ],
 
-    // ────────── 영어 (독해 + 수능형) ──────────
+    // ────────── 영어 (난이도별 확실히 차등) ──────────
     '영어': [
-      // === 문법/어휘 기본 ===
-      { number:1, type:'MULTIPLE_CHOICE', question:'"Had I known the truth, I would have acted differently." 이 문장의 시제는?', options:['가정법 과거','가정법 과거완료','가정법 미래','가정법 현재'], answer:1, explanation:'Had+S+p.p. = 가정법 과거완료 도치', difficulty:'medium' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'"It goes without saying that ~"의 뜻은?', options:['~이 중요하다','~은 말할 것도 없다','~을 알 수 없다','~은 불가능하다'], answer:1, explanation:'"~은 말할 필요도 없다"', difficulty:'medium' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'"A is to B what C is to D"의 뜻은?', options:['A는 B보다 크다','A:B = C:D 관계','A는 B가 아니라 C이다','A와 D는 같다'], answer:1, explanation:'비례 관계 표현', difficulty:'hard' },
-      { number:4, type:'SHORT_ANSWER', question:'"regardless of"의 뜻을 쓰세요.', answer:'~에 관계없이', explanation:'regardless of = ~에 상관없이', difficulty:'easy' },
-      { number:5, type:'SHORT_ANSWER', question:'"The more you practice, the better you become."의 문법 구조는?', answer:'the 비교급 the 비교급', explanation:'"~할수록 더 ~하다" 구문', difficulty:'medium' },
+      // ── 기본: 단어 뜻, 기초 문법 ──
+      { number:1, type:'MULTIPLE_CHOICE', question:'"regardless of"의 뜻은?', options:['~때문에','~에 관계없이','~에 따라','~덕분에'], answer:1, explanation:'regardless of = ~에 상관없이', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'"alternative"의 뜻은?', options:['대안, 대체의','최종적인','전통적인','필수적인'], answer:0, explanation:'alternative = 대안의, 대체 가능한', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'"on the whole"의 뜻은?', options:['특히','전체적으로','예를 들어','반대로'], answer:1, explanation:'on the whole = 전체적으로, 대체로', difficulty:'easy' },
+      { number:4, type:'SHORT_ANSWER', question:'"as a result"의 뜻을 쓰세요.', answer:'결과적으로', explanation:'as a result = 그 결과', difficulty:'easy' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'"The meeting was canceled ___ the storm."', options:['because','due to','although','despite'], answer:1, explanation:'due to + 명사 = ~때문에', difficulty:'easy' },
 
-      // === 수능형 빈칸추론 ===
-      { number:6, type:'MULTIPLE_CHOICE', question:'수능 영어 빈칸추론에서 가장 중요한 전략은?', options:['문법 분석','단어 암기','문맥 파악','속도 높이기'], answer:2, explanation:'빈칸추론의 핵심은 문맥 파악입니다.', difficulty:'easy' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'수능 영어 문장 삽입 문제의 핵심 단서는?', options:['문장의 길이','지시어와 연결어','단어의 난이도','문법 구조'], answer:1, explanation:'지시어(this, such)와 연결어(however)가 핵심', difficulty:'medium' },
-      { number:8, type:'MULTIPLE_CHOICE', question:'"무관한 문장 찾기"의 핵심 전략은?', options:['가장 긴 문장','주제와 관련 없는 문장','첫 번째 문장','마지막 문장'], answer:1, explanation:'글의 주제에서 벗어난 문장을 찾습니다.', difficulty:'easy' },
-      { number:9, type:'MULTIPLE_CHOICE', question:'수능 영어 "요지 파악"에서 정답 위치는 주로?', options:['글의 처음과 끝','글의 가운데만','마지막 문장만','규칙 없음'], answer:0, explanation:'요지는 대체로 처음이나 끝에 나타납니다.', difficulty:'easy' },
+      // ── 보통: 문법 적용, 짧은 독해 ──
+      { number:6, type:'MULTIPLE_CHOICE', question:'"Had I known the truth, I would have acted differently." 이 문장의 문법은?', options:['가정법 과거','가정법 과거완료','가정법 미래','직설법 과거'], answer:1, explanation:'Had+S+p.p. → 가정법 과거완료 도치 구문', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'"No sooner had I arrived ___ it started to rain."', options:['than','when','before','after'], answer:0, explanation:'No sooner ~ than = ~하자마자', difficulty:'medium' },
+      { number:8, type:'SHORT_ANSWER', question:'"The more you practice, the better you become."의 문법 구조는?', answer:'the 비교급 the 비교급', explanation:'"~할수록 더 ~하다" 구문', difficulty:'medium' },
 
-      // === 독해 지문 - 환경 ===
-      { number:10, type:'MULTIPLE_CHOICE', difficulty:'medium',
-        passage:'The ocean absorbs about 30% of the carbon dioxide produced by humans. While this might seem beneficial for reducing atmospheric CO2, it comes at a great cost. The absorbed CO2 reacts with seawater to form carbonic acid, leading to ocean acidification. This process threatens marine ecosystems, particularly organisms that build shells or skeletons from calcium carbonate, such as corals and mollusks.',
+      { number:9, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'The printing press, invented by Johannes Gutenberg around 1440, transformed European society by making books affordable and widely available. Before its invention, books were hand-copied by monks and were extremely expensive. The printing press democratized knowledge, fueled the Renaissance, and played a key role in the Protestant Reformation.',
         question:'이 글의 주제로 가장 적절한 것은?',
-        options:['해양 생물의 다양성','이산화탄소 배출량 감소','해양의 CO2 흡수로 인한 산성화 문제','산호초 보호 방법'],
-        answer:2, explanation:'바다가 CO2를 흡수하면서 산성화가 진행되고, 이것이 해양 생태계를 위협한다는 내용입니다.' },
+        options:['구텐베르크의 생애','중세 수도원의 역할','인쇄술이 유럽 사회에 미친 영향','르네상스 예술의 발전'],
+        answer:2, explanation:'인쇄술이 지식 민주화, 르네상스, 종교개혁에 미친 영향을 다룹니다.' },
 
-      { number:11, type:'MULTIPLE_CHOICE', difficulty:'hard',
-        passage:'The ocean absorbs about 30% of the carbon dioxide produced by humans. While this might seem beneficial for reducing atmospheric CO2, it comes at a great cost. The absorbed CO2 reacts with seawater to form carbonic acid, leading to ocean acidification. This process threatens marine ecosystems, particularly organisms that build shells or skeletons from calcium carbonate, such as corals and mollusks.',
-        question:'밑줄 친 "it comes at a great cost"에서 "cost"가 의미하는 것은?',
-        options:['경제적 비용','시간적 손실','해양 생태계에 대한 피해','에너지 소비'],
-        answer:2, explanation:'CO2 흡수의 대가로 해양 산성화가 발생하여 생태계가 피해를 입는다는 뜻입니다.' },
-
-      // === 독해 지문 - 심리학 ===
-      { number:12, type:'MULTIPLE_CHOICE', difficulty:'medium',
-        passage:'The Dunning-Kruger effect is a cognitive bias in which people with limited competence in a domain overestimate their own ability. Conversely, experts tend to underestimate their competence, assuming that tasks easy for them are easy for everyone. This asymmetry in self-assessment has significant implications for education, workplace management, and public discourse.',
-        question:'이 글에 따르면, 전문가들은 어떤 경향이 있는가?',
+      { number:10, type:'MULTIPLE_CHOICE', difficulty:'medium',
+        passage:'The Dunning-Kruger effect is a cognitive bias in which people with limited competence overestimate their own ability. Conversely, experts tend to underestimate their competence, assuming that tasks easy for them are easy for everyone.',
+        question:'전문가들은 어떤 경향이 있는가?',
         options:['자신의 능력을 과대평가한다','자신의 능력을 과소평가한다','다른 사람을 무시한다','자신감이 매우 높다'],
-        answer:1, explanation:'전문가는 자신에게 쉬운 것이 모두에게 쉽다고 가정하여 과소평가하는 경향이 있습니다.' },
+        answer:1, explanation:'전문가는 자신에게 쉬운 것이 모두에게 쉽다고 가정하여 과소평가합니다.' },
+
+      // ── 심화: 수능 31~34번 스타일 (빈칸추론, 복합추론) ──
+      { number:11, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'When people face an overwhelming number of choices, they often experience what psychologist Barry Schwartz calls "the paradox of choice." Rather than feeling liberated by abundant options, individuals become paralyzed by indecision, fearing they will make the wrong selection. After finally choosing, they frequently experience regret, wondering whether a different option would have been better. Paradoxically, reducing the number of available choices often leads to greater satisfaction with the chosen option.',
+        question:'빈칸에 가장 적절한 것은? "The paradox of choice demonstrates that having more options does not necessarily lead to ___."',
+        options:['higher prices','better decisions','greater happiness','increased productivity'],
+        answer:2, explanation:'선택지가 많을수록 오히려 만족감이 떨어진다는 역설이므로, 더 많은 선택이 "더 큰 행복"으로 이어지지 않는다는 의미입니다.' },
+
+      { number:12, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'In ecology, the concept of a "trophic cascade" describes how changes at the top of a food chain can dramatically alter an entire ecosystem. When wolves were reintroduced to Yellowstone National Park in 1995, they reduced the elk population, which had been overgrazing riverside vegetation. As the vegetation recovered, riverbanks stabilized, songbird populations returned, and even the physical course of rivers changed. This interconnected chain of effects illustrates how a single species can reshape an entire landscape through indirect ecological interactions.',
+        question:'이 글을 통해 추론할 수 있는 것으로 가장 적절한 것은?',
+        options:['늑대는 초식동물만 직접 영향을 미친다','생태계의 상위 포식자 제거는 하위 요소에도 연쇄적 영향을 미친다','강의 흐름은 식물과 무관하다','엘크 개체수가 줄면 생태계가 파괴된다'],
+        answer:1, explanation:'영양 단계 폭포 효과: 상위 포식자의 변화가 식물, 새, 심지어 지형까지 연쇄적으로 영향을 미칩니다.' },
 
       { number:13, type:'MULTIPLE_CHOICE', difficulty:'hard',
-        passage:'The Dunning-Kruger effect is a cognitive bias in which people with limited competence in a domain overestimate their own ability. Conversely, experts tend to underestimate their competence, assuming that tasks easy for them are easy for everyone. This asymmetry in self-assessment has significant implications for education, workplace management, and public discourse.',
-        question:'이 글의 빈칸에 들어갈 말로 가장 적절한 것은? "The Dunning-Kruger effect reveals a fundamental _____ between actual ability and perceived ability."',
-        options:['connection','gap','similarity','improvement'],
-        answer:1, explanation:'실제 능력과 인식된 능력 사이의 "차이(gap)"를 드러낸다는 의미입니다.' },
+        passage:'The sunk cost fallacy occurs when people continue investing in something because of previously invested resources, rather than evaluating the future value of the investment. A company might continue funding a failing project because it has already spent millions on it, even though cutting losses would be the rational choice. Similarly, a person might sit through a terrible movie simply because they paid for the ticket. The fallacy lies in treating irrecoverable past costs as relevant to decisions about the future.',
+        question:'밑줄 친 "treating irrecoverable past costs as relevant to decisions about the future"가 의미하는 것으로 가장 적절한 것은?',
+        options:['미래 투자의 수익성을 분석하는 것','회수 불가능한 과거 비용을 미래 결정의 근거로 삼는 비합리적 행동','과거의 실수에서 교훈을 얻는 합리적 판단','손실을 최소화하기 위한 전략적 투자'],
+        answer:1, explanation:'이미 회수할 수 없는 과거의 비용(매몰 비용)을 미래 의사결정에 반영하는 비합리적 경향을 말합니다.' },
 
-      // === 독해 지문 - 기술 ===
       { number:14, type:'MULTIPLE_CHOICE', difficulty:'hard',
-        passage:'Artificial intelligence systems are increasingly being used in hiring processes to screen resumes and conduct initial interviews. Proponents argue that AI can reduce human biases and improve efficiency. However, critics point out that these systems can perpetuate existing biases present in their training data, potentially discriminating against certain demographic groups. The challenge lies in developing AI that is both efficient and equitable.',
+        passage:'Scientists have long debated whether language shapes thought or merely reflects it. The strong version of the Sapir-Whorf hypothesis suggests that the language we speak fundamentally determines how we perceive reality. For instance, the Hopi language lacks grammatical tenses for past and future, leading some researchers to argue that Hopi speakers perceive time differently. However, more recent evidence suggests a weaker version: while language does not determine thought, it can influence certain cognitive processes, such as color perception and spatial reasoning.',
         question:'이 글의 요지로 가장 적절한 것은?',
-        options:['AI 채용은 인간 편견을 완전히 제거한다','AI 채용 시스템은 효율적이지만 편향성 문제가 있다','AI는 채용 과정에 사용되어서는 안 된다','AI 학습 데이터는 항상 공정하다'],
-        answer:1, explanation:'AI 채용의 효율성과 편향성 문제를 함께 다루고 있습니다.' },
+        options:['언어는 사고를 완전히 결정한다','모든 언어는 동일한 인지 구조를 반영한다','언어가 사고를 결정하지는 않지만 일부 인지 과정에 영향을 줄 수 있다','호피어를 사용하는 사람은 시간 개념이 없다'],
+        answer:2, explanation:'강한 가설(결정)은 약화되었지만, 약한 버전(영향)은 지지됩니다.' },
 
-      { number:15, type:'MULTIPLE_CHOICE', difficulty:'medium',
-        passage:'Artificial intelligence systems are increasingly being used in hiring processes to screen resumes and conduct initial interviews. Proponents argue that AI can reduce human biases and improve efficiency. However, critics point out that these systems can perpetuate existing biases present in their training data, potentially discriminating against certain demographic groups. The challenge lies in developing AI that is both efficient and equitable.',
-        question:'"perpetuate"의 의미와 가장 가까운 것은?',
-        options:['제거하다','영속시키다','감소시키다','분석하다'],
-        answer:1, explanation:'perpetuate = 영속시키다, 지속시키다' },
+      { number:15, type:'MULTIPLE_CHOICE', difficulty:'hard',
+        passage:'Confirmation bias is the tendency to search for, interpret, and recall information in a way that confirms one\'s preexisting beliefs. In the age of social media algorithms, this bias is amplified through "filter bubbles" that expose users primarily to content aligning with their existing views. This creates an illusion of consensus, where individuals mistakenly believe their perspective is universally shared, further entrenching polarization.',
+        question:'다음 문장이 들어갈 위치로 가장 적절한 곳은? "As a result, people become less likely to encounter or seriously consider opposing viewpoints."',
+        options:['첫 번째 문장 뒤','두 번째 문장 뒤','세 번째 문장 뒤','마지막 문장 뒤'],
+        answer:1, explanation:'필터 버블이 기존 관점의 콘텐츠만 보여준다는 내용 뒤에, 그 결과 반대 의견을 접하기 어렵다는 문장이 자연스럽습니다.' },
 
-      // === 독해 지문 - 과학 ===
-      { number:16, type:'MULTIPLE_CHOICE', difficulty:'hard',
-        passage:'Recent studies have shown that the gut microbiome plays a crucial role not only in digestion but also in mental health. The gut-brain axis, a bidirectional communication network between the gastrointestinal tract and the central nervous system, allows bacteria in the gut to influence mood, cognition, and even behavior. Researchers have found that individuals with depression often have significantly different gut bacteria compositions compared to healthy individuals.',
-        question:'이 글에서 추론할 수 있는 것은?',
-        options:['우울증은 오직 뇌의 문제이다','장내 세균은 소화에만 관여한다','장내 미생물 조절이 정신건강 치료에 활용될 수 있다','장-뇌 축은 단방향 통신이다'],
-        answer:2, explanation:'장내 세균이 정신건강에 영향을 미치므로, 미생물 조절이 치료에 활용될 수 있음을 추론할 수 있습니다.' },
-
-      // === 독해 지문 - 경제 ===
-      { number:17, type:'MULTIPLE_CHOICE', difficulty:'hard',
-        passage:'The concept of "nudging," popularized by behavioral economists Richard Thaler and Cass Sunstein, refers to designing choices in ways that guide people toward better decisions without restricting their freedom. For example, placing healthy food at eye level in a cafeteria is a nudge that encourages healthier eating. Unlike mandates or bans, nudges preserve individual autonomy while subtly steering behavior in beneficial directions.',
-        question:'"nudge"의 핵심 특징은?',
-        options:['강제로 행동을 제한한다','선택의 자유를 유지하면서 행동을 유도한다','경제적 인센티브를 제공한다','법률로 행동을 규제한다'],
-        answer:1, explanation:'넛지는 자유를 제한하지 않으면서 더 나은 선택으로 유도하는 것입니다.' },
-
-      // === 독해 지문 - 역사/문화 ===
-      { number:18, type:'MULTIPLE_CHOICE', difficulty:'medium',
-        passage:'The printing press, invented by Johannes Gutenberg around 1440, transformed European society by making books affordable and widely available. Before its invention, books were hand-copied by monks and were extremely expensive, limiting literacy to the wealthy and clergy. The printing press democratized knowledge, fueled the Renaissance, and played a key role in the Protestant Reformation by enabling the rapid spread of new ideas.',
-        question:'이 글의 제목으로 가장 적절한 것은?',
-        options:['구텐베르크의 생애','중세 수도원의 역할','인쇄술이 유럽 사회에 미친 영향','르네상스 예술의 발전'],
-        answer:2, explanation:'인쇄술이 지식의 민주화, 르네상스, 종교개혁에 미친 영향을 다루고 있습니다.' },
-
-      // === 어법 ===
-      { number:19, type:'MULTIPLE_CHOICE', question:'다음 중 어법상 올바른 것은?', options:['He suggested that she goes home.','He suggested that she go home.','He suggested that she went home.','He suggested that she going home.'], answer:1, explanation:'suggest + that + S + 동사원형 (가정법 현재)', difficulty:'hard' },
-      { number:20, type:'MULTIPLE_CHOICE', question:'"No sooner had I arrived ___ it started to rain."', options:['than','when','before','after'], answer:0, explanation:'No sooner ~ than: ~하자마자', difficulty:'hard' },
+      { number:16, type:'MULTIPLE_CHOICE', question:'다음 중 어법상 올바른 것은?', options:['He suggested that she goes home.','He suggested that she go home.','He suggested that she went home.','He suggested that she going home.'], answer:1, explanation:'suggest + that + S + 동사원형 (가정법 현재)', difficulty:'hard' },
+      { number:17, type:'MULTIPLE_CHOICE', question:'"A is to B what C is to D"를 올바르게 해석한 것은?', options:['A는 B보다 C만큼 크다','A와 B의 관계는 C와 D의 관계와 같다','A가 B라면 C도 D이다','A에서 B를 빼면 C에서 D를 뺀 것과 같다'], answer:1, explanation:'비례 관계: A:B = C:D', difficulty:'hard' },
     ],
 
-    // ────────── 수학 (수능/모의고사 기출 스타일) ──────────
+    // ────────── 수학 (난이도별 확실히 차등) ──────────
     '수학': [
-      // === 미적분 ===
-      { number:1, type:'MULTIPLE_CHOICE', question:'lim(x→0) sinx/x = ?', options:['0','1','∞','존재하지 않음'], answer:1, explanation:'삼각함수의 극한: lim(x→0) sinx/x = 1', difficulty:'easy' },
-      { number:2, type:'MULTIPLE_CHOICE', question:'f(x)=x³-3x+2일 때 f\'(x)는?', options:['3x²-3','3x²-3x','x²-3','3x²+2'], answer:0, explanation:'(x³)\'=3x², (-3x)\'=-3, (2)\'=0', difficulty:'easy' },
-      { number:3, type:'MULTIPLE_CHOICE', question:'∫(2x+1)dx = ?', options:['x²+x+C','2x²+x+C','x²+C','2x+C'], answer:0, explanation:'∫2xdx=x², ∫1dx=x → x²+x+C', difficulty:'easy' },
-      { number:4, type:'MULTIPLE_CHOICE', question:'f(x)=x²-4x+3의 최솟값은?', options:['-1','0','1','3'], answer:0, explanation:'f(x)=(x-2)²-1, 최솟값=-1', difficulty:'medium' },
-      { number:5, type:'MULTIPLE_CHOICE', question:'정적분 ∫₀²(2x)dx = ?', options:['2','4','6','8'], answer:1, explanation:'[x²]₀²=4-0=4', difficulty:'medium' },
-      { number:6, type:'MULTIPLE_CHOICE', question:'함수 f(x)=x³-3x가 극대가 되는 x값은?', options:['x=-1','x=0','x=1','x=3'], answer:0, explanation:"f'(x)=3x²-3=0→x=±1, f''(-1)<0 → 극대", difficulty:'medium' },
-      { number:7, type:'MULTIPLE_CHOICE', question:'lim(x→∞) (3x²+x)/(x²-1) = ?', options:['0','1','3','∞'], answer:2, explanation:'최고차항 계수의 비: 3/1=3', difficulty:'medium' },
-      { number:8, type:'MULTIPLE_CHOICE', question:'f(x)=eˣ일 때 f\'(x)는?', options:['xeˣ⁻¹','eˣ','eˣ+1','xe'], answer:1, explanation:'(eˣ)\'=eˣ', difficulty:'easy' },
-      { number:9, type:'MULTIPLE_CHOICE', question:'∫₀¹ eˣ dx = ?', options:['e','e-1','e+1','1'], answer:1, explanation:'[eˣ]₀¹=e¹-e⁰=e-1', difficulty:'medium' },
-      { number:10, type:'MULTIPLE_CHOICE', question:'f(x)=ln x일 때 f\'(x)는?', options:['x','1/x','ln x/x','1'], answer:1, explanation:'(ln x)\'=1/x', difficulty:'easy' },
+      // ── 기본: 공식 대입 한 번이면 끝 ──
+      { number:1, type:'MULTIPLE_CHOICE', question:'f(x)=x³일 때 f\'(x)는?', options:['x²','3x','3x²','x³'], answer:2, explanation:'(xⁿ)\'=nxⁿ⁻¹ → 3x²', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'log₂8 = ?', options:['2','3','4','8'], answer:1, explanation:'2³=8 → log₂8=3', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'등차수열 2,5,8,11,...의 공차는?', options:['2','3','5','8'], answer:1, explanation:'5-2=3', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'sin30° = ?', options:['0','1/2','√2/2','√3/2'], answer:1, explanation:'sin30°=1/2 (기본 삼각비)', difficulty:'easy' },
+      { number:5, type:'MULTIPLE_CHOICE', question:'(eˣ)\' = ?', options:['xeˣ⁻¹','eˣ','eˣ+1','1/eˣ'], answer:1, explanation:'지수함수의 미분: (eˣ)\'=eˣ', difficulty:'easy' },
+      { number:6, type:'SHORT_ANSWER', question:'2⁵ = ?', answer:'32', explanation:'2×2×2×2×2=32', difficulty:'easy' },
+      { number:7, type:'SHORT_ANSWER', question:'등비수열 2,6,18,...의 공비는?', answer:'3', explanation:'6/2=3', difficulty:'easy' },
 
-      // === 수능 킬러 (고난도) ===
-      { number:11, type:'MULTIPLE_CHOICE', question:'lim(x→0) (1-cosx)/x² = ?', options:['0','1/2','1','2'], answer:1, explanation:'로피탈 또는 반각 공식: (1-cosx)/x² → 1/2', difficulty:'hard' },
-      { number:12, type:'MULTIPLE_CHOICE', question:'함수 f(x)=x⁴-4x³+6의 변곡점의 x좌표는?', options:['x=0, x=2','x=0, x=3','x=1, x=3','x=2, x=4'], answer:0, explanation:'f\'\'(x)=12x²-24x=12x(x-2)=0 → x=0, x=2', difficulty:'hard' },
-      { number:13, type:'MULTIPLE_CHOICE', question:'∫₀^π sin²x dx = ?', options:['0','π/4','π/2','π'], answer:2, explanation:'sin²x=(1-cos2x)/2, 적분하면 π/2', difficulty:'hard' },
-      { number:14, type:'MULTIPLE_CHOICE', question:'y=x²과 y=2x로 둘러싸인 영역의 넓이는?', options:['1/3','2/3','4/3','8/3'], answer:2, explanation:'교점 x=0,2. ∫₀²(2x-x²)dx=[x²-x³/3]₀²=4-8/3=4/3', difficulty:'hard' },
+      // ── 보통: 2~3단계 풀이 ──
+      { number:8, type:'MULTIPLE_CHOICE', question:'f(x)=x²-4x+3의 최솟값은?', options:['-1','0','1','3'], answer:0, explanation:'f(x)=(x-2)²-1 → 꼭짓점(2,-1), 최솟값=-1', difficulty:'medium' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'정적분 ∫₀²(2x)dx = ?', options:['2','4','6','8'], answer:1, explanation:'∫2xdx=x² → [x²]₀²=4-0=4', difficulty:'medium' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'등차수열 {aₙ}에서 a₃=7, a₇=19일 때, 공차 d는?', options:['2','3','4','6'], answer:1, explanation:'a₇-a₃=4d=12 → d=3', difficulty:'medium' },
+      { number:11, type:'MULTIPLE_CHOICE', question:'₁₀C₃ = ?', options:['30','60','120','720'], answer:2, explanation:'10!/(3!×7!) = (10×9×8)/(3×2×1) = 120', difficulty:'medium' },
+      { number:12, type:'MULTIPLE_CHOICE', question:'lim(x→∞) (3x²+x)/(x²-1) = ?', options:['0','1','3','∞'], answer:2, explanation:'최고차항의 계수의 비: 3/1=3', difficulty:'medium' },
+      { number:13, type:'MULTIPLE_CHOICE', question:'함수 f(x)=x³-3x의 극대가 되는 x값은?', options:['x=-1','x=0','x=1','x=3'], answer:0, explanation:"f'(x)=3x²-3=0→x=±1. f''(-1)=-6<0→극대", difficulty:'medium' },
+      { number:14, type:'MULTIPLE_CHOICE', question:'∫₁ᵉ (1/x)dx = ?', options:['0','1','e','e-1'], answer:1, explanation:'[ln|x|]₁ᵉ = lne - ln1 = 1-0 = 1', difficulty:'medium' },
+      { number:15, type:'SHORT_ANSWER', question:'₅P₃의 값은?', answer:'60', explanation:'5×4×3=60', difficulty:'medium' },
+      { number:16, type:'SHORT_ANSWER', question:'x²-6x+k=0이 중근을 가지려면 k는?', answer:'9', explanation:'판별식 D=36-4k=0 → k=9', difficulty:'medium' },
 
-      // === 확률과 통계 ===
-      { number:15, type:'MULTIPLE_CHOICE', question:'등차수열 2,5,8,11,...의 제20항은?', options:['56','59','62','65'], answer:1, explanation:'a₂₀=2+(20-1)×3=59', difficulty:'easy' },
-      { number:16, type:'MULTIPLE_CHOICE', question:'₁₀C₃ = ?', options:['30','60','120','720'], answer:2, explanation:'10!/(3!×7!)=120', difficulty:'medium' },
-      { number:17, type:'MULTIPLE_CHOICE', question:'5개 숫자 1,2,3,4,5로 만들 수 있는 3자리 수의 개수는? (중복 없음)', options:['30','60','120','125'], answer:1, explanation:'₅P₃=5×4×3=60', difficulty:'medium' },
-      { number:18, type:'MULTIPLE_CHOICE', question:'등비수열 2,6,18,54,...의 제5항은?', options:['108','162','216','324'], answer:1, explanation:'a₅=2×3⁴=2×81=162', difficulty:'medium' },
-      { number:19, type:'MULTIPLE_CHOICE', question:'주사위를 2번 던질 때 합이 7인 경우의 수는?', options:['4','5','6','7'], answer:2, explanation:'(1,6),(2,5),(3,4),(4,3),(5,2),(6,1)=6가지', difficulty:'medium' },
-      { number:20, type:'MULTIPLE_CHOICE', question:'정규분포 N(50,5²)에서 P(45≤X≤55)는 약?', options:['34.1%','68.3%','95.4%','99.7%'], answer:1, explanation:'평균±1σ 구간=약 68.3%', difficulty:'hard' },
+      // ── 심화: 수능 킬러 (22번·30번급) 복합·다단계 ──
+      { number:17, type:'MULTIPLE_CHOICE', question:'함수 f(x)=x⁴-8x²+12에서 극솟값을 모두 구하면?', options:['f(±2)=-4','f(0)=12, f(±2)=-4','f(2)=-4만','f(-2)=-4만'], answer:1, explanation:"f'=4x³-16x=4x(x²-4)=0→x=0,±2. f''(0)=-16<0(극대), f''(±2)=32>0(극소). f(0)=12(극대), f(±2)=16-32+12=-4(극소)", difficulty:'hard' },
+      { number:18, type:'MULTIPLE_CHOICE', question:'y=x²과 y=2x로 둘러싸인 영역의 넓이는?', options:['1/3','2/3','4/3','8/3'], answer:2, explanation:'교점: x²=2x → x=0,2. ∫₀²(2x-x²)dx=[x²-x³/3]₀²=4-8/3=4/3', difficulty:'hard' },
+      { number:19, type:'MULTIPLE_CHOICE', question:'∫₀^π sin²x dx = ?', options:['0','π/4','π/2','π'], answer:2, explanation:'반각 공식: sin²x=(1-cos2x)/2. ∫₀^π (1-cos2x)/2 dx = [x/2-sin2x/4]₀^π = π/2', difficulty:'hard' },
+      { number:20, type:'MULTIPLE_CHOICE', question:'방정식 log₃(x-1)+log₃(x+1)=2를 만족하는 x는? (x>1)', options:['√10','2','3','4'], answer:0, explanation:'log₃(x²-1)=2 → x²-1=9 → x²=10 → x=√10 (x>1이므로 양수만)', difficulty:'hard' },
+      { number:21, type:'MULTIPLE_CHOICE', question:'함수 f(x)=2x³-9x²+12x-4에서 극대와 극소의 차는?', options:['0','1','4','5'], answer:1, explanation:"f'=6x²-18x+12=6(x-1)(x-2)=0→x=1,2. f(1)=2-9+12-4=1(극대), f(2)=16-36+24-4=0(극소). 차=1-0=1", difficulty:'hard' },
+      { number:22, type:'MULTIPLE_CHOICE', question:'Σ(k=1→20) k = 210일 때, Σ(k=1→20) (3k-1)의 값은?', options:['609','610','630','650'], answer:1, explanation:'Σ(3k-1)=3Σk-Σ1=3×210-20=630-20=610', difficulty:'hard' },
+      { number:23, type:'MULTIPLE_CHOICE', question:'두 곡선 y=eˣ과 y=e²⁻ˣ의 교점의 x좌표는?', options:['0','1','2','e'], answer:1, explanation:'eˣ=e²⁻ˣ → x=2-x → 2x=2 → x=1', difficulty:'hard' },
+      { number:24, type:'MULTIPLE_CHOICE', question:'주머니에 1~5 번호 공이 있다. 2개를 동시에 꺼낼 때, 합이 홀수인 확률은?', options:['2/5','3/5','1/2','7/10'], answer:1, explanation:'전체: ₅C₂=10. 홀+짝 조합: 3(홀)×2(짝)=6가지. 확률=6/10=3/5', difficulty:'hard' },
+      { number:25, type:'MULTIPLE_CHOICE', question:'f(x)=xeˣ일 때 f\'(x)는?', options:['eˣ','xeˣ','(x+1)eˣ','(x-1)eˣ'], answer:2, explanation:'곱의 미분: f\'=eˣ+xeˣ=(x+1)eˣ', difficulty:'hard' },
+      { number:26, type:'SHORT_ANSWER', question:'lim(x→0) (1-cosx)/x²의 값은?', answer:'1/2', explanation:'로피탈 2회: sinx/2x → cosx/2 → 1/2. 또는 반각: (1-cosx)=2sin²(x/2), 2sin²(x/2)/x²=1/2', difficulty:'hard' },
+      { number:27, type:'SHORT_ANSWER', question:'곡선 y=x³-3x 위의 점 (1,-2)에서의 접선의 기울기를 구하세요.', answer:'0', explanation:"y'=3x²-3, x=1 대입: 3(1)-3=0", difficulty:'hard' },
+      { number:28, type:'SHORT_ANSWER', question:'∫₀¹ xeˣ dx의 값은? (부분적분 사용)', answer:'1', explanation:'∫xeˣdx = xeˣ-∫eˣdx = xeˣ-eˣ. [xeˣ-eˣ]₀¹ = (e-e)-(0-1) = 0+1 = 1', difficulty:'hard' },
+    ],
 
-      // === 수능 고난도 ===
-      { number:21, type:'MULTIPLE_CHOICE', question:'등차수열 {aₙ}에서 a₃=7, a₇=19일 때, a₁₀은?', options:['25','28','31','34'], answer:1, explanation:'d=(19-7)/4=3, a₁=1, a₁₀=1+27=28', difficulty:'medium' },
-      { number:22, type:'MULTIPLE_CHOICE', question:'함수 f(x)=2x³-9x²+12x의 극솟값은?', options:['0','3','4','5'], answer:2, explanation:'f\'=6x²-18x+12=0→x=1,2. f(2)=16-36+24=4', difficulty:'hard' },
-      { number:23, type:'MULTIPLE_CHOICE', question:'Σ(k=1→n) k² = n(n+1)(2n+1)/6에서 Σ(k=1→10) k²은?', options:['285','330','385','440'], answer:2, explanation:'10×11×21/6=385', difficulty:'hard' },
-      { number:24, type:'MULTIPLE_CHOICE', question:'방정식 log₃(x-1)+log₃(x+1)=2의 해는?', options:['x=√10','x=2','x=3','x=4'], answer:0, explanation:'log₃(x²-1)=2→x²-1=9→x²=10→x=√10', difficulty:'hard' },
-      { number:25, type:'MULTIPLE_CHOICE', question:'∫₁ᵉ (1/x)dx = ?', options:['0','1','e','e-1'], answer:1, explanation:'[ln x]₁ᵉ=ln e-ln 1=1-0=1', difficulty:'medium' },
+    // ────────── 코딩 (난이도별 확실히 차등) ──────────
+    '코딩': [
+      // ── 기본: 문법 확인, 개념 이해 ──
+      { number:1, type:'MULTIPLE_CHOICE', question:'Python에서 리스트 컴프리헨션 [x for x in range(10)]의 결과는?', options:['[1,2,...,10]','[0,1,...,9]','[0,1,...,10]','오류'], answer:1, explanation:'range(10)은 0~9를 생성합니다.', difficulty:'easy' },
+      { number:2, type:'MULTIPLE_CHOICE', question:'REST API에서 데이터를 생성할 때 사용하는 HTTP 메서드는?', options:['GET','POST','PUT','DELETE'], answer:1, explanation:'POST는 새로운 리소스를 생성할 때 사용합니다.', difficulty:'easy' },
+      { number:3, type:'MULTIPLE_CHOICE', question:'Git에서 원격 저장소의 변경사항을 가져와 병합하는 명령은?', options:['git push','git commit','git pull','git add'], answer:2, explanation:'git pull = fetch + merge', difficulty:'easy' },
+      { number:4, type:'MULTIPLE_CHOICE', question:'데이터베이스에서 SELECT * FROM users WHERE age > 20은?', options:['모든 사용자 삭제','20세 이상 사용자 조회','사용자 나이 수정','새 사용자 추가'], answer:1, explanation:'SELECT + WHERE 조건으로 데이터를 필터링 조회합니다.', difficulty:'easy' },
+      { number:5, type:'SHORT_ANSWER', question:'JavaScript에서 비동기 처리에 사용하는 키워드 2가지를 쓰세요.', answer:'async, await', explanation:'async 함수 안에서 await로 비동기 작업을 기다립니다.', difficulty:'easy' },
 
-      { number:26, type:'SHORT_ANSWER', question:'f(x)=x³-3x+2일 때 f\'(x)를 구하세요.', answer:'3x²-3', explanation:'미분: 3x²-3', difficulty:'easy' },
-      { number:27, type:'SHORT_ANSWER', question:'₁₀C₃의 값을 구하세요.', answer:'120', explanation:'10!/(3!×7!)=120', difficulty:'medium' },
-      { number:28, type:'SHORT_ANSWER', question:'등비수열 2,6,18,...의 공비를 구하세요.', answer:'3', explanation:'r=6/2=3', difficulty:'easy' },
-      { number:29, type:'SHORT_ANSWER', question:'lim(x→0) tanx/x의 값은?', answer:'1', explanation:'tanx/x=(sinx/cosx)/x=sinx/x × 1/cosx → 1×1=1', difficulty:'hard' },
-      { number:30, type:'SHORT_ANSWER', question:'방정식 2ˣ=32의 해 x를 구하세요.', answer:'5', explanation:'2⁵=32 → x=5', difficulty:'medium' },
+      // ── 보통: 알고리즘 분석, 구현 이해 ──
+      { number:6, type:'MULTIPLE_CHOICE', question:'해시 테이블에서 충돌(collision)이 발생하는 경우는?', options:['키가 같을 때','값이 같을 때','서로 다른 키가 같은 해시값을 가질 때','테이블이 비어 있을 때'], answer:2, explanation:'서로 다른 키가 같은 해시 인덱스로 매핑될 때 충돌이 발생합니다.', difficulty:'medium' },
+      { number:7, type:'MULTIPLE_CHOICE', question:'이진 탐색 트리(BST)에서 노드 검색의 평균 시간 복잡도는?', options:['O(1)','O(log n)','O(n)','O(n²)'], answer:1, explanation:'균형 BST에서 검색은 O(log n)입니다.', difficulty:'medium' },
+      { number:8, type:'MULTIPLE_CHOICE', question:'다음 코드의 출력은?\ndef solution(s):\n    stack = []\n    for c in s:\n        if c == "(":\n            stack.append(c)\n        elif c == ")":\n            if not stack: return False\n            stack.pop()\n    return len(stack) == 0\nprint(solution("(())()"))', options:['True','False','오류','None'], answer:0, explanation:'괄호가 올바르게 짝지어져 있으므로 True', difficulty:'medium' },
+      { number:9, type:'MULTIPLE_CHOICE', question:'TCP와 UDP의 차이로 올바른 것은?', options:['TCP는 비연결, UDP는 연결 기반','TCP는 신뢰성 보장, UDP는 속도 우선','둘 다 같은 프로토콜','TCP만 인터넷에서 사용'], answer:1, explanation:'TCP는 연결 기반 + 신뢰성, UDP는 비연결 + 속도', difficulty:'medium' },
+      { number:10, type:'MULTIPLE_CHOICE', question:'React에서 컴포넌트의 상태를 관리하는 Hook은?', options:['useEffect','useState','useRef','useMemo'], answer:1, explanation:'useState Hook으로 컴포넌트 상태를 관리합니다.', difficulty:'medium' },
+      { number:11, type:'SHORT_ANSWER', question:'CSS에서 Flexbox 컨테이너를 만들기 위한 속성과 값은?', answer:'display: flex', explanation:'display: flex로 플렉스 컨테이너를 생성합니다.', difficulty:'medium' },
+
+      // ── 심화: 복합 알고리즘, 시스템 설계 ──
+      { number:12, type:'MULTIPLE_CHOICE', question:'다음 DP 코드는 무엇을 구하는가?\ndef solve(n):\n    dp = [0]*(n+1)\n    dp[1] = 1\n    dp[2] = 2\n    for i in range(3, n+1):\n        dp[i] = dp[i-1] + dp[i-2]\n    return dp[n]', options:['피보나치 수','팩토리얼','계단 오르기 경우의 수','최대공약수'], answer:2, explanation:'1칸 또는 2칸씩 오를 수 있는 계단 오르기의 경우의 수입니다. dp[i]=dp[i-1]+dp[i-2]', difficulty:'hard' },
+      { number:13, type:'MULTIPLE_CHOICE', question:'그래프에서 최단 경로를 구하는 다익스트라 알고리즘의 시간 복잡도는? (힙 사용)', options:['O(V)','O(V²)','O(E log V)','O(V!)'], answer:2, explanation:'우선순위 큐(힙) 사용 시 O(E log V)', difficulty:'hard' },
+      { number:14, type:'MULTIPLE_CHOICE', question:'다음 코드의 결과는?\ndef knapsack(W, items):\n    n = len(items)\n    dp = [[0]*(W+1) for _ in range(n+1)]\n    for i in range(1, n+1):\n        w, v = items[i-1]\n        for j in range(W+1):\n            if w <= j:\n                dp[i][j] = max(dp[i-1][j], dp[i-1][j-w]+v)\n            else:\n                dp[i][j] = dp[i-1][j]\n    return dp[n][W]\nprint(knapsack(5, [(2,3),(3,4),(4,5)]))', options:['5','7','9','12'], answer:1, explanation:'무게2가치3 + 무게3가치4 = 무게5가치7이 최적', difficulty:'hard' },
+      { number:15, type:'MULTIPLE_CHOICE', question:'데이터베이스 인덱스가 B-Tree를 사용하는 이유는?', options:['메모리를 적게 사용해서','삽입이 O(1)이라서','디스크 I/O를 최소화하면서 O(log n) 검색이 가능해서','정렬이 필요 없어서'], answer:2, explanation:'B-Tree는 디스크 블록 단위 접근에 최적화되어 I/O를 줄이면서 효율적 검색이 가능합니다.', difficulty:'hard' },
+      { number:16, type:'MULTIPLE_CHOICE', question:'동시성(Concurrency) 문제 중 "데드락"의 4가지 조건에 해당하지 않는 것은?', options:['상호 배제','점유 대기','비선점','시간 초과'], answer:3, explanation:'데드락 4조건: 상호배제, 점유대기, 비선점, 순환대기', difficulty:'hard' },
+      { number:17, type:'SHORT_ANSWER', question:'빅오 표기법에서 O(n log n)이 O(n²)보다 효율적인 이유를 한 마디로?', answer:'증가율이 더 느리다', explanation:'n이 커질수록 n log n < n²이므로 더 효율적입니다.', difficulty:'hard' },
     ],
   },
 }
