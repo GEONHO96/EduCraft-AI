@@ -4,7 +4,7 @@
  */
 import { useState, memo, useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { courseApi, BrowseCourse } from '../../api/courses'
 import { useAuthStore } from '../../stores/authStore'
 import { getSubjectColor } from '../../constants/subjects'
@@ -159,8 +159,13 @@ const CourseCard = memo(function CourseCard({
   onEnroll: () => void
   enrolling: boolean
 }) {
+  const navigate = useNavigate()
+
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-5">
+    <div
+      onClick={() => navigate(`/courses/${course.id}`)}
+      className="bg-white rounded-xl shadow-sm hover:shadow-md hover:border-indigo-200 border border-transparent transition p-5 cursor-pointer group"
+    >
       <div className="flex gap-4">
         {/* 과목 아이콘 */}
         <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${subjectColor} flex items-center justify-center text-white font-bold text-lg flex-shrink-0`}>
@@ -169,9 +174,9 @@ const CourseCard = memo(function CourseCard({
 
         <div className="flex-1 min-w-0">
           {/* 제목 */}
-          <Link to={`/courses/${course.id}`} className="text-base font-semibold text-gray-800 hover:text-primary-600 transition line-clamp-1">
+          <h3 className="text-base font-semibold text-gray-800 group-hover:text-primary-600 transition line-clamp-1">
             {course.title}
-          </Link>
+          </h3>
 
           {/* 과목 + 교강사 */}
           <div className="flex items-center gap-2 mt-1">
@@ -207,7 +212,7 @@ const CourseCard = memo(function CourseCard({
                 </span>
               ) : (
                 <button
-                  onClick={onEnroll}
+                  onClick={(e) => { e.stopPropagation(); onEnroll() }}
                   disabled={enrolling}
                   className="text-xs bg-primary-600 text-white px-4 py-1.5 rounded-lg hover:bg-primary-700 disabled:opacity-50 transition font-medium"
                 >
