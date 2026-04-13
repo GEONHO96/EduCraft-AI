@@ -42,10 +42,10 @@ export default function MaterialGeneratePage() {
               <h3 className="font-semibold text-lg">{section.heading}</h3>
               <p className="text-gray-600 mt-2 whitespace-pre-wrap">{section.content}</p>
               {section.keyPoints && (
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-3 space-y-1.5">
                   {section.keyPoints.map((point: string, j: number) => (
-                    <li key={j} className="text-sm text-primary-700 flex items-start">
-                      <span className="mr-2">*</span>{point}
+                    <li key={j} className="text-sm text-gray-700 flex items-start">
+                      <span className="mr-2 text-indigo-400 font-bold">•</span>{point}
                     </li>
                   ))}
                 </ul>
