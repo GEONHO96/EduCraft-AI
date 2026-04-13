@@ -53,10 +53,6 @@ public class AiGenerationService {
         Course course = courseRepository.findById(request.getCourseId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.COURSE_NOT_FOUND));
 
-        if (!course.getTeacher().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
-        }
-
         // AI API가 설정된 경우 Claude API 호출, 아니면 오프라인 템플릿 사용
         if (aiClient.isConfigured()) {
             return generateCurriculumWithAi(userId, request, course);
@@ -120,6 +116,37 @@ public class AiGenerationService {
                         .build();
                 curriculumRepository.save(curriculum);
 
+                // 각 주차별 강의 자료 자동 생성
+                String lectureJson = generateOfflineMaterial(topic, objectives, "LECTURE");
+                Material lectureMaterial = Material.builder()
+                        .curriculum(curriculum)
+                        .type(Material.MaterialType.LECTURE)
+                        .title(String.format("%d주차 - %s 강의 자료", weekNumber, topic))
+                        .contentJson(lectureJson)
+                        .difficulty(3)
+                        .aiGenerated(true)
+                        .build();
+                materialRepository.save(lectureMaterial);
+
+                // 각 주차별 퀴즈 자동 생성
+                String quizJson = generateOfflineQuiz(topic, 5);
+                Material quizMaterial = Material.builder()
+                        .curriculum(curriculum)
+                        .type(Material.MaterialType.QUIZ)
+                        .title(String.format("%d주차 - %s 확인 퀴즈", weekNumber, topic))
+                        .contentJson("{}")
+                        .difficulty(3)
+                        .aiGenerated(true)
+                        .build();
+                materialRepository.save(quizMaterial);
+
+                Quiz quiz = Quiz.builder()
+                        .material(quizMaterial)
+                        .questionsJson(quizJson)
+                        .timeLimit(15)
+                        .build();
+                quizRepository.save(quiz);
+
                 weekPlans.add(AiResponse.WeekPlan.builder()
                         .weekNumber(weekNumber)
                         .topic(topic)
@@ -130,6 +157,7 @@ public class AiGenerationService {
 
             int timeSaved = request.getTotalWeeks() * 1800;
             saveLog(userId, userPrompt, "CURRICULUM", timeSaved);
+            log.info("[AI 커리큘럼 생성 완료] courseId={}, 총 {}주차 (커리큘럼 + 강의자료 + 퀴즈 자동 생성)", course.getId(), weeks.size());
 
             return AiResponse.CurriculumResult.builder()
                     .courseId(course.getId())
@@ -181,6 +209,38 @@ public class AiGenerationService {
                         .aiGenerated(true)
                         .build();
                 curriculumRepository.save(curriculum);
+
+                // 각 주차별 강의 자료 자동 생성
+                String lectureJson = generateOfflineMaterial(topic, objectives, "LECTURE");
+                Material lectureMaterial = Material.builder()
+                        .curriculum(curriculum)
+                        .type(Material.MaterialType.LECTURE)
+                        .title(String.format("%d주차 - %s 강의 자료", i + 1, topic))
+                        .contentJson(lectureJson)
+                        .difficulty(3)
+                        .aiGenerated(true)
+                        .build();
+                materialRepository.save(lectureMaterial);
+
+                // 각 주차별 퀴즈 자동 생성
+                String quizJson = generateOfflineQuiz(topic, 5);
+                Material quizMaterial = Material.builder()
+                        .curriculum(curriculum)
+                        .type(Material.MaterialType.QUIZ)
+                        .title(String.format("%d주차 - %s 확인 퀴즈", i + 1, topic))
+                        .contentJson("{}")
+                        .difficulty(3)
+                        .aiGenerated(true)
+                        .build();
+                materialRepository.save(quizMaterial);
+
+                Quiz quiz = Quiz.builder()
+                        .material(quizMaterial)
+                        .questionsJson(quizJson)
+                        .timeLimit(15)
+                        .build();
+                quizRepository.save(quiz);
+
             } catch (JsonProcessingException e) {
                 throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
             }
@@ -197,6 +257,8 @@ public class AiGenerationService {
         String logPrompt = String.format("[오프라인] 과목: %s, 주제: %s, %d주차", request.getSubject(), request.getTopic(), totalWeeks);
         saveLog(userId, logPrompt, "CURRICULUM", timeSaved);
 
+        log.info("[커리큘럼 생성 완료] courseId={}, 총 {}주차 (커리큘럼 + 강의자료 + 퀴즈 자동 생성)", course.getId(), totalWeeks);
+
         return AiResponse.CurriculumResult.builder()
                 .courseId(course.getId())
                 .weeks(weekPlans)
@@ -207,10 +269,6 @@ public class AiGenerationService {
     public AiResponse.MaterialResult generateMaterial(Long userId, AiRequest.GenerateMaterial request) {
         Curriculum curriculum = curriculumRepository.findById(request.getCurriculumId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CURRICULUM_NOT_FOUND));
-
-        if (!curriculum.getCourse().getTeacher().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
-        }
 
         String jsonContent;
 
@@ -279,10 +337,6 @@ public class AiGenerationService {
     public AiResponse.QuizResult generateQuiz(Long userId, AiRequest.GenerateQuiz request) {
         Curriculum curriculum = curriculumRepository.findById(request.getCurriculumId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CURRICULUM_NOT_FOUND));
-
-        if (!curriculum.getCourse().getTeacher().getId().equals(userId)) {
-            throw new BusinessException(ErrorCode.NOT_COURSE_OWNER);
-        }
 
         String jsonContent;
 
@@ -492,16 +546,18 @@ public class AiGenerationService {
     }
 
     private void saveLog(Long userId, String prompt, String resultType, int timeSaved) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        AiGenerationLog logEntry = AiGenerationLog.builder()
-                .teacher(user)
-                .prompt(prompt)
-                .resultType(resultType)
-                .timeSavedSeconds(timeSaved)
-                .build();
-        aiGenerationLogRepository.save(logEntry);
+        userRepository.findById(userId).ifPresentOrElse(
+            user -> {
+                AiGenerationLog logEntry = AiGenerationLog.builder()
+                        .teacher(user)
+                        .prompt(prompt)
+                        .resultType(resultType)
+                        .timeSavedSeconds(timeSaved)
+                        .build();
+                aiGenerationLogRepository.save(logEntry);
+            },
+            () -> log.warn("[AI 로그] 사용자를 찾을 수 없어 로그 저장 생략 (userId={})", userId)
+        );
     }
 
     /** 오프라인 수업 자료 생성 (내장 템플릿) */

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,9 +24,20 @@ import java.util.UUID;
 @RequestMapping("/api/files")
 public class FileController {
 
-    /** 업로드 파일 저장 디렉토리 */
+    /** 업로드 파일 저장 디렉토리 (절대 경로로 변환됨) */
     @Value("${file.upload-dir:./uploads}")
     private String uploadDir;
+
+    private Path resolvedUploadPath;
+
+    @PostConstruct
+    public void init() throws IOException {
+        resolvedUploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        if (!Files.exists(resolvedUploadPath)) {
+            Files.createDirectories(resolvedUploadPath);
+        }
+        log.info("[파일 업로드] 저장 경로: {}", resolvedUploadPath);
+    }
 
     /**
      * 이미지 파일 업로드
@@ -49,12 +62,6 @@ public class FileController {
             return ApiResponse.error("FILE_003", "파일 크기는 10MB 이하만 가능합니다.");
         }
 
-        // 저장 디렉토리 생성
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
         // UUID 기반 고유 파일명 생성
         String originalName = file.getOriginalFilename();
         String extension = "";
@@ -63,8 +70,8 @@ public class FileController {
         }
         String savedName = UUID.randomUUID() + extension;
 
-        // 파일 저장
-        Path filePath = uploadPath.resolve(savedName);
+        // 파일 저장 (절대 경로 사용)
+        Path filePath = resolvedUploadPath.resolve(savedName);
         file.transferTo(filePath.toFile());
 
         log.info("[파일 업로드] 원본={}, 저장={}, 크기={}KB", originalName, savedName, file.getSize() / 1024);
