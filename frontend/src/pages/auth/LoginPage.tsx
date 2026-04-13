@@ -1,7 +1,6 @@
 /**
- * LoginPage - 로그인 페이지 (리뉴얼 v2)
- * 좌측 브랜딩 패널 (라이트) + 우측 로그인 폼
- * 소셜 로그인은 하단 배치
+ * LoginPage - 로그인 페이지 (미니멀 v3)
+ * 깔끔한 화이트 배경, Validation 중심, 최대 여백
  */
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -14,11 +13,42 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const { setAuth } = useAuthStore()
   const navigate = useNavigate()
 
+  // 실시간 유효성 검사
+  const validateEmail = (v: string) => {
+    if (!v) return '이메일을 입력해주세요'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return '올바른 이메일 형식이 아닙니다'
+    return ''
+  }
+
+  const validatePassword = (v: string) => {
+    if (!v) return '비밀번호를 입력해주세요'
+    if (v.length < 4) return '비밀번호는 4자 이상이어야 합니다'
+    return ''
+  }
+
+  const handleEmailBlur = () => {
+    const err = validateEmail(email)
+    setErrors((prev) => ({ ...prev, email: err || undefined }))
+  }
+
+  const handlePasswordBlur = () => {
+    const err = validatePassword(password)
+    setErrors((prev) => ({ ...prev, password: err || undefined }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const emailErr = validateEmail(email)
+    const passErr = validatePassword(password)
+    if (emailErr || passErr) {
+      setErrors({ email: emailErr || undefined, password: passErr || undefined })
+      return
+    }
+    setErrors({})
     setLoading(true)
     try {
       const res = await authApi.login({ email, password })
@@ -30,7 +60,7 @@ export default function LoginPage() {
         toast.error((res.data as any).error?.message || '로그인 실패')
       }
     } catch (err: any) {
-      const msg = err?.response?.data?.error?.message || '로그인에 실패했습니다.'
+      const msg = err?.response?.data?.error?.message || '이메일 또는 비밀번호를 확인해주세요.'
       toast.error(msg)
     } finally {
       setLoading(false)
@@ -63,180 +93,198 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex bg-white">
 
-      {/* ====== 좌측 브랜딩 패널 (라이트) ====== */}
-      <div className="hidden lg:flex lg:w-[48%] relative overflow-hidden bg-gray-50 flex-col justify-between py-10 pl-[72px] pr-10">
-        {/* 배경 장식 — 은은한 라이트 톤 */}
-        <div className="absolute -top-20 -right-20 w-72 h-72 bg-indigo-100/40 rounded-full blur-3xl" />
-        <div className="absolute -bottom-24 -left-16 w-64 h-64 bg-violet-100/30 rounded-full blur-3xl" />
+      {/* 왼쪽 브랜딩 패널 - 몽환적 초록 */}
+      <div className="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-10 overflow-hidden" style={{ background: 'linear-gradient(160deg, #064e3b 0%, #065f46 20%, #047857 40%, #059669 60%, #0d9488 80%, #134e4a 100%)' }}>
 
-        {/* 도트 패턴 */}
-        <div className="absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
-            backgroundSize: '28px 28px',
-          }}
-        />
+        {/* 몽환적 배경 오브 - 여러 겹 겹침으로 깊이감 */}
+        <div className="absolute inset-0">
+          {/* 큰 빛 오브 */}
+          <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full animate-pulse" style={{ background: 'radial-gradient(circle, rgba(52,211,153,0.3) 0%, transparent 70%)' }} />
+          <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.25) 0%, transparent 65%)', animation: 'pulse 4s ease-in-out infinite alternate' }} />
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 rounded-full" style={{ background: 'radial-gradient(circle, rgba(110,231,183,0.2) 0%, transparent 60%)', animation: 'pulse 6s ease-in-out infinite alternate-reverse' }} />
+
+          {/* 작은 떠다니는 빛 입자들 */}
+          <div className="absolute top-[15%] left-[20%] w-2 h-2 bg-emerald-300/40 rounded-full" style={{ animation: 'float 8s ease-in-out infinite' }} />
+          <div className="absolute top-[35%] right-[15%] w-1.5 h-1.5 bg-teal-200/50 rounded-full" style={{ animation: 'float 6s ease-in-out infinite 1s' }} />
+          <div className="absolute top-[55%] left-[30%] w-1 h-1 bg-green-300/60 rounded-full" style={{ animation: 'float 7s ease-in-out infinite 2s' }} />
+          <div className="absolute top-[70%] right-[25%] w-2.5 h-2.5 bg-emerald-200/30 rounded-full" style={{ animation: 'float 9s ease-in-out infinite 0.5s' }} />
+          <div className="absolute top-[25%] left-[60%] w-1 h-1 bg-teal-300/40 rounded-full" style={{ animation: 'float 5s ease-in-out infinite 3s' }} />
+          <div className="absolute top-[80%] left-[50%] w-1.5 h-1.5 bg-green-200/50 rounded-full" style={{ animation: 'float 10s ease-in-out infinite 1.5s' }} />
+
+          {/* 나뭇잎 실루엣 장식 */}
+          <svg className="absolute bottom-0 left-0 w-full opacity-[0.06]" viewBox="0 0 500 200" fill="white">
+            <path d="M0,200 Q50,120 100,180 Q130,100 180,160 Q210,80 260,150 Q290,90 340,140 Q370,70 420,130 Q450,60 500,120 L500,200 Z" />
+          </svg>
+          <svg className="absolute top-0 right-0 w-40 h-40 opacity-[0.06]" viewBox="0 0 100 100" fill="white">
+            <path d="M80,10 Q60,30 50,50 Q40,70 30,90 M80,10 Q70,40 75,60 Q80,80 70,95 M80,10 Q50,20 35,40 Q20,60 15,85" stroke="white" strokeWidth="2" fill="none" />
+          </svg>
+        </div>
+
+        {/* 유리 질감 오버레이 */}
+        <div className="absolute inset-0 backdrop-blur-[0.5px]" style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%)' }} />
 
         {/* 로고 */}
-        <div className="relative">
+        <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/15 group-hover:rotate-6 transition-transform">
+            <div className="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:rotate-6 group-hover:scale-110 transition-all duration-300 shadow-lg shadow-emerald-900/20">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
               </svg>
             </div>
             <div className="flex items-baseline gap-0.5">
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Edu</span>
-              <span className="text-xl font-bold text-gray-900">Craft</span>
-              <span className="text-[10px] font-bold bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-1.5 py-0.5 rounded ml-1 uppercase tracking-wider">AI</span>
+              <span className="text-xl font-bold text-white drop-shadow-sm">EduCraft</span>
+              <span className="text-[10px] font-bold bg-white/20 backdrop-blur-sm text-white px-1.5 py-0.5 rounded ml-1.5 uppercase tracking-wider border border-white/10">AI</span>
             </div>
           </Link>
         </div>
 
-        {/* 중앙 컨텐츠 */}
-        <div className="relative flex-1 flex flex-col justify-center -mt-6">
-          <h2 className="text-3xl font-bold text-gray-900 leading-snug mb-3">
-            AI와 함께하는<br />
-            <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
-              스마트한 교육의 시작
-            </span>
-          </h2>
-          <p className="text-sm text-gray-500 leading-relaxed max-w-sm mb-10">
-            커리큘럼 생성부터 학습 자료, 퀴즈까지<br />
-            AI가 교육의 모든 과정을 도와드립니다.
-          </p>
+        {/* 중앙 콘텐츠 */}
+        <div className="relative z-10 space-y-8">
+          <div>
+            <h2 className="text-[28px] font-bold text-white leading-snug drop-shadow-sm">
+              배움의 숲에서<br />
+              <span className="text-emerald-200">AI와 함께 성장하다</span>
+            </h2>
+            <p className="text-emerald-100/70 text-sm mt-3 leading-relaxed">
+              교강사와 학생 모두를 위한 차세대 교육 플랫폼.<br />
+              AI가 만드는 새로운 교육의 경험을 시작하세요.
+            </p>
+          </div>
 
-          {/* 피처 카드 */}
-          <div className="space-y-3 max-w-sm">
-            {[
-              {
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                ),
-                title: 'AI 커리큘럼 자동 생성',
-                desc: '과목과 주차를 입력하면 체계적인 교육과정을 설계합니다',
-                gradient: 'from-amber-500 to-orange-500',
-                bg: 'bg-amber-50',
-              },
-              {
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                ),
-                title: '맞춤형 학습 자료',
-                desc: '커리큘럼에 맞는 강의 자료와 핵심 포인트를 자동 생성합니다',
-                gradient: 'from-blue-500 to-cyan-500',
-                bg: 'bg-blue-50',
-              },
-              {
-                icon: (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                ),
-                title: '스마트 퀴즈 시스템',
-                desc: '학습 내용을 기반으로 실전 문제를 자동으로 출제합니다',
-                gradient: 'from-emerald-500 to-teal-500',
-                bg: 'bg-emerald-50',
-              },
-            ].map((feature, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-3.5 bg-white rounded-xl p-4 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className={`w-9 h-9 shrink-0 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center`}>
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {feature.icon}
-                  </svg>
-                </div>
-                <div className="min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-800">{feature.title}</h4>
-                  <p className="text-xs text-gray-400 leading-relaxed mt-0.5">{feature.desc}</p>
-                </div>
+          {/* 기능 하이라이트 - 글래스모피즘 카드 */}
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 bg-white/[0.07] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 hover:bg-white/[0.12] transition-all duration-300">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400/30 to-green-500/20 border border-emerald-300/20 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
               </div>
-            ))}
+              <div>
+                <h4 className="text-[13px] font-semibold text-white">AI 문제 자동 생성</h4>
+                <p className="text-xs text-emerald-200/50 mt-0.5">교과서 내용 기반, 다양한 유형의 문제를 즉시 생성</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 bg-white/[0.07] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 hover:bg-white/[0.12] transition-all duration-300">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400/30 to-cyan-500/20 border border-teal-300/20 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-teal-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-[13px] font-semibold text-white">실시간 학습 분석</h4>
+                <p className="text-xs text-emerald-200/50 mt-0.5">학생별 취약점과 성장 추이를 한눈에 파악</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 bg-white/[0.07] backdrop-blur-sm rounded-2xl p-3.5 border border-white/10 hover:bg-white/[0.12] transition-all duration-300">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400/30 to-emerald-500/20 border border-green-300/20 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-[13px] font-semibold text-white">커뮤니티 & 협업</h4>
+                <p className="text-xs text-emerald-200/50 mt-0.5">교강사 간 자료 공유와 소통으로 교육의 질 향상</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* 하단 */}
-        <div className="relative">
-          <p className="text-xs text-gray-400">&copy; 2026 EduCraft AI. All rights reserved.</p>
+        {/* 하단 통계 - 글래스 카드 */}
+        <div className="relative z-10 bg-white/[0.07] backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="text-center">
+              <p className="text-xl font-bold text-white">280+</p>
+              <p className="text-[10px] text-emerald-200/50 mt-0.5">AI 생성 문항</p>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="text-center">
+              <p className="text-xl font-bold text-white">8과목</p>
+              <p className="text-[10px] text-emerald-200/50 mt-0.5">지원 교과</p>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="text-center">
+              <p className="text-xl font-bold text-white">24/7</p>
+              <p className="text-[10px] text-emerald-200/50 mt-0.5">AI 학습 지원</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ====== 우측 로그인 폼 ====== */}
-      <div className="flex-1 flex items-center justify-center px-6 py-10">
+      {/* 오른쪽 로그인 폼 */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10">
         <div className="w-full max-w-[400px]">
 
-          {/* 모바일 로고 */}
-          <div className="lg:hidden text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* 모바일 로고 (lg 이하에서만 표시) */}
+          <div className="text-center mb-10 lg:hidden">
+            <Link to="/" className="inline-flex items-center gap-2 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-6 transition-transform">
+                <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
                 </svg>
               </div>
               <div className="flex items-baseline gap-0.5">
-                <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Edu</span>
-                <span className="text-lg font-bold text-gray-900">Craft</span>
-                <span className="text-[9px] font-bold bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-1.5 py-0.5 rounded ml-1">AI</span>
+                <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Edu</span>
+                <span className="text-xl font-bold text-gray-900">Craft</span>
+                <span className="text-[10px] font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-1.5 py-0.5 rounded ml-1 uppercase tracking-wider">AI</span>
               </div>
             </Link>
           </div>
 
           {/* 헤딩 */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-900">로그인</h1>
-            <p className="text-sm text-gray-400 mt-1.5">
-              계정에 로그인하여 학습을 시작하세요
-            </p>
+            <h1 className="text-[22px] font-bold text-gray-900">로그인</h1>
+            <p className="text-sm text-gray-400 mt-1">계정에 로그인하여 학습을 시작하세요</p>
           </div>
 
           {/* 로그인 폼 */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* 이메일 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">이메일</label>
-              <div className="relative">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">이메일</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors((p) => ({ ...p, email: undefined })) }}
+                onBlur={handleEmailBlur}
+                className={`w-full px-4 py-3 bg-gray-50 border rounded-xl text-sm outline-none transition-all placeholder:text-gray-300 ${
+                  errors.email
+                    ? 'border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100'
+                    : 'border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:bg-white'
+                }`}
+                placeholder="name@example.com"
+              />
+              {errors.email && (
+                <p className="flex items-center gap-1 mt-1.5 text-xs text-red-500">
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-11 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all placeholder:text-gray-300"
-                  placeholder="name@example.com"
-                  required
-                />
-              </div>
+                  {errors.email}
+                </p>
+              )}
             </div>
 
             {/* 비밀번호 */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium text-gray-700">비밀번호</label>
-                <Link to="/find-account" className="text-xs text-indigo-600 hover:text-indigo-700 transition font-medium">
+                <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">비밀번호</label>
+                <Link to="/find-account" className="text-xs text-emerald-600 hover:text-emerald-700 transition font-medium">
                   비밀번호 찾기
                 </Link>
               </div>
               <div className="relative">
-                <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                  <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-11 pr-11 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 outline-none transition-all placeholder:text-gray-300"
-                  placeholder="8자 이상 입력하세요"
-                  required
+                  onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors((p) => ({ ...p, password: undefined })) }}
+                  onBlur={handlePasswordBlur}
+                  className={`w-full px-4 py-3 pr-11 bg-gray-50 border rounded-xl text-sm outline-none transition-all placeholder:text-gray-300 ${
+                    errors.password
+                      ? 'border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100'
+                      : 'border-gray-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:bg-white'
+                  }`}
+                  placeholder="비밀번호를 입력하세요"
                 />
                 <button
                   type="button"
@@ -255,13 +303,21 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <p className="flex items-center gap-1 mt-1.5 text-xs text-red-500">
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {errors.password}
+                </p>
+              )}
             </div>
 
             {/* 로그인 버튼 */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-indigo-500/20 flex items-center justify-center gap-2"
+              className="w-full h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm shadow-emerald-500/20 flex items-center justify-center gap-2 mt-6"
             >
               {loading ? (
                 <>
@@ -276,25 +332,26 @@ export default function LoginPage() {
           </form>
 
           {/* 회원가입 */}
-          <p className="text-center text-sm text-gray-500 mt-5">
+          <p className="text-center text-sm text-gray-400 mt-6">
             아직 계정이 없으신가요?{' '}
-            <Link to="/register" className="text-indigo-600 font-semibold hover:text-indigo-700 transition">
+            <Link to="/register" className="text-emerald-600 font-semibold hover:text-emerald-700 transition">
               회원가입
             </Link>
           </p>
 
           {/* 구분선 */}
           <div className="flex items-center gap-3 mt-8 mb-5">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">소셜 로그인</span>
-            <div className="flex-1 h-px bg-gray-200" />
+            <div className="flex-1 h-px bg-gray-100" />
+            <span className="text-[11px] text-gray-300 font-medium">간편 로그인</span>
+            <div className="flex-1 h-px bg-gray-100" />
           </div>
 
-          {/* 소셜 로그인 — 하단 배치 */}
-          <div className="grid grid-cols-3 gap-3">
+          {/* 소셜 로그인 - 아이콘 원형 */}
+          <div className="flex items-center justify-center gap-4">
             <button
               onClick={handleGoogleLogin}
-              className="flex items-center justify-center gap-2 h-11 border border-gray-200 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all"
+              className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-all"
+              title="Google 로그인"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
@@ -302,34 +359,33 @@ export default function LoginPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              <span className="text-sm font-medium text-gray-600">Google</span>
             </button>
 
             <button
               onClick={handleKakaoLogin}
-              className="flex items-center justify-center gap-2 h-11 rounded-xl hover:opacity-90 transition-all"
+              className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-80 transition-all"
               style={{ backgroundColor: '#FEE500' }}
+              title="Kakao 로그인"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path fill="#3C1E1E" d="M12 3C6.48 3 2 6.36 2 10.44c0 2.62 1.75 4.93 4.37 6.24l-1.12 4.16c-.1.36.31.65.62.44l4.94-3.26c.39.04.78.06 1.19.06 5.52 0 10-3.36 10-7.64S17.52 3 12 3z"/>
               </svg>
-              <span className="text-sm font-medium" style={{ color: '#3C1E1E' }}>Kakao</span>
             </button>
 
             <button
               onClick={handleNaverLogin}
-              className="flex items-center justify-center gap-2 h-11 rounded-xl hover:opacity-90 transition-all text-white"
+              className="w-12 h-12 rounded-full flex items-center justify-center hover:opacity-80 transition-all text-white"
               style={{ backgroundColor: '#03C75A' }}
+              title="Naver 로그인"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#fff" d="M16.273 12.845 7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/>
               </svg>
-              <span className="text-sm font-medium">Naver</span>
             </button>
           </div>
 
-          {/* 하단 모바일 */}
-          <p className="lg:hidden text-center text-xs text-gray-300 mt-8">
+          {/* Copyright */}
+          <p className="text-center text-[11px] text-gray-300 mt-10">
             &copy; 2026 EduCraft AI. All rights reserved.
           </p>
         </div>

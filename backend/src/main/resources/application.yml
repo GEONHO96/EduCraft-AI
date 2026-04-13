@@ -97,7 +97,7 @@ social:
     client-id: ZsTK1qXQouaeK9jzWd6z
     client-secret: PGTPS01rZZ
   kakao:
-    client-id: "1429142"
+    client-id: "3d156fb67d32652fd0c89c5e659f0942"
 
 ---
 # Docker 프로필

@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { courseApi, BrowseCourse } from '../../api/courses'
 import { useAuthStore } from '../../stores/authStore'
-import { getSubjectColor } from '../../constants/subjects'
+import { getSubjectColor, getSubjectIcon } from '../../constants/subjects'
 import { timeAgo } from '../../utils/date'
 import { getErrorMessage } from '../../utils/error'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
@@ -133,6 +133,7 @@ export default function BrowseCoursesPage() {
             course={course}
             isStudent={user?.role === 'STUDENT'}
             subjectColor={getSubjectColor(course.subject)}
+            subjectIcon={getSubjectIcon(course.subject)}
             timeAgo={timeAgo(course.createdAt)}
             onEnroll={() => enrollMutation.mutate(course.id)}
             enrolling={enrollMutation.isPending}
@@ -148,6 +149,7 @@ const CourseCard = memo(function CourseCard({
   course,
   isStudent,
   subjectColor,
+  subjectIcon,
   timeAgo,
   onEnroll,
   enrolling,
@@ -155,6 +157,7 @@ const CourseCard = memo(function CourseCard({
   course: BrowseCourse
   isStudent: boolean
   subjectColor: string
+  subjectIcon: React.ReactNode
   timeAgo: string
   onEnroll: () => void
   enrolling: boolean
@@ -168,8 +171,8 @@ const CourseCard = memo(function CourseCard({
     >
       <div className="flex gap-4">
         {/* 과목 아이콘 */}
-        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${subjectColor} flex items-center justify-center text-white font-bold text-lg flex-shrink-0`}>
-          {course.subject.charAt(0)}
+        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${subjectColor} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+          {subjectIcon}
         </div>
 
         <div className="flex-1 min-w-0">
