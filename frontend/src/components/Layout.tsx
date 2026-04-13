@@ -86,8 +86,8 @@ export default function Layout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             {/* 로고 + 네비게이션 */}
-            <div className="flex items-center space-x-8">
-              <Link to="/" className="flex items-center gap-2.5 group">
+            <div className="flex items-center gap-4 min-w-0 flex-1">
+              <Link to="/" className="flex items-center gap-2.5 group shrink-0">
                 <div className="relative w-8 h-8">
                   <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg rotate-6 group-hover:rotate-12 transition-transform duration-300" />
                   <div className="relative w-full h-full bg-gradient-to-br from-indigo-500 to-violet-500 rounded-lg flex items-center justify-center shadow-sm">
@@ -104,12 +104,12 @@ export default function Layout() {
               </Link>
 
               {/* 데스크톱 메뉴 */}
-              <div className="hidden md:flex items-center space-x-1">
+              <div className="hidden md:flex items-center gap-0.5 min-w-0 overflow-x-auto scrollbar-hide">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-1.5 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    className={`flex items-center gap-1 px-2.5 py-2 rounded-lg text-sm font-medium transition whitespace-nowrap shrink-0 ${
                       isActive(item.path)
                         ? 'bg-primary-50 text-primary-700'
                         : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -123,7 +123,7 @@ export default function Layout() {
             </div>
 
             {/* 유저 정보 + 로그아웃 */}
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 shrink-0">
               <Link
                 to="/profile/edit"
                 className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition cursor-pointer"

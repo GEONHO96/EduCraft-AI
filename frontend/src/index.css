@@ -10,6 +10,15 @@ body {
   background-color: #f8fafc;
 }
 
+/* 스크롤바 숨기기 (네비게이션 등) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* 챗봇 창 등장 애니메이션 */
 .animate-in {
   animation: chatSlideIn 0.3s ease-out;
