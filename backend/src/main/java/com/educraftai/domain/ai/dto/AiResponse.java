@@ -17,10 +17,13 @@ public class AiResponse {
 
     @Getter @Builder @AllArgsConstructor
     public static class WeekPlan {
+        private Long curriculumId;
         private Integer weekNumber;
         private String topic;
         private String objectives;
         private String content;
+        private String materialContentJson;
+        private String quizQuestionsJson;
     }
 
     @Getter @Builder @AllArgsConstructor

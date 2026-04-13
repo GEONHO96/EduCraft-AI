@@ -26,10 +26,13 @@ export interface GenerateQuizRequest {
 }
 
 export interface WeekPlan {
+  curriculumId: number
   weekNumber: number
   topic: string
   objectives: string
   content: string
+  materialContentJson: string
+  quizQuestionsJson: string
 }
 
 export interface CurriculumResult {

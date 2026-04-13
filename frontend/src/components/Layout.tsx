@@ -59,6 +59,12 @@ export default function Layout() {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
       </svg>
     )},
+    { path: '/settings', label: '설정', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    )},
   ]
 
   // 현재 경로와 메뉴 항목의 활성 상태를 비교
@@ -68,6 +74,7 @@ export default function Layout() {
     if (path === '/recommend') return location.pathname.startsWith('/recommend')
     if (path === '/sns/feed') return location.pathname.startsWith('/sns')
     if (path === '/pricing') return location.pathname.startsWith('/pricing')
+    if (path === '/settings') return location.pathname.startsWith('/settings')
     if (path === '/courses/browse') return location.pathname === '/courses/browse'
     if (path === '/courses') return location.pathname.startsWith('/courses') && !location.pathname.startsWith('/courses/browse')
     return location.pathname.startsWith(path)
@@ -80,11 +87,20 @@ export default function Layout() {
           <div className="flex justify-between h-16 items-center">
             {/* 로고 + 네비게이션 */}
             <div className="flex items-center space-x-8">
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">E</span>
+              <Link to="/" className="flex items-center gap-2.5 group">
+                <div className="relative w-8 h-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg rotate-6 group-hover:rotate-12 transition-transform duration-300" />
+                  <div className="relative w-full h-full bg-gradient-to-br from-indigo-500 to-violet-500 rounded-lg flex items-center justify-center shadow-sm">
+                    <svg className="w-4.5 h-4.5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                    </svg>
+                  </div>
                 </div>
-                <span className="text-xl font-bold text-gray-900 hidden sm:block">EduCraft AI</span>
+                <span className="hidden sm:flex items-baseline text-lg font-extrabold tracking-tight">
+                  <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Edu</span>
+                  <span className="text-gray-800">Craft</span>
+                  <span className="text-[10px] font-bold text-violet-500 ml-1 bg-violet-50 px-1.5 py-0.5 rounded-md leading-none self-center">AI</span>
+                </span>
               </Link>
 
               {/* 데스크톱 메뉴 */}

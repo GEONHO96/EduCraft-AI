@@ -21,6 +21,7 @@ import com.educraftai.global.exception.ErrorCode;
 import com.educraftai.infra.ai.AiClient;
 import com.educraftai.infra.ai.OfflineCurriculumData;
 import com.educraftai.infra.ai.OfflineCurriculumData.WeekEntry;
+import com.educraftai.infra.ai.OfflineQuizData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,8 +117,8 @@ public class AiGenerationService {
                         .build();
                 curriculumRepository.save(curriculum);
 
-                // 각 주차별 강의 자료 자동 생성
-                String lectureJson = generateOfflineMaterial(topic, objectives, "LECTURE");
+                // 각 주차별 강의 자료 자동 생성 (커리큘럼 content 활용)
+                String lectureJson = generateOfflineMaterial(topic, objectives, content, "LECTURE");
                 Material lectureMaterial = Material.builder()
                         .curriculum(curriculum)
                         .type(Material.MaterialType.LECTURE)
@@ -128,7 +129,7 @@ public class AiGenerationService {
                         .build();
                 materialRepository.save(lectureMaterial);
 
-                // 각 주차별 퀴즈 자동 생성
+                // 각 주차별 퀴즈 자동 생성 (주제별 실제 문제 은행 활용)
                 String quizJson = generateOfflineQuiz(topic, 5);
                 Material quizMaterial = Material.builder()
                         .curriculum(curriculum)
@@ -148,10 +149,13 @@ public class AiGenerationService {
                 quizRepository.save(quiz);
 
                 weekPlans.add(AiResponse.WeekPlan.builder()
+                        .curriculumId(curriculum.getId())
                         .weekNumber(weekNumber)
                         .topic(topic)
                         .objectives(objectives)
                         .content(content)
+                        .materialContentJson(lectureJson)
+                        .quizQuestionsJson(quizJson)
                         .build());
             }
 
@@ -210,8 +214,8 @@ public class AiGenerationService {
                         .build();
                 curriculumRepository.save(curriculum);
 
-                // 각 주차별 강의 자료 자동 생성
-                String lectureJson = generateOfflineMaterial(topic, objectives, "LECTURE");
+                // 각 주차별 강의 자료 자동 생성 (커리큘럼 content 활용)
+                String lectureJson = generateOfflineMaterial(topic, objectives, content, "LECTURE");
                 Material lectureMaterial = Material.builder()
                         .curriculum(curriculum)
                         .type(Material.MaterialType.LECTURE)
@@ -222,7 +226,7 @@ public class AiGenerationService {
                         .build();
                 materialRepository.save(lectureMaterial);
 
-                // 각 주차별 퀴즈 자동 생성
+                // 각 주차별 퀴즈 자동 생성 (주제별 실제 문제 은행 활용)
                 String quizJson = generateOfflineQuiz(topic, 5);
                 Material quizMaterial = Material.builder()
                         .curriculum(curriculum)
@@ -241,16 +245,19 @@ public class AiGenerationService {
                         .build();
                 quizRepository.save(quiz);
 
+                weekPlans.add(AiResponse.WeekPlan.builder()
+                        .curriculumId(curriculum.getId())
+                        .weekNumber(i + 1)
+                        .topic(topic)
+                        .objectives(objectives)
+                        .content(content)
+                        .materialContentJson(lectureJson)
+                        .quizQuestionsJson(quizJson)
+                        .build());
+
             } catch (JsonProcessingException e) {
                 throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
             }
-
-            weekPlans.add(AiResponse.WeekPlan.builder()
-                    .weekNumber(i + 1)
-                    .topic(topic)
-                    .objectives(objectives)
-                    .content(content)
-                    .build());
         }
 
         int timeSaved = totalWeeks * 1800;
@@ -560,30 +567,63 @@ public class AiGenerationService {
         );
     }
 
-    /** 오프라인 수업 자료 생성 (내장 템플릿) */
-    private String generateOfflineMaterial(String topic, String objectives, String type) {
+    /**
+     * 오프라인 수업 자료 생성 — 커리큘럼 content를 파싱하여 실제 교육 내용 구성
+     * content 텍스트를 문장 단위로 분리 → 섹션별로 그룹핑 → 핵심 키워드 추출
+     */
+    private String generateOfflineMaterial(String topic, String objectives, String curriculumContent, String type) {
         String typeLabel = "LECTURE".equalsIgnoreCase(type) ? "강의 자료" : "실습 자료";
         try {
+            // 커리큘럼 content를 문장 단위로 분리 (마침표 기준)
+            String[] sentences = curriculumContent.split("(?<=다\\.)\\s*|(?<=니다\\.)\\s*");
+            List<String> validSentences = new ArrayList<>();
+            for (String s : sentences) {
+                String trimmed = s.trim();
+                if (!trimmed.isEmpty() && trimmed.length() > 5) {
+                    validSentences.add(trimmed);
+                }
+            }
+
+            // 최소 3문장 보장
+            while (validSentences.size() < 3) {
+                validSentences.add(topic + "의 심화 내용을 추가로 학습합니다.");
+            }
+
+            // 문장들을 3개 섹션으로 분배
+            int total = validSentences.size();
+            int sec1End = Math.max(1, total / 3);
+            int sec2End = Math.max(sec1End + 1, total * 2 / 3);
+
+            String section1Content = String.join(" ", validSentences.subList(0, sec1End));
+            String section2Content = String.join(" ", validSentences.subList(sec1End, sec2End));
+            String section3Content = String.join(" ", validSentences.subList(sec2End, total));
+
+            // 각 섹션에서 핵심 키워드 추출 (괄호 안 용어들)
+            List<String> keyPoints1 = extractKeyPoints(section1Content, topic);
+            List<String> keyPoints2 = extractKeyPoints(section2Content, topic);
+            List<String> keyPoints3 = extractKeyPoints(section3Content, topic);
+
             Map<String, Object> material = Map.of(
                 "title", topic + " " + typeLabel,
                 "sections", List.of(
                     Map.of(
-                        "heading", "1. " + topic + " 개요",
-                        "content", objectives + "\n\n이번 " + typeLabel + "에서는 " + topic + "의 핵심 개념을 체계적으로 학습합니다. 기본 원리부터 실전 활용까지 단계적으로 다루며, 각 섹션별 핵심 포인트를 정리합니다.",
-                        "keyPoints", List.of(topic + "의 정의와 필요성", "기본 구조와 동작 원리", "실제 활용 사례")
+                        "heading", "1. 학습 목표 및 개요",
+                        "content", objectives + "\n\n" + section1Content,
+                        "keyPoints", keyPoints1
                     ),
                     Map.of(
-                        "heading", "2. 핵심 개념 정리",
-                        "content", topic + "을(를) 구성하는 핵심 요소들을 하나씩 살펴봅니다. 각 개념의 정의, 특징, 장단점을 비교 분석하고, 실제 코드나 예제를 통해 이해를 확인합니다.",
-                        "keyPoints", List.of("주요 용어 정리", "개념 간 관계 파악", "예제를 통한 이해 확인")
+                        "heading", "2. 핵심 개념 상세",
+                        "content", section2Content,
+                        "keyPoints", keyPoints2
                     ),
                     Map.of(
-                        "heading", "3. 실전 예제와 연습",
-                        "content", "앞서 배운 개념을 바탕으로 실전 예제를 풀어봅니다. 단계별로 난이도를 높여가며 문제를 해결하고, 최종적으로 종합 과제를 수행합니다.",
-                        "keyPoints", List.of("기초 예제 풀이", "응용 문제 도전", "종합 과제 수행")
+                        "heading", "3. 실습 및 응용",
+                        "content", section3Content,
+                        "keyPoints", keyPoints3
                     )
                 ),
-                "summary", topic + "의 핵심 개념을 학습하고, 실전 예제를 통해 이해를 심화했습니다. 다음 주차에서는 이를 바탕으로 더 심화된 내용을 다룹니다."
+                "summary", String.format("이번 강의에서는 %s을(를) 학습했습니다. %s 다음 주차에서는 이를 바탕으로 심화 내용을 다룹니다.",
+                        topic, objectives)
             );
             return objectMapper.writeValueAsString(material);
         } catch (JsonProcessingException e) {
@@ -591,47 +631,55 @@ public class AiGenerationService {
         }
     }
 
-    /** 오프라인 퀴즈 생성 (범용 문제 템플릿) */
-    private String generateOfflineQuiz(String topic, int questionCount) {
-        List<Map<String, Object>> questions = new ArrayList<>();
-        String[][] templates = {
-            {"다음 중 %s에 대한 설명으로 올바른 것은?", "%s의 기본 개념에 해당한다", "%s와 관련이 없다", "%s에서 사용되지 않는다", "%s의 반대 개념이다"},
-            {"다음 중 %s의 주요 특징이 아닌 것은?", "효율적인 처리가 가능하다", "재사용성이 높다", "모든 경우에 항상 최적이다", "유지보수가 용이하다"},
-            {"다음 중 %s을(를) 활용하는 가장 적절한 상황은?", "해당 개념이 필요한 문제를 해결할 때", "관련 없는 작업을 수행할 때", "단순 반복 작업만 할 때", "어떤 상황에서도 사용하지 않을 때"},
-            {"%s에서 가장 중요한 원칙은?", "정확성과 효율성의 균형", "속도만 추구하는 것", "복잡성을 최대화하는 것", "가독성을 무시하는 것"},
-            {"%s의 장점으로 올바른 것은?", "코드의 재사용성과 유지보수성 향상", "항상 실행 속도가 빨라진다", "메모리를 무제한으로 사용할 수 있다", "디버깅이 불필요해진다"},
-        };
+    /** 기존 호환용 — content 없이 호출 시 (단독 자료 생성용) */
+    private String generateOfflineMaterial(String topic, String objectives, String type) {
+        return generateOfflineMaterial(topic, objectives, objectives, type);
+    }
 
-        for (int i = 0; i < questionCount; i++) {
-            String[] tmpl = templates[i % templates.length];
-            if (i % 3 == 2) {
-                // 주관식
-                questions.add(Map.of(
-                    "number", i + 1,
-                    "type", "SHORT_ANSWER",
-                    "question", String.format("%s의 핵심 개념을 한 문장으로 설명하세요.", topic),
-                    "options", List.of(),
-                    "answer", topic + "의 기본 원리를 이해하고 적용하는 것",
-                    "explanation", topic + "은(는) 해당 분야의 핵심 개념으로, 기본 원리를 이해하는 것이 가장 중요합니다."
-                ));
-            } else {
-                // 객관식
-                questions.add(Map.of(
-                    "number", i + 1,
-                    "type", "MULTIPLE_CHOICE",
-                    "question", String.format(tmpl[0], topic),
-                    "options", List.of(
-                        String.format(tmpl[1], topic),
-                        String.format(tmpl[2], topic),
-                        String.format(tmpl[3], topic),
-                        String.format(tmpl[4], topic)
-                    ),
-                    "answer", 0,
-                    "explanation", topic + "에 대한 기본 개념을 정확히 이해하고 있어야 합니다. 정답은 첫 번째 보기입니다."
-                ));
+    /** 텍스트에서 핵심 키워드(괄호 안 용어, 키 개념) 추출 */
+    private List<String> extractKeyPoints(String text, String topic) {
+        List<String> points = new ArrayList<>();
+
+        // 괄호 안의 용어 추출 (한글 괄호 + 영문 괄호)
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("[（(]([^)）]+)[)）]").matcher(text);
+        while (matcher.find() && points.size() < 4) {
+            String term = matcher.group(1).trim();
+            if (term.length() >= 2 && term.length() <= 50) {
+                points.add(term);
             }
         }
 
+        // 괄호 추출이 부족하면 문장에서 주요 키워드 추가
+        if (points.size() < 3) {
+            String[] keywords = text.split("[,，·/]");
+            for (String kw : keywords) {
+                String trimmed = kw.trim();
+                // 짧은 핵심 키워드만 추출
+                if (trimmed.length() >= 3 && trimmed.length() <= 30 && points.size() < 4) {
+                    // "를 학습합니다" 등 서술어 제거
+                    trimmed = trimmed.replaceAll("을\\s*(학습|다룹|실습|소개).*", "").trim();
+                    trimmed = trimmed.replaceAll("를\\s*(학습|다룹|실습|소개).*", "").trim();
+                    if (trimmed.length() >= 2 && !points.contains(trimmed)) {
+                        points.add(trimmed);
+                    }
+                }
+            }
+        }
+
+        // 최소 2개 보장
+        if (points.isEmpty()) {
+            points.add(topic + " 핵심 개념 이해");
+            points.add("실전 예제를 통한 응용");
+        } else if (points.size() == 1) {
+            points.add("실전 예제를 통한 응용");
+        }
+
+        return points.subList(0, Math.min(points.size(), 4));
+    }
+
+    /** 오프라인 퀴즈 생성 — OfflineQuizData 문제 은행에서 실제 문제 출제 */
+    private String generateOfflineQuiz(String topic, int questionCount) {
+        List<Map<String, Object>> questions = OfflineQuizData.findQuestions(topic, questionCount);
         try {
             return objectMapper.writeValueAsString(Map.of("questions", questions));
         } catch (JsonProcessingException e) {
