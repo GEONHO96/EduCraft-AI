@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { courseApi } from '../../api/courses'
 import { useAuthStore } from '../../stores/authStore'
@@ -18,6 +18,7 @@ interface CurriculumInfo {
 export default function CourseDetailPage() {
   const { courseId } = useParams<{ courseId: string }>()
   const isTeacher = useAuthStore((s) => s.isTeacher)()
+  const navigate = useNavigate()
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -134,8 +135,11 @@ export default function CourseDetailPage() {
                   </div>
                 </div>
 
-                {/* 카드 */}
-                <div className="flex-1 bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md hover:border-indigo-100 transition-all duration-200 group-hover:-translate-y-0.5">
+                {/* 카드 - 클릭하면 자료 생성 페이지로 이동 */}
+                <div
+                  onClick={() => navigate(`/curriculum/${c.id}/generate-material`)}
+                  className="flex-1 bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md hover:border-indigo-200 transition-all duration-200 group-hover:-translate-y-0.5 cursor-pointer"
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -151,7 +155,7 @@ export default function CourseDetailPage() {
                           </span>
                         )}
                       </div>
-                      <h3 className="font-semibold text-gray-800">{c.topic}</h3>
+                      <h3 className="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{c.topic}</h3>
                       <p className="text-sm text-gray-400 mt-1 line-clamp-2">{c.objectives}</p>
                     </div>
                     {isTeacher && (
@@ -159,12 +163,14 @@ export default function CourseDetailPage() {
                         <Link
                           to={`/curriculum/${c.id}/generate-material`}
                           className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1.5 rounded-lg hover:bg-blue-100 transition font-medium"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           자료 생성
                         </Link>
                         <Link
                           to={`/curriculum/${c.id}/generate-quiz`}
                           className="text-xs bg-emerald-50 text-emerald-600 px-2.5 py-1.5 rounded-lg hover:bg-emerald-100 transition font-medium"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           퀴즈 출제
                         </Link>
