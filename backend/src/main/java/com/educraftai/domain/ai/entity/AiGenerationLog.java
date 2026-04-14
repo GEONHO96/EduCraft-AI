@@ -8,7 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ai_generation_logs")
+@Table(name = "ai_generation_logs", indexes = {
+    @Index(name = "idx_ai_log_teacher", columnList = "teacher_id")
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

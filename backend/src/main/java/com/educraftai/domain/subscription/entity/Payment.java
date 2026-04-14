@@ -12,7 +12,9 @@ import java.time.LocalDateTime;
  * 각 결제 건의 금액, 결제 수단, 상태 등을 기록한다.
  */
 @Entity
-@Table(name = "payments")
+@Table(name = "payments", indexes = {
+    @Index(name = "idx_payment_user", columnList = "user_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

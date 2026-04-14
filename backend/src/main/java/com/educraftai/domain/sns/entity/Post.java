@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
  * 카테고리별 게시판 기능을 제공하며, 좋아요/댓글 수를 비정규화하여 관리한다.
  */
 @Entity
-@Table(name = "posts")
+@Table(name = "posts", indexes = {
+    @Index(name = "idx_post_author", columnList = "author_id"),
+    @Index(name = "idx_post_category", columnList = "category")
+})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

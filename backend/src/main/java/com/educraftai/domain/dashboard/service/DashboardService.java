@@ -73,13 +73,24 @@ public class DashboardService {
     }
 
     public DashboardResponse.StudentDashboard getStudentDashboard(Long studentId) {
-        var enrollments = enrollmentRepository.findByStudentId(studentId);
-        var submissions = submissionRepository.findByStudentId(studentId);
-        var gradeQuizSubmissions = gradeQuizSubmissionRepository.findByStudentIdOrderBySubmittedAtDesc(studentId);
+        long enrolledCourseCount = enrollmentRepository.countByStudentId(studentId);
 
-        // 강의 퀴즈 결과
+        // DB 집계로 전체 퀴즈 수 조회 (메모리에 전체 로드 방지)
+        long quizCount = submissionRepository.countByStudentId(studentId);
+        long gradeQuizCount = gradeQuizSubmissionRepository.countByStudentId(studentId);
+        long totalQuizCount = quizCount + gradeQuizCount;
+
+        // DB 집계로 평균 점수 계산 (가중 평균)
+        double quizAvg = submissionRepository.getAverageScorePercentByStudentId(studentId);
+        double gradeQuizAvg = gradeQuizSubmissionRepository.getAverageScorePercentByStudentId(studentId);
+        double avgScore = totalQuizCount > 0
+                ? (quizAvg * quizCount + gradeQuizAvg * gradeQuizCount) / totalQuizCount
+                : 0.0;
+
+        // 최근 결과: 각 소스에서 최근 10건만 조회 후 병합
         List<DashboardResponse.QuizResult> recentResults = new ArrayList<>();
-        for (var s : submissions) {
+
+        for (var s : submissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(studentId)) {
             recentResults.add(DashboardResponse.QuizResult.builder()
                     .quizTitle(s.getQuiz().getMaterial().getTitle())
                     .score(s.getScore())
@@ -88,8 +99,7 @@ public class DashboardService {
                     .build());
         }
 
-        // 학년별 AI 퀴즈 결과도 포함
-        for (var g : gradeQuizSubmissions) {
+        for (var g : gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(studentId)) {
             String gradeLabel = GRADE_LABELS.getOrDefault(g.getGrade(), g.getGrade());
             recentResults.add(DashboardResponse.QuizResult.builder()
                     .quizTitle(gradeLabel + " " + g.getSubject() + " 퀴즈")
@@ -99,31 +109,15 @@ public class DashboardService {
                     .build());
         }
 
-        // 최신순 정렬 후 최근 10개만
+        // 병합 후 최신순 정렬, 최대 10건
         recentResults.sort(Comparator.comparing(DashboardResponse.QuizResult::getSubmittedAt).reversed());
         if (recentResults.size() > 10) {
             recentResults = recentResults.subList(0, 10);
         }
 
-        // 전체 퀴즈 수 합산
-        int totalQuizCount = submissions.size() + gradeQuizSubmissions.size();
-
-        // 전체 평균 점수 (강의 퀴즈 + 학년별 퀴즈 통합)
-        double totalScoreSum = 0;
-        int count = 0;
-        for (var s : submissions) {
-            totalScoreSum += (double) s.getScore() / s.getTotalQuestions() * 100;
-            count++;
-        }
-        for (var g : gradeQuizSubmissions) {
-            totalScoreSum += (double) g.getScore() / g.getTotalQuestions() * 100;
-            count++;
-        }
-        double avgScore = count > 0 ? totalScoreSum / count : 0.0;
-
         return DashboardResponse.StudentDashboard.builder()
-                .enrolledCourses(enrollments.size())
-                .completedQuizzes(totalQuizCount)
+                .enrolledCourses((int) enrolledCourseCount)
+                .completedQuizzes((int) totalQuizCount)
                 .averageScore(Math.round(avgScore * 10.0) / 10.0)
                 .recentQuizResults(recentResults)
                 .build();

@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
  * 학년별 퀴즈는 별도 엔티티로 관리한다.
  */
 @Entity
-@Table(name = "grade_quiz_submissions")
+@Table(name = "grade_quiz_submissions", indexes = {
+    @Index(name = "idx_grade_quiz_student", columnList = "student_id")
+})
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

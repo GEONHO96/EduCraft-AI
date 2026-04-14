@@ -78,16 +78,23 @@ public class QuizService {
 
     private int calculateScore(String questionsJson, String answersJson) {
         try {
-            Map<String, Object> questions = objectMapper.readValue(questionsJson, new TypeReference<>() {});
-            List<Map<String, Object>> questionList = (List<Map<String, Object>>) questions.get("questions");
+            List<Map<String, Object>> questionList = parseQuestionList(questionsJson);
+            if (questionList == null || questionList.isEmpty()) {
+                return 0;
+            }
+
             List<Object> studentAnswers = objectMapper.readValue(answersJson, new TypeReference<>() {});
+            if (studentAnswers == null) {
+                return 0;
+            }
 
             int correct = 0;
             for (int i = 0; i < questionList.size() && i < studentAnswers.size(); i++) {
                 Object correctAnswer = questionList.get(i).get("answer");
                 Object studentAnswer = studentAnswers.get(i);
 
-                if (correctAnswer != null && correctAnswer.toString().equals(studentAnswer.toString())) {
+                if (correctAnswer != null && studentAnswer != null
+                        && correctAnswer.toString().equals(studentAnswer.toString())) {
                     correct++;
                 }
             }
@@ -100,12 +107,22 @@ public class QuizService {
 
     private int countQuestions(String questionsJson) {
         try {
-            Map<String, Object> questions = objectMapper.readValue(questionsJson, new TypeReference<>() {});
-            List<?> questionList = (List<?>) questions.get("questions");
-            return questionList.size();
+            List<?> questionList = parseQuestionList(questionsJson);
+            return questionList != null ? questionList.size() : 0;
         } catch (Exception e) {
-            log.warn("[Quiz] 점수 계산 실패: {}", e.getMessage());
+            log.warn("[Quiz] 문제 수 조회 실패: {}", e.getMessage());
             return 0;
         }
+    }
+
+    /** questionsJson에서 questions 배열을 안전하게 추출 */
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> parseQuestionList(String questionsJson) throws Exception {
+        Map<String, Object> parsed = objectMapper.readValue(questionsJson, new TypeReference<>() {});
+        Object questions = parsed.get("questions");
+        if (questions instanceof List<?> list) {
+            return (List<Map<String, Object>>) list;
+        }
+        return null;
     }
 }

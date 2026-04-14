@@ -103,35 +103,35 @@ public class SnsService {
 
     // ============ 좋아요 ============
 
-    /** 좋아요 토글 - 이미 좋아요했으면 취소, 아니면 추가 */
+    /** 좋아요 토글 - 이미 좋아요했으면 취소, 아니면 추가 (원자적 카운터 업데이트) */
     @Transactional
     public SnsResponse.LikeResult toggleLike(Long userId, Long postId) {
         Post post = findPost(postId);
         User user = findUser(userId);
 
-        return postLikeRepository.findByPostIdAndUserId(postId, userId)
-                .map(like -> {
-                    postLikeRepository.delete(like);
-                    post.decrementLikeCount();
-                    postRepository.save(post);
-                    return SnsResponse.LikeResult.builder()
-                            .liked(false)
-                            .likeCount(post.getLikeCount())
-                            .build();
-                })
-                .orElseGet(() -> {
-                    PostLike like = PostLike.builder()
-                            .post(post)
-                            .user(user)
-                            .build();
-                    postLikeRepository.save(like);
-                    post.incrementLikeCount();
-                    postRepository.save(post);
-                    return SnsResponse.LikeResult.builder()
-                            .liked(true)
-                            .likeCount(post.getLikeCount())
-                            .build();
-                });
+        boolean alreadyLiked = postLikeRepository.findByPostIdAndUserId(postId, userId).isPresent();
+
+        if (alreadyLiked) {
+            postLikeRepository.deleteByPostIdAndUserId(postId, userId);
+            postRepository.decrementLikeCount(postId);
+        } else {
+            PostLike like = PostLike.builder()
+                    .post(post)
+                    .user(user)
+                    .build();
+            postLikeRepository.save(like);
+            postRepository.incrementLikeCount(postId);
+        }
+
+        // DB에서 최신 카운트를 다시 조회 (영속성 컨텍스트 캐시 우회)
+        postRepository.flush();
+        int updatedCount = postRepository.findById(postId)
+                .map(Post::getLikeCount).orElse(0);
+
+        return SnsResponse.LikeResult.builder()
+                .liked(!alreadyLiked)
+                .likeCount(updatedCount)
+                .build();
     }
 
     // ============ 댓글 ============
@@ -149,8 +149,7 @@ public class SnsService {
                 .build();
 
         postCommentRepository.save(comment);
-        post.incrementCommentCount();
-        postRepository.save(post);
+        postRepository.incrementCommentCount(postId);
 
         return SnsResponse.CommentInfo.from(comment);
     }
@@ -165,10 +164,9 @@ public class SnsService {
             throw new BusinessException(ErrorCode.SNS_NOT_AUTHOR);
         }
 
-        Post post = comment.getPost();
-        post.decrementCommentCount();
-        postRepository.save(post);
+        Long commentPostId = comment.getPost().getId();
         postCommentRepository.delete(comment);
+        postRepository.decrementCommentCount(commentPostId);
     }
 
     // ============ 팔로우 ============

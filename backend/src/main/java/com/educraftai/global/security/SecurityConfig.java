@@ -19,6 +19,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.List;
 
 /**
@@ -33,6 +35,10 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final ObjectMapper objectMapper;
+
+    /** CORS 허용 Origin 목록 (application.yml에서 설정, 기본값: localhost:5173) */
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://127.0.0.1:5173}")
+    private String allowedOrigins;
 
     /** 보안 필터 체인 설정 - CORS, CSRF 비활성화, JWT 필터 등록, 인증/인가 예외 처리 */
     @Bean
@@ -75,11 +81,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /** CORS 설정 - 프론트엔드 개발 서버 허용 */
+    /** CORS 설정 - 허용된 Origin만 접근 가능 (프로덕션 안전) */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
+        List<String> origins = List.of(allowedOrigins.split(","));
+        configuration.setAllowedOriginPatterns(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

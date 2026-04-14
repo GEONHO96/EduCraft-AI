@@ -40,6 +40,16 @@ import java.util.Map;
 @Transactional
 public class AiGenerationService {
 
+    // ====== 시간 절약 상수 (초 단위) ======
+    /** 커리큘럼 1주차당 절약 시간 (30분) */
+    private static final int TIME_SAVED_PER_WEEK = 1800;
+    /** 수업 자료 1건당 절약 시간 (1시간) */
+    private static final int TIME_SAVED_PER_MATERIAL = 3600;
+    /** 퀴즈 문제 1문항당 절약 시간 (10분) */
+    private static final int TIME_SAVED_PER_QUESTION = 600;
+    /** 보충학습 1건당 절약 시간 (30분) */
+    private static final int TIME_SAVED_PER_SUPPLEMENT = 1800;
+
     private final AiClient aiClient;
     private final ObjectMapper objectMapper;
     private final CourseRepository courseRepository;
@@ -107,59 +117,10 @@ public class AiGenerationService {
                 String objectives = (String) week.get("objectives");
                 String content = (String) week.get("content");
 
-                Curriculum curriculum = Curriculum.builder()
-                        .course(course)
-                        .weekNumber(weekNumber)
-                        .topic(topic)
-                        .objectives(objectives)
-                        .contentJson(objectMapper.writeValueAsString(Map.of("content", content)))
-                        .aiGenerated(true)
-                        .build();
-                curriculumRepository.save(curriculum);
-
-                // 각 주차별 강의 자료 자동 생성 (커리큘럼 content 활용)
-                String lectureJson = generateOfflineMaterial(topic, objectives, content, "LECTURE");
-                Material lectureMaterial = Material.builder()
-                        .curriculum(curriculum)
-                        .type(Material.MaterialType.LECTURE)
-                        .title(String.format("%d주차 - %s 강의 자료", weekNumber, topic))
-                        .contentJson(lectureJson)
-                        .difficulty(3)
-                        .aiGenerated(true)
-                        .build();
-                materialRepository.save(lectureMaterial);
-
-                // 각 주차별 퀴즈 자동 생성 (주제별 실제 문제 은행 활용)
-                String quizJson = generateOfflineQuiz(topic, 5);
-                Material quizMaterial = Material.builder()
-                        .curriculum(curriculum)
-                        .type(Material.MaterialType.QUIZ)
-                        .title(String.format("%d주차 - %s 확인 퀴즈", weekNumber, topic))
-                        .contentJson("{}")
-                        .difficulty(3)
-                        .aiGenerated(true)
-                        .build();
-                materialRepository.save(quizMaterial);
-
-                Quiz quiz = Quiz.builder()
-                        .material(quizMaterial)
-                        .questionsJson(quizJson)
-                        .timeLimit(15)
-                        .build();
-                quizRepository.save(quiz);
-
-                weekPlans.add(AiResponse.WeekPlan.builder()
-                        .curriculumId(curriculum.getId())
-                        .weekNumber(weekNumber)
-                        .topic(topic)
-                        .objectives(objectives)
-                        .content(content)
-                        .materialContentJson(lectureJson)
-                        .quizQuestionsJson(quizJson)
-                        .build());
+                weekPlans.add(saveWeekWithMaterials(course, weekNumber, topic, objectives, content));
             }
 
-            int timeSaved = request.getTotalWeeks() * 1800;
+            int timeSaved = request.getTotalWeeks() * TIME_SAVED_PER_WEEK;
             saveLog(userId, userPrompt, "CURRICULUM", timeSaved);
             log.info("[AI 커리큘럼 생성 완료] courseId={}, 총 {}주차 (커리큘럼 + 강의자료 + 퀴즈 자동 생성)", course.getId(), weeks.size());
 
@@ -204,63 +165,13 @@ public class AiGenerationService {
             }
 
             try {
-                Curriculum curriculum = Curriculum.builder()
-                        .course(course)
-                        .weekNumber(i + 1)
-                        .topic(topic)
-                        .objectives(objectives)
-                        .contentJson(objectMapper.writeValueAsString(Map.of("content", content)))
-                        .aiGenerated(true)
-                        .build();
-                curriculumRepository.save(curriculum);
-
-                // 각 주차별 강의 자료 자동 생성 (커리큘럼 content 활용)
-                String lectureJson = generateOfflineMaterial(topic, objectives, content, "LECTURE");
-                Material lectureMaterial = Material.builder()
-                        .curriculum(curriculum)
-                        .type(Material.MaterialType.LECTURE)
-                        .title(String.format("%d주차 - %s 강의 자료", i + 1, topic))
-                        .contentJson(lectureJson)
-                        .difficulty(3)
-                        .aiGenerated(true)
-                        .build();
-                materialRepository.save(lectureMaterial);
-
-                // 각 주차별 퀴즈 자동 생성 (주제별 실제 문제 은행 활용)
-                String quizJson = generateOfflineQuiz(topic, 5);
-                Material quizMaterial = Material.builder()
-                        .curriculum(curriculum)
-                        .type(Material.MaterialType.QUIZ)
-                        .title(String.format("%d주차 - %s 확인 퀴즈", i + 1, topic))
-                        .contentJson("{}")
-                        .difficulty(3)
-                        .aiGenerated(true)
-                        .build();
-                materialRepository.save(quizMaterial);
-
-                Quiz quiz = Quiz.builder()
-                        .material(quizMaterial)
-                        .questionsJson(quizJson)
-                        .timeLimit(15)
-                        .build();
-                quizRepository.save(quiz);
-
-                weekPlans.add(AiResponse.WeekPlan.builder()
-                        .curriculumId(curriculum.getId())
-                        .weekNumber(i + 1)
-                        .topic(topic)
-                        .objectives(objectives)
-                        .content(content)
-                        .materialContentJson(lectureJson)
-                        .quizQuestionsJson(quizJson)
-                        .build());
-
+                weekPlans.add(saveWeekWithMaterials(course, i + 1, topic, objectives, content));
             } catch (JsonProcessingException e) {
                 throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
             }
         }
 
-        int timeSaved = totalWeeks * 1800;
+        int timeSaved = totalWeeks * TIME_SAVED_PER_WEEK;
         String logPrompt = String.format("[오프라인] 과목: %s, 주제: %s, %d주차", request.getSubject(), request.getTopic(), totalWeeks);
         saveLog(userId, logPrompt, "CURRICULUM", timeSaved);
 
@@ -330,7 +241,7 @@ public class AiGenerationService {
                 .build();
         materialRepository.save(material);
 
-        int timeSaved = 3600;
+        int timeSaved = TIME_SAVED_PER_MATERIAL;
         saveLog(userId, String.format("[%s] 주제: %s", aiClient.isConfigured() ? "AI" : "오프라인", curriculum.getTopic()), "MATERIAL", timeSaved);
 
         return AiResponse.MaterialResult.builder()
@@ -408,7 +319,7 @@ public class AiGenerationService {
                 .build();
         quizRepository.save(quiz);
 
-        int timeSaved = request.getQuestionCount() * 600;
+        int timeSaved = request.getQuestionCount() * TIME_SAVED_PER_QUESTION;
         saveLog(userId, String.format("[%s] 주제: %s, %d문제", aiClient.isConfigured() ? "AI" : "오프라인", curriculum.getTopic(), request.getQuestionCount()), "QUIZ", timeSaved);
 
         return AiResponse.QuizResult.builder()
@@ -537,7 +448,7 @@ public class AiGenerationService {
         String aiResult = aiClient.generate(systemPrompt, userPrompt);
         String jsonContent = extractJson(aiResult);
 
-        int timeSaved = 1800;
+        int timeSaved = TIME_SAVED_PER_SUPPLEMENT;
         saveLog(userId, userPrompt, "SUPPLEMENT", timeSaved);
 
         try {
@@ -550,6 +461,64 @@ public class AiGenerationService {
         } catch (JsonProcessingException e) {
             throw new BusinessException(ErrorCode.AI_GENERATION_FAILED);
         }
+    }
+
+    /**
+     * 주차별 커리큘럼 + 강의자료 + 퀴즈를 한 번에 저장한다.
+     * 온라인(AI)/오프라인 커리큘럼 생성에서 공통으로 사용되는 핵심 저장 로직.
+     */
+    private AiResponse.WeekPlan saveWeekWithMaterials(Course course, int weekNumber, String topic,
+                                                       String objectives, String content) throws JsonProcessingException {
+        Curriculum curriculum = Curriculum.builder()
+                .course(course)
+                .weekNumber(weekNumber)
+                .topic(topic)
+                .objectives(objectives)
+                .contentJson(objectMapper.writeValueAsString(Map.of("content", content)))
+                .aiGenerated(true)
+                .build();
+        curriculumRepository.save(curriculum);
+
+        // 강의 자료 생성
+        String lectureJson = generateOfflineMaterial(topic, objectives, content, "LECTURE");
+        Material lectureMaterial = Material.builder()
+                .curriculum(curriculum)
+                .type(Material.MaterialType.LECTURE)
+                .title(String.format("%d주차 - %s 강의 자료", weekNumber, topic))
+                .contentJson(lectureJson)
+                .difficulty(3)
+                .aiGenerated(true)
+                .build();
+        materialRepository.save(lectureMaterial);
+
+        // 퀴즈 생성
+        String quizJson = generateOfflineQuiz(topic, 5);
+        Material quizMaterial = Material.builder()
+                .curriculum(curriculum)
+                .type(Material.MaterialType.QUIZ)
+                .title(String.format("%d주차 - %s 확인 퀴즈", weekNumber, topic))
+                .contentJson("{}")
+                .difficulty(3)
+                .aiGenerated(true)
+                .build();
+        materialRepository.save(quizMaterial);
+
+        Quiz quiz = Quiz.builder()
+                .material(quizMaterial)
+                .questionsJson(quizJson)
+                .timeLimit(15)
+                .build();
+        quizRepository.save(quiz);
+
+        return AiResponse.WeekPlan.builder()
+                .curriculumId(curriculum.getId())
+                .weekNumber(weekNumber)
+                .topic(topic)
+                .objectives(objectives)
+                .content(content)
+                .materialContentJson(lectureJson)
+                .quizQuestionsJson(quizJson)
+                .build();
     }
 
     private void saveLog(Long userId, String prompt, String resultType, int timeSaved) {
@@ -687,16 +656,38 @@ public class AiGenerationService {
         }
     }
 
+    /**
+     * AI 응답에서 JSON 부분만 추출한다.
+     * 마크다운 코드블록이나 부가 텍스트가 섞여 있어도 { } 또는 [ ] 범위만 안전하게 반환한다.
+     */
     private String extractJson(String text) {
+        if (text == null || text.isBlank()) {
+            return "{}";
+        }
+
         text = text.trim();
+
+        // 마크다운 코드블록 제거 (```json ... ```)
+        if (text.contains("```")) {
+            int codeStart = text.indexOf("```");
+            int lineEnd = text.indexOf('\n', codeStart);
+            int codeEnd = text.indexOf("```", lineEnd > 0 ? lineEnd : codeStart + 3);
+            if (lineEnd > 0 && codeEnd > lineEnd) {
+                text = text.substring(lineEnd + 1, codeEnd).trim();
+            }
+        }
+
         int startBrace = text.indexOf('{');
         int startBracket = text.indexOf('[');
 
-        int start;
-        char endChar;
+        // JSON 시작 문자가 없으면 원본 반환
         if (startBrace == -1 && startBracket == -1) {
             return text;
-        } else if (startBrace == -1) {
+        }
+
+        int start;
+        char endChar;
+        if (startBrace == -1) {
             start = startBracket;
             endChar = ']';
         } else if (startBracket == -1) {
@@ -708,7 +699,11 @@ public class AiGenerationService {
         }
 
         int end = text.lastIndexOf(endChar);
-        if (end == -1) return text;
+
+        // end가 start보다 앞이거나 없으면 원본 반환 (StringIndexOutOfBoundsException 방지)
+        if (end < 0 || end < start) {
+            return text;
+        }
 
         return text.substring(start, end + 1);
     }
