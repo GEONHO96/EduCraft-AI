@@ -130,7 +130,7 @@ export default function Layout() {
                 title="프로필 수정"
               >
                 {user?.profileImage ? (
-                  <img src={user.profileImage} alt="" className="w-7 h-7 rounded-full object-cover" />
+                  <img src={user.profileImage} alt="" loading="lazy" className="w-7 h-7 rounded-full object-cover" />
                 ) : (
                   <div className="w-7 h-7 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
                     {user?.name?.charAt(0)}
@@ -194,7 +194,7 @@ export default function Layout() {
               className="flex items-center space-x-2 px-3 py-2.5 text-sm text-gray-500 hover:bg-gray-100 rounded-lg"
             >
               {user?.profileImage ? (
-                <img src={user.profileImage} alt="" className="w-6 h-6 rounded-full object-cover" />
+                <img src={user.profileImage} alt="" loading="lazy" className="w-6 h-6 rounded-full object-cover" />
               ) : (
                 <div className="w-6 h-6 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center text-xs font-bold">
                   {user?.name?.charAt(0)}

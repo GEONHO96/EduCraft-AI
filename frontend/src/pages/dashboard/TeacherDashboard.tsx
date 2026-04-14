@@ -8,6 +8,8 @@ import { useQuery } from '@tanstack/react-query'
 import { dashboardApi } from '../../api/dashboard'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
+import LoadingSkeleton from '../../components/LoadingSkeleton'
+import ErrorCard from '../../components/ErrorCard'
 
 type StatKey = 'courses' | 'students' | 'ai' | 'activity'
 
@@ -24,35 +26,8 @@ export default function TeacherDashboard() {
     },
   })
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-44 rounded-2xl bg-gray-200 animate-pulse" />
-        <div className="grid grid-cols-3 gap-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="text-center py-20">
-        <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-          <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-          </svg>
-        </div>
-        <h3 className="font-semibold text-gray-800 mb-1">연결할 수 없습니다</h3>
-        <p className="text-sm text-gray-500 mb-4">서버 상태를 확인해주세요</p>
-        <button onClick={() => refetch()} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition text-sm">
-          다시 시도
-        </button>
-      </div>
-    )
-  }
+  if (isLoading) return <LoadingSkeleton />
+  if (isError) return <ErrorCard onRetry={refetch} />
 
   const genCount = Number(data?.timeSaved?.generationCount ?? 0)
 

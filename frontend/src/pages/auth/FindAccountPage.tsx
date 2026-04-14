@@ -6,6 +6,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
+import { getResponseError } from '../../utils/error'
 import toast from 'react-hot-toast'
 
 type Tab = 'find-email' | 'reset-password'
@@ -189,7 +190,7 @@ function FindEmailForm() {
       if (res.data.success) {
         setEmails(res.data.data)
       } else {
-        toast.error((res.data as any).error?.message || '사용자를 찾을 수 없습니다.')
+        toast.error(getResponseError(res.data, '사용자를 찾을 수 없습니다.'))
       }
     } catch {
       toast.error('사용자를 찾을 수 없습니다.')
@@ -283,7 +284,7 @@ function ResetPasswordForm() {
         setStep('temp-issued')
         toast.success('임시 비밀번호가 이메일로 발송되었습니다.')
       } else {
-        toast.error((res.data as any).error?.message || '사용자를 찾을 수 없습니다.')
+        toast.error(getResponseError(res.data, '사용자를 찾을 수 없습니다.'))
       }
     } catch {
       toast.error('이메일 또는 이름이 일치하지 않습니다.')
@@ -303,7 +304,7 @@ function ResetPasswordForm() {
         toast.success('비밀번호가 변경되었습니다. 새 비밀번호로 로그인해주세요.')
         navigate('/login')
       } else {
-        toast.error((res.data as any).error?.message || '비밀번호 변경에 실패했습니다.')
+        toast.error(getResponseError(res.data, '비밀번호 변경에 실패했습니다.'))
       }
     } catch {
       toast.error('임시 비밀번호가 올바르지 않습니다.')

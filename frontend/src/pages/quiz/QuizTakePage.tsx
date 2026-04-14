@@ -71,7 +71,7 @@ export default function QuizTakePage() {
       apiClient.post(`/quizzes/${quizId}/submit`, {
         answersJson: JSON.stringify(Object.values(answers)),
       }),
-    onSuccess: (res: any) => {
+    onSuccess: (res: { data: { success: boolean; data: { score: number; totalQuestions: number } } }) => {
       if (res.data.success) {
         setResult(res.data.data)
         setSubmitted(true)

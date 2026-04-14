@@ -9,6 +9,7 @@ import { snsApi, fileApi, PostInfo, CommentInfo } from '../../api/sns'
 import { useAuthStore } from '../../stores/authStore'
 import { CATEGORIES, CATEGORY_LABELS, CATEGORY_COLORS } from '../../constants/categories'
 import { timeAgo } from '../../utils/date'
+import LoadingSkeleton from '../../components/LoadingSkeleton'
 import toast from 'react-hot-toast'
 
 type FeedType = 'all' | 'following'
@@ -94,23 +95,8 @@ export default function FeedPage() {
 
   if (feedQuery.isLoading) {
     return (
-      <div className="max-w-xl mx-auto space-y-4 pt-4">
-        {[1, 2].map((i) => (
-          <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
-            <div className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-200 rounded-full" />
-              <div className="space-y-1.5">
-                <div className="h-3.5 w-24 bg-gray-200 rounded" />
-                <div className="h-3 w-16 bg-gray-100 rounded" />
-              </div>
-            </div>
-            <div className="h-64 bg-gray-100" />
-            <div className="p-4 space-y-2">
-              <div className="h-3.5 w-full bg-gray-100 rounded" />
-              <div className="h-3.5 w-2/3 bg-gray-100 rounded" />
-            </div>
-          </div>
-        ))}
+      <div className="max-w-xl mx-auto pt-4">
+        <LoadingSkeleton variant="feed" />
       </div>
     )
   }
@@ -193,7 +179,7 @@ export default function FeedPage() {
         className="flex items-center gap-3 bg-white rounded-2xl p-4 mb-5 cursor-pointer hover:shadow-md transition-shadow border border-gray-100"
       >
         {user?.profileImage ? (
-          <img src={user.profileImage} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-100" />
+          <img src={user.profileImage} alt="" loading="lazy" className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-100" />
         ) : (
           <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-100">
             {user?.name?.charAt(0)}
@@ -236,7 +222,7 @@ export default function FeedPage() {
             {/* 프로필 + 카테고리 */}
             <div className="flex items-center gap-3 px-5 pt-4 pb-2">
               {user?.profileImage ? (
-                <img src={user.profileImage} alt="" className="w-10 h-10 rounded-full object-cover" />
+                <img src={user.profileImage} alt="" loading="lazy" className="w-10 h-10 rounded-full object-cover" />
               ) : (
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold text-sm">
                   {user?.name?.charAt(0)}
@@ -417,7 +403,7 @@ const PostCard = memo(function PostCard({
         <div className="flex items-center gap-3">
           <Link to={`/sns/profile/${post.author.id}`} className="relative">
             {post.author.profileImage ? (
-              <img src={post.author.profileImage} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-100" />
+              <img src={post.author.profileImage} alt="" loading="lazy" className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-100" />
             ) : (
               <div className="w-10 h-10 bg-gradient-to-br from-purple-400 via-pink-400 to-orange-300 rounded-full flex items-center justify-center text-white font-bold text-sm ring-2 ring-purple-100">
                 {post.author.name.charAt(0)}
@@ -459,6 +445,7 @@ const PostCard = memo(function PostCard({
           <img
             src={post.imageUrl.startsWith('/uploads') ? `http://localhost:8080${post.imageUrl}` : post.imageUrl}
             alt=""
+            loading="lazy"
             className="w-full max-h-[480px] object-cover"
             onDoubleClick={onLike}
           />
@@ -557,7 +544,7 @@ const PostCard = memo(function PostCard({
                   <div key={comment.id} className="flex gap-2.5 group">
                     <Link to={`/sns/profile/${comment.author.id}`} className="shrink-0">
                       {comment.author.profileImage ? (
-                        <img src={comment.author.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        <img src={comment.author.profileImage} alt="" loading="lazy" className="w-8 h-8 rounded-full object-cover" />
                       ) : (
                         <div className="w-8 h-8 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center text-white text-xs font-bold">
                           {comment.author.name.charAt(0)}

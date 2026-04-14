@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/authStore'
+import { getResponseError } from '../../utils/error'
 import toast from 'react-hot-toast'
 
 export default function SocialCallbackPage() {
@@ -96,7 +97,7 @@ export default function SocialCallbackPage() {
         toast.success('로그인 성공!')
         navigate('/')
       } else {
-        toast.error((res.data as any).error?.message || '로그인 실패')
+        toast.error(getResponseError(res.data, '로그인 실패'))
         navigate('/login')
       }
     } catch {

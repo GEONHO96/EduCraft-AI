@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/authStore'
+import { getResponseError, getErrorMessage } from '../../utils/error'
 import toast from 'react-hot-toast'
 
 export default function RegisterPage() {
@@ -68,10 +69,10 @@ export default function RegisterPage() {
         toast.success('회원가입 성공!')
         navigate('/')
       } else {
-        toast.error((res.data as any).error?.message || '회원가입 실패')
+        toast.error(getResponseError(res.data, '회원가입 실패'))
       }
-    } catch (err: any) {
-      toast.error(err?.response?.data?.error?.message || '회원가입에 실패했습니다.')
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, '회원가입에 실패했습니다.'))
     } finally { setLoading(false) }
   }
 

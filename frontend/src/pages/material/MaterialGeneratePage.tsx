@@ -44,7 +44,7 @@ export default function MaterialGeneratePage() {
       return (
         <div className="space-y-6">
           <h2 className="text-xl font-bold">{content.title}</h2>
-          {content.sections?.map((section: any, i: number) => {
+          {content.sections?.map((section: { heading: string; content: string; keyPoints?: string[] }, i: number) => {
             const isExpanded = expandedSections[i] ?? false
             return (
               <div key={i} className="border-l-4 border-primary-400 pl-4">

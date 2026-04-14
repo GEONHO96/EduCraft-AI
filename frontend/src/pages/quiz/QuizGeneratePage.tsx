@@ -38,7 +38,7 @@ export default function QuizGeneratePage() {
       const data = JSON.parse(result.questionsJson)
       return (
         <div className="space-y-6">
-          {data.questions?.map((q: any, i: number) => (
+          {data.questions?.map((q: { number: number; type: string; question: string; options?: string[]; answer: number | string; explanation?: string }, i: number) => (
             <div key={i} className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex items-center space-x-2 mb-3">
                 <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">

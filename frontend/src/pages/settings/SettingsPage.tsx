@@ -86,7 +86,7 @@ export default function SettingsPage() {
               <h2 className="text-lg font-semibold text-gray-800">프로필 정보</h2>
               <div className="flex items-center gap-4">
                 {user?.profileImage ? (
-                  <img src={user.profileImage} alt="" className="w-16 h-16 rounded-full object-cover ring-2 ring-indigo-100" />
+                  <img src={user.profileImage} alt="" loading="lazy" className="w-16 h-16 rounded-full object-cover ring-2 ring-indigo-100" />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xl font-bold">
                     {user?.name?.charAt(0)}

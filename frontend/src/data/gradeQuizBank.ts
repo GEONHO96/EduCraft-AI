@@ -577,7 +577,7 @@ export const QUESTION_BANK: Record<string, Record<string, Question[]>> = {
 // ════════════════════════════════════════
 
 /** 학년+과목에 해당하는 문제 풀 반환 (fallback 포함) */
-export function getQuestions(grade: string, subject: string, difficulty?: Difficulty): Question[] {
+export function getQuestions(grade: string, subject: string, difficulty?: Difficulty | 'all'): Question[] {
   let pool: Question[] = []
 
   // 직접 매칭
@@ -605,7 +605,7 @@ export function getQuestions(grade: string, subject: string, difficulty?: Diffic
   }
 
   // 난이도 필터
-  if (difficulty && difficulty !== 'all' as any) {
+  if (difficulty && difficulty !== 'all') {
     const filtered = pool.filter(q => q.difficulty === difficulty)
     if (filtered.length > 0) return filtered
     // 필터 결과가 너무 적으면 전체 반환

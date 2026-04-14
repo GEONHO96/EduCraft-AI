@@ -96,7 +96,7 @@ export default function ProfilePage() {
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <div className="flex items-center gap-6">
           {profile.profileImage ? (
-            <img src={profile.profileImage} alt="" className="w-20 h-20 rounded-full object-cover ring-4 ring-primary-100" />
+            <img src={profile.profileImage} alt="" loading="lazy" className="w-20 h-20 rounded-full object-cover ring-4 ring-primary-100" />
           ) : (
             <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white text-2xl font-bold ring-4 ring-primary-100">
               {profile.name.charAt(0)}
@@ -190,7 +190,7 @@ export default function ProfilePage() {
             <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{post.content}</p>
 
             {post.imageUrl && (
-              <img src={post.imageUrl} alt="" className="w-full rounded-xl object-cover max-h-80 mt-3" />
+              <img src={post.imageUrl} alt="" loading="lazy" className="w-full rounded-xl object-cover max-h-80 mt-3" />
             )}
 
             <div className="flex items-center gap-4 mt-3 pt-2 border-t">

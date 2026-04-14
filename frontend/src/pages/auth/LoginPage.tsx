@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi } from '../../api/auth'
 import { useAuthStore } from '../../stores/authStore'
+import { getResponseError, getErrorMessage } from '../../utils/error'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
@@ -57,11 +58,10 @@ export default function LoginPage() {
         toast.success('로그인 성공!')
         navigate('/')
       } else {
-        toast.error((res.data as any).error?.message || '로그인 실패')
+        toast.error(getResponseError(res.data, '로그인 실패'))
       }
-    } catch (err: any) {
-      const msg = err?.response?.data?.error?.message || '이메일 또는 비밀번호를 확인해주세요.'
-      toast.error(msg)
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, '이메일 또는 비밀번호를 확인해주세요.'))
     } finally {
       setLoading(false)
     }
