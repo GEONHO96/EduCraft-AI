@@ -7,7 +7,7 @@ import { useAuthStore } from '../../stores/authStore'
 
 // ====== 학교급 & 학년 정의 ======
 type SchoolLevel = 'elementary' | 'middle' | 'high'
-type Subject = '국어' | '영어' | '수학'
+type Subject = '국어' | '영어' | '수학' | '코딩'
 
 const SCHOOL_LEVELS = [
   { value: 'elementary' as SchoolLevel, label: '초등학교', grades: [1, 2, 3, 4, 5, 6], emoji: '🏫' },
@@ -19,6 +19,7 @@ const SUBJECTS: { value: Subject; label: string; color: string; bg: string }[] =
   { value: '국어', label: '국어', color: 'text-red-600', bg: 'bg-red-50 border-red-200' },
   { value: '영어', label: '영어', color: 'text-green-600', bg: 'bg-green-50 border-green-200' },
   { value: '수학', label: '수학', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200' },
+  { value: '코딩', label: '코딩', color: 'text-purple-600', bg: 'bg-purple-50 border-purple-200' },
 ]
 
 // ====== 유튜브 강의 데이터 타입 ======
@@ -48,6 +49,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '덧셈과 뺄셈 연습(1)', channel: 'onschool', videoId: '2miRGtazHKs', description: '한 자리 수 덧셈과 뺄셈 연습' },
       { title: '가르기와 모으기', channel: 'onschool', videoId: 'jYh56qhCEr8', description: '수를 가르고 모으는 방법 배우기' },
     ],
+    '코딩': [
+      { title: '스크래치 3.0 시작하기', channel: '나도코딩', videoId: 'xN8O_mhR-7Y', description: '스크래치 기초 사용법과 블록 코딩 입문' },
+      { title: '코딩이란 무엇일까?', channel: '퉁퉁코딩', videoId: 'phmnXaN3G08', description: '코딩의 기본 개념을 재미있게 알아봐요' },
+      { title: '프로그래밍이란? - 코딩 첫걸음', channel: '달리나음 IT', videoId: '6MjXHIYZWRE', description: '프로그래밍의 뜻과 기초 개념 이해' },
+    ],
   },
   'elementary-2': {
     '국어': [
@@ -64,6 +70,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '세 자리 수 알아보기', channel: 'onschool', videoId: '9E31dS9bGWs', description: '90보다 10만큼 더 큰 수를 배워요' },
       { title: '받아올림이 있는 덧셈', channel: 'onschool', videoId: 'hwopRyxEqVk', description: '받아올림이 있는 세로 방향 덧셈' },
       { title: '받아내림이 있는 뺄셈', channel: 'onschool', videoId: 'zNJ6NrZ5FgQ', description: '받아내림이 있는 세로 방향 뺄셈' },
+    ],
+    '코딩': [
+      { title: '스크래치로 게임 만들기', channel: '나도코딩', videoId: 'q6fPjQAzll8', description: '블록 코딩으로 나만의 게임을 만들어봐요' },
+      { title: '코딩 환경 설정하기', channel: '달리나음 IT', videoId: 'pFCHn0F-nuw', description: '코딩을 시작하기 위한 환경 준비' },
+      { title: '첫 코드 실행해보기', channel: '달리나음 IT', videoId: 'YuOGpTO8x94', description: '처음으로 코드를 실행하는 방법' },
     ],
   },
   'elementary-3': {
@@ -82,6 +93,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '세 자리 수 덧셈 (받아올림 2번)', channel: 'onschool', videoId: 'AOQQSy4qRs8', description: '받아올림이 두 번 있는 덧셈' },
       { title: '1단원 덧셈과 뺄셈 요점 정리', channel: 'onschool', videoId: 'l46i4r0K0rI', description: '3학년 덧셈과 뺄셈 핵심만 쏙쏙' },
     ],
+    '코딩': [
+      { title: '코딩 기본 배우기', channel: '달리나음 IT', videoId: 'YmS32bo3Uas', description: '변수와 데이터의 기본 개념 익히기' },
+      { title: '코딩 연습 - 간단한 프로그램', channel: '달리나음 IT', videoId: 'aodQTNWkoko', description: '직접 따라하며 코딩 연습하기' },
+      { title: '코딩 개념 정리', channel: '달리나음 IT', videoId: 'meJGRyyXY54', description: '배운 코딩 개념을 정리해봐요' },
+    ],
   },
   'elementary-4': {
     '국어': [
@@ -98,6 +114,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '큰 수 알아보기 (신의 수)', channel: 'onschool', videoId: 'FfrjhKIasu8', description: '만 단위 이상의 큰 수 이해하기' },
       { title: '십만, 백만, 천만 알아보기', channel: 'onschool', videoId: 'sTm4bUUHPnE', description: '4학년 1학기 1단원 큰 수' },
       { title: '수학 송 (일만억조송)', channel: 'onschool', videoId: 'dT_jDEKeSDM', description: '노래로 큰 수의 단위를 외워요' },
+    ],
+    '코딩': [
+      { title: '숫자와 계산 - 데이터 타입', channel: '달리나음 IT', videoId: '9H79uXxQCBk', description: '프로그래밍에서 숫자를 다루는 방법' },
+      { title: '문자열 다루기', channel: '달리나음 IT', videoId: 'STGCSIt3nsE', description: '텍스트 데이터를 코딩으로 처리하기' },
+      { title: '리스트 알아보기', channel: '달리나음 IT', videoId: 'x6W7t0KkTAc', description: '여러 데이터를 묶어서 관리하기' },
     ],
   },
   'elementary-5': {
@@ -116,6 +137,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '덧셈·뺄셈·나눗셈 혼합 계산', channel: '핑퐁쌤', videoId: '1Ytm1bDE9nU', description: '나눗셈이 포함된 혼합 계산' },
       { title: '자연수의 혼합계산 단원 도입', channel: '수학교실', videoId: '27HJB6fzZYw', description: '5학년 혼합계산 단원 시작하기' },
     ],
+    '코딩': [
+      { title: '파이썬 코딩 무료 강의 (기본편)', channel: '나도코딩', videoId: 'kWiCuklohdY', description: '파이썬 기초 문법 6시간 완성 강의' },
+      { title: '튜플과 딕셔너리', channel: '달리나음 IT', videoId: 'YVLqi0sAJzc', description: '파이썬 튜플과 딕셔너리 자료형 배우기' },
+      { title: '딕셔너리 활용하기', channel: '달리나음 IT', videoId: 'BmXDox6ZFzo', description: '딕셔너리로 데이터를 효율적으로 관리' },
+    ],
   },
   'elementary-6': {
     '국어': [
@@ -132,6 +158,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '분수의 나눗셈 (5분 정리)', channel: 'onschool', videoId: '808bPy95mAQ', description: '6학년 1학기 분수의 나눗셈 핵심 정리' },
       { title: '각기둥 알아보기', channel: 'onschool', videoId: 'SLbCnxbYtBo', description: '각기둥의 성질과 특징 이해' },
       { title: '각기둥 (입체도형)', channel: 'onschool', videoId: 'ObwJ13eGb6U', description: '입체도형으로서의 각기둥 탐구' },
+    ],
+    '코딩': [
+      { title: '집합 자료형 이해하기', channel: '달리나음 IT', videoId: 'nsAtYHnovUA', description: '파이썬 집합(Set) 자료형 배우기' },
+      { title: '불(Boolean) - 참과 거짓', channel: '달리나음 IT', videoId: 'kuEJlH1-8eo', description: '프로그래밍의 참/거짓 논리 이해하기' },
+      { title: '변수 활용하기', channel: '달리나음 IT', videoId: 'k7J6dt-tsbI', description: '변수를 만들고 활용하는 방법 배우기' },
     ],
   },
 
@@ -152,6 +183,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '중1 수학 - 정수와 유리수', channel: '수악중독', videoId: 'rNskXNSFcfo', description: '정수와 유리수의 개념과 사칙연산' },
       { title: '중학 수학 개념 정리', channel: '수악중독', videoId: '-Scmiczp_Fs', description: '중학교 수학 핵심 개념 정리' },
     ],
+    '코딩': [
+      { title: '점프 투 파이썬 (2023)', channel: '조코딩 JoCoding', videoId: 'ftQZo7XaTOA', description: '파이썬 입문 - 점프 투 파이썬 교재 기반' },
+      { title: '조건문 (if문) 배우기', channel: '달리나음 IT', videoId: 'B5WF6k70svo', description: '파이썬 조건문으로 프로그램 흐름 제어하기' },
+      { title: '반복문 (while/for) 배우기', channel: '달리나음 IT', videoId: '1Ts4h7_0V-0', description: '반복문으로 효율적인 코드 작성하기' },
+    ],
   },
   'middle-2': {
     '국어': [
@@ -169,6 +205,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '중2 수학 - 일차함수의 그래프', channel: '수악중독', videoId: 'rNskXNSFcfo', description: 'y=ax+b 일차함수의 그래프와 성질' },
       { title: '중학 수학 수동태와 수식', channel: '수학교실', videoId: '27HJB6fzZYw', description: '중학교 수학 핵심 개념 정리' },
     ],
+    '코딩': [
+      { title: '함수 만들기', channel: '달리나음 IT', videoId: '0b7xo33cfa4', description: '파이썬 함수 정의와 호출 방법' },
+      { title: '입력과 출력', channel: '달리나음 IT', videoId: 'L7E9l_cU17U', description: '사용자 입력 받기와 결과 출력하기' },
+      { title: '파일 다루기', channel: '달리나음 IT', videoId: 'urHDYgAPJiM', description: '파이썬으로 파일 읽기/쓰기' },
+    ],
   },
   'middle-3': {
     '국어': [
@@ -185,6 +226,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '중3 수학 - 이차방정식', channel: '수악중독', videoId: '-Scmiczp_Fs', description: '이차방정식의 풀이법과 근의 공식' },
       { title: '중3 수학 - 이차함수의 그래프', channel: '수악중독', videoId: 'rNskXNSFcfo', description: 'y=ax² 이차함수의 그래프 이해' },
       { title: '중3 수학 핵심 개념 정리', channel: '수학교실', videoId: '27HJB6fzZYw', description: '고등학교 대비 수학 핵심 정리' },
+    ],
+    '코딩': [
+      { title: '클래스와 객체', channel: '달리나음 IT', videoId: 'x1opLkO4zvE', description: '파이썬 객체지향 프로그래밍 입문' },
+      { title: '모듈 활용하기', channel: '달리나음 IT', videoId: 'K-7GMt1YhLw', description: '파이썬 모듈을 만들고 사용하는 방법' },
+      { title: '패키지 구조 이해하기', channel: '달리나음 IT', videoId: 'pfUohnK0ir8', description: '파이썬 패키지로 코드 체계적으로 관리' },
     ],
   },
 
@@ -205,6 +251,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '고1 수학 - 공통수학1 개념', channel: '수악중독', videoId: 'rNskXNSFcfo', description: '공통수학1 핵심 개념 파헤치기' },
       { title: '고1 수학 - 방정식과 부등식', channel: '수악중독', videoId: '-Scmiczp_Fs', description: '이차방정식, 이차부등식 심화' },
     ],
+    '코딩': [
+      { title: 'JAVA 프로그래밍 입문', channel: '생활코딩', videoId: '-dPXqgWQBGE', description: '자바 프로그래밍 수업 소개 및 방향' },
+      { title: 'Hello World - 첫 자바 프로그램', channel: '생활코딩', videoId: 'pUqRAHxpxjM', description: '자바로 첫 프로그램 작성하기' },
+      { title: '자바의 동작 원리', channel: '생활코딩', videoId: 'AuiMh9bGTKI', description: '자바 코드가 실행되는 원리 이해' },
+    ],
   },
   'high-2': {
     '국어': [
@@ -222,6 +273,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '삼차함수의 대칭과 비율관계 2', channel: '메가스터디 현우진', videoId: 'OokdBPW5TmY', description: '삼차함수 비율관계 심화 학습' },
       { title: '사차함수의 대칭과 비율관계', channel: '메가스터디 현우진', videoId: 'acRsLeti7vw', description: '사차함수의 대칭과 비율 특징' },
     ],
+    '코딩': [
+      { title: '자바 변수와 데이터 타입', channel: '생활코딩', videoId: 'FtWGiWBNJ-I', description: '자바 변수 선언과 기본 데이터 타입' },
+      { title: '자바 조건문 활용', channel: '생활코딩', videoId: 'y-qUWhanlkM', description: '자바 if/else 조건문으로 분기 처리' },
+      { title: '자바 반복문 활용', channel: '생활코딩', videoId: '4-5tmh5Krk8', description: '자바 for/while 반복문 실습' },
+    ],
   },
   'high-3': {
     '국어': [
@@ -238,6 +294,11 @@ const VIDEO_DATA: Record<string, Record<Subject, VideoInfo[]>> = {
       { title: '삼차함수의 대칭과 비율관계 1', channel: '메가스터디 현우진', videoId: 'uON650egSVU', description: '수능 수학 삼차함수 핵심 특징' },
       { title: '삼차함수의 대칭과 비율관계 2', channel: '메가스터디 현우진', videoId: 'OokdBPW5TmY', description: '수능 수학 고난도 함수 문제 풀이' },
       { title: '사차함수의 대칭과 비율관계', channel: '메가스터디 현우진', videoId: 'acRsLeti7vw', description: '사차함수 킬러문항 대비' },
+    ],
+    '코딩': [
+      { title: '자바 메소드 정의와 호출', channel: '생활코딩', videoId: 'XXFaCUcwWIk', description: '자바 메소드를 만들고 활용하는 방법' },
+      { title: '자바 클래스와 인스턴스', channel: '생활코딩', videoId: 'l8hrA4VSIlA', description: '자바 객체지향 프로그래밍의 핵심' },
+      { title: '패키지와 API 활용', channel: '생활코딩', videoId: 'kSH6-DU68fo', description: '자바 패키지 구조와 API 사용법' },
     ],
   },
 }
