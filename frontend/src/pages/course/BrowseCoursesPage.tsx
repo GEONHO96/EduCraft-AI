@@ -24,6 +24,7 @@ export default function BrowseCoursesPage() {
     queryKey: ['browse-courses', debouncedSearch],
     queryFn: async () => {
       const res = await courseApi.browse(debouncedSearch || undefined)
+      if (!res.data.success) throw new Error(res.data.error?.message || '강의를 불러올 수 없습니다')
       return res.data.data
     },
   })

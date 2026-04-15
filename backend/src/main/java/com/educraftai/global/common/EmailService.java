@@ -1,6 +1,5 @@
 package com.educraftai.global.common;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +37,8 @@ public class EmailService {
 
             mailSender.send(message);
             log.info("[Email] 임시 비밀번호 이메일 발송 성공 - to: {}", to);
-        } catch (MessagingException e) {
-            log.error("[Email] 임시 비밀번호 이메일 발송 실패 - to: {}, error: {}", to, e.getMessage());
+        } catch (Exception e) {
+            log.warn("[Email] 임시 비밀번호 이메일 발송 실패 (화면에서 직접 확인 가능) - to: {}, error: {}", to, e.getMessage());
         }
     }
 

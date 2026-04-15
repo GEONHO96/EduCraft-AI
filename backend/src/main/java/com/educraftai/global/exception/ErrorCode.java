@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS("AUTH_002", "이메일 또는 비밀번호가 올바르지 않습니다."),
     UNAUTHORIZED("AUTH_003", "로그인이 필요합니다."),
     FORBIDDEN("AUTH_004", "접근 권한이 없습니다."),
+    SOCIAL_LOGIN_NO_PASSWORD("AUTH_005", "소셜 로그인 계정은 비밀번호가 없습니다. 소셜 로그인을 이용해주세요."),
 
     // User
     USER_NOT_FOUND("USER_001", "사용자를 찾을 수 없습니다."),

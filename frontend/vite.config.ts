@@ -16,6 +16,20 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        // 프록시 타임아웃 설정 (기본값이 너무 짧을 수 있음)
+        configure: (proxy) => {
+          proxy.on('error', (err, _req, res) => {
+            console.warn('[Proxy Error]', err.message)
+            if (res && !res.headersSent) {
+              res.writeHead(502, { 'Content-Type': 'application/json' })
+              res.end(JSON.stringify({ success: false, error: { code: 'PROXY_ERROR', message: '서버에 연결할 수 없습니다' } }))
+            }
+          })
+        },
+      },
     },
   },
   build: {

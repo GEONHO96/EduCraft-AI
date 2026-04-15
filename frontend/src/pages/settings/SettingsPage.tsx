@@ -5,6 +5,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
+import { authApi } from '../../api/auth'
+import { getErrorMessage } from '../../utils/error'
 import toast from 'react-hot-toast'
 
 type Tab = 'profile' | 'notifications' | 'display' | 'account'
@@ -24,19 +26,59 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium')
 
+  // 계정 탈퇴
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePw, setDeletePw] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const isSocialUser = !!user?.socialProvider && user.socialProvider !== 'LOCAL'
+
   // 비밀번호 변경
   const [currentPw, setCurrentPw] = useState('')
   const [newPw, setNewPw] = useState('')
   const [confirmPw, setConfirmPw] = useState('')
+  const [pwLoading, setPwLoading] = useState(false)
 
   const handleLogout = () => { logout(); navigate('/login') }
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleDeleteAccount = async () => {
+    if (!deletePw) { toast.error('비밀번호를 입력해주세요'); return }
+    setDeleteLoading(true)
+    try {
+      const res = await authApi.deleteAccount({ password: deletePw })
+      if (!res.data.success) {
+        toast.error(res.data.error?.message || '계정 탈퇴에 실패했습니다')
+        return
+      }
+      toast.success('계정이 삭제되었습니다. 이용해주셔서 감사합니다.')
+      logout()
+      navigate('/login')
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, '계정 탈퇴에 실패했습니다'))
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
     if (newPw !== confirmPw) { toast.error('새 비밀번호가 일치하지 않습니다'); return }
     if (newPw.length < 6) { toast.error('비밀번호는 6자 이상이어야 합니다'); return }
-    toast.success('비밀번호가 변경되었습니다')
-    setCurrentPw(''); setNewPw(''); setConfirmPw('')
+    if (currentPw === newPw) { toast.error('현재 비밀번호와 다른 비밀번호를 입력해주세요'); return }
+
+    setPwLoading(true)
+    try {
+      const res = await authApi.changeMyPassword({ currentPassword: currentPw, newPassword: newPw })
+      if (!res.data.success) {
+        toast.error(res.data.error?.message || '비밀번호 변경에 실패했습니다')
+        return
+      }
+      toast.success('비밀번호가 변경되었습니다')
+      setCurrentPw(''); setNewPw(''); setConfirmPw('')
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, '비밀번호 변경에 실패했습니다'))
+    } finally {
+      setPwLoading(false)
+    }
   }
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
@@ -201,8 +243,8 @@ export default function SettingsPage() {
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required />
                   <input type="password" placeholder="새 비밀번호 확인" value={confirmPw} onChange={e => setConfirmPw(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none" required />
-                  <button type="submit" className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-medium rounded-lg hover:opacity-90 transition">
-                    비밀번호 변경
+                  <button type="submit" disabled={pwLoading} className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-medium rounded-lg hover:opacity-90 transition disabled:opacity-50">
+                    {pwLoading ? '변경 중...' : '비밀번호 변경'}
                   </button>
                 </form>
               </div>
@@ -226,12 +268,52 @@ export default function SettingsPage() {
                   계정을 탈퇴하면 모든 데이터가 삭제되며 복구할 수 없습니다.
                 </p>
                 <button
-                  onClick={() => toast.error('계정 탈퇴 기능은 준비 중입니다')}
+                  onClick={() => { setShowDeleteModal(true); setDeletePw('') }}
                   className="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition"
                 >
                   계정 탈퇴
                 </button>
               </div>
+
+              {/* 계정 탈퇴 확인 모달 */}
+              {showDeleteModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowDeleteModal(false)}>
+                  <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-xl" onClick={e => e.stopPropagation()}>
+                    <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 text-center mb-1">정말 탈퇴하시겠습니까?</h3>
+                    <p className="text-sm text-gray-500 text-center mb-4">
+                      모든 강의, 퀴즈, 게시글, 학습 기록이 영구적으로 삭제됩니다.
+                    </p>
+                    <input
+                      type="password"
+                      placeholder="비밀번호를 입력하세요"
+                      value={deletePw}
+                      onChange={e => setDeletePw(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-400 outline-none mb-4"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setShowDeleteModal(false)}
+                        className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
+                      >
+                        취소
+                      </button>
+                      <button
+                        onClick={handleDeleteAccount}
+                        disabled={deleteLoading}
+                        className="flex-1 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+                      >
+                        {deleteLoading ? '처리 중...' : '탈퇴하기'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

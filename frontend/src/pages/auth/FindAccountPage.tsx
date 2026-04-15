@@ -93,7 +93,7 @@ export default function FindAccountPage() {
               </div>
               <div>
                 <h4 className="text-[13px] font-semibold text-white">비밀번호 재설정</h4>
-                <p className="text-xs text-emerald-200/50 mt-0.5">임시 비밀번호를 발급받아 새 비밀번호로 변경합니다</p>
+                <p className="text-xs text-emerald-200/50 mt-0.5">이메일로 임시 비밀번호를 발급받아 변경합니다</p>
               </div>
             </div>
           </div>
@@ -269,7 +269,6 @@ function ResetPasswordForm() {
   const navigate = useNavigate()
   const [step, setStep] = useState<ResetStep>('request')
   const [email, setEmail] = useState('')
-  const [name, setName] = useState('')
   const [inputTempPw, setInputTempPw] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -279,15 +278,18 @@ function ResetPasswordForm() {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await authApi.resetPassword({ email, name })
+      const res = await authApi.resetPassword({ email })
       if (res.data.success) {
+        if (res.data.data.tempPassword) {
+          setInputTempPw(res.data.data.tempPassword)
+        }
         setStep('temp-issued')
-        toast.success('임시 비밀번호가 이메일로 발송되었습니다.')
+        toast.success('임시 비밀번호가 발급되었습니다.')
       } else {
-        toast.error(getResponseError(res.data, '사용자를 찾을 수 없습니다.'))
+        toast.error(getResponseError(res.data, '가입되지 않은 이메일입니다.'))
       }
     } catch {
-      toast.error('이메일 또는 이름이 일치하지 않습니다.')
+      toast.error('가입되지 않은 이메일입니다.')
     } finally {
       setLoading(false)
     }
@@ -317,7 +319,7 @@ function ResetPasswordForm() {
     return (
       <div>
         <p className="text-sm text-gray-500 mb-5">
-          가입한 이메일과 이름을 입력하면 임시 비밀번호를 보내드립니다.
+          가입한 이메일을 입력하면 임시 비밀번호를 발급해드립니다.
         </p>
         <form onSubmit={handleRequestReset} className="space-y-4">
           <div>
@@ -338,24 +340,6 @@ function ResetPasswordForm() {
               />
             </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">이름</label>
-            <div className="relative">
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 focus:bg-white outline-none transition-all placeholder:text-gray-300"
-                placeholder="가입 시 입력한 이름"
-                required
-              />
-            </div>
-          </div>
           <button
             type="submit"
             disabled={loading}
@@ -367,7 +351,7 @@ function ResetPasswordForm() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                발송 중...
+                발급 중...
               </>
             ) : '임시 비밀번호 발급'}
           </button>
@@ -379,7 +363,7 @@ function ResetPasswordForm() {
   if (step === 'temp-issued') {
     return (
       <div>
-        {/* 발송 완료 안내 */}
+        {/* 임시 비밀번호 발급 완료 안내 */}
         <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl mb-5">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
@@ -387,12 +371,17 @@ function ResetPasswordForm() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-emerald-800">이메일 발송 완료</span>
+            <span className="text-sm font-semibold text-emerald-800">임시 비밀번호 발급 완료</span>
           </div>
+          {inputTempPw && (
+            <div className="bg-white border-2 border-emerald-200 rounded-lg p-3 text-center my-2">
+              <p className="text-[11px] text-emerald-600 font-semibold uppercase tracking-wider mb-1">임시 비밀번호</p>
+              <p className="text-xl font-bold font-mono text-emerald-700 tracking-[4px] select-all">{inputTempPw}</p>
+            </div>
+          )}
           <p className="text-sm text-emerald-700 leading-relaxed">
-            <strong>{email}</strong>으로 임시 비밀번호를 발송했습니다.
+            아래에서 새 비밀번호로 바로 변경해주세요.
           </p>
-          <p className="text-xs text-emerald-400 mt-1.5">메일이 도착하지 않으면 스팸함을 확인해주세요.</p>
         </div>
 
         {/* 비밀번호 변경 폼 */}

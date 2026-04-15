@@ -18,16 +18,17 @@ export default function TeacherDashboard() {
   const [activeStat, setActiveStat] = useState<StatKey | null>(null)
   const toggleStat = (key: StatKey) => setActiveStat((prev) => (prev === key ? null : key))
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['teacher-dashboard'],
     queryFn: async () => {
       const res = await dashboardApi.teacher()
+      if (!res.data.success) throw new Error(res.data.error?.message || '데이터를 불러올 수 없습니다')
       return res.data.data
     },
   })
 
   if (isLoading) return <LoadingSkeleton />
-  if (isError) return <ErrorCard onRetry={refetch} />
+  if (isError) return <ErrorCard onRetry={refetch} description={error?.message} />
 
   const genCount = Number(data?.timeSaved?.generationCount ?? 0)
 

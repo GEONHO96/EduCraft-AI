@@ -24,6 +24,7 @@ export default function CourseDetailPage() {
     queryKey: ['course', courseId],
     queryFn: async () => {
       const res = await courseApi.getCourse(Number(courseId))
+      if (!res.data.success) throw new Error(res.data.error?.message || '강의 정보를 불러올 수 없습니다')
       return res.data.data
     },
   })
@@ -31,9 +32,10 @@ export default function CourseDetailPage() {
   const { data: curriculums } = useQuery({
     queryKey: ['curriculums', courseId],
     queryFn: async () => {
-      const res = await apiClient.get<{ success: boolean; data: CurriculumInfo[] }>(
+      const res = await apiClient.get<{ success: boolean; data: CurriculumInfo[]; error?: { message: string } }>(
         `/courses/${courseId}/curriculums`
       )
+      if (!res.data.success) throw new Error(res.data.error?.message || '커리큘럼을 불러올 수 없습니다')
       return res.data.data
     },
   })

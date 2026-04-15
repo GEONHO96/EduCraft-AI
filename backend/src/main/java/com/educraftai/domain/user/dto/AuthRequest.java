@@ -66,4 +66,20 @@ public class AuthRequest {
         @NotBlank(message = "새 비밀번호는 필수입니다.")
         private String newPassword;
     }
+
+    /** 계정 탈퇴 요청 (비밀번호 확인용) */
+    @Getter @Setter
+    public static class DeleteAccount {
+        private String password;
+    }
+
+    /** 로그인 상태에서 비밀번호 변경 (현재 비밀번호 검증) */
+    @Getter @Setter
+    public static class ChangeMyPassword {
+        @NotBlank(message = "현재 비밀번호는 필수입니다.")
+        private String currentPassword;
+
+        @NotBlank(message = "새 비밀번호는 필수입니다.")
+        private String newPassword;
+    }
 }

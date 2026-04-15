@@ -23,6 +23,7 @@ export default function ProfilePage() {
     queryKey: ['sns-profile', targetId],
     queryFn: async () => {
       const res = await snsApi.getProfile(targetId)
+      if (!res.data.success) throw new Error(res.data.error?.message || '프로필을 불러올 수 없습니다')
       return res.data.data
     },
   })
@@ -32,6 +33,7 @@ export default function ProfilePage() {
     queryKey: ['sns-user-posts', targetId],
     queryFn: async () => {
       const res = await snsApi.getUserPosts(targetId)
+      if (!res.data.success) throw new Error(res.data.error?.message || '게시글을 불러올 수 없습니다')
       return res.data.data
     },
   })

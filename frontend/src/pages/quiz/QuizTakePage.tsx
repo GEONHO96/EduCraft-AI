@@ -38,7 +38,8 @@ export default function QuizTakePage() {
   const { data: quiz, isLoading, isError } = useQuery({
     queryKey: ['quiz', quizId],
     queryFn: async () => {
-      const res = await apiClient.get<{ success: boolean; data: QuizInfo }>(`/quizzes/${quizId}`)
+      const res = await apiClient.get<{ success: boolean; data: QuizInfo; error?: { message: string } }>(`/quizzes/${quizId}`)
+      if (!res.data.success) throw new Error(res.data.error?.message || '퀴즈를 불러올 수 없습니다')
       return res.data.data
     },
   })

@@ -65,11 +65,15 @@ public class AuthController {
         return ApiResponse.ok(authService.findEmail(request));
     }
 
-    /** 비밀번호 초기화 (임시 비밀번호를 이메일로 발송) */
+    /** 비밀번호 초기화 (이메일만으로 임시 비밀번호 발급) */
     @PostMapping("/reset-password")
-    public ApiResponse<Map<String, String>> resetPassword(@Valid @RequestBody AuthRequest.ResetPassword request) {
-        authService.resetPassword(request);
-        return ApiResponse.ok(Map.of("message", "임시 비밀번호가 이메일로 발송되었습니다."));
+    public ApiResponse<Map<String, String>> resetPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String tempPassword = authService.resetPassword(email);
+        return ApiResponse.ok(Map.of(
+            "message", "임시 비밀번호가 발급되었습니다.",
+            "tempPassword", tempPassword
+        ));
     }
 
     /** 임시 비밀번호로 새 비밀번호 변경 */
@@ -79,10 +83,24 @@ public class AuthController {
         return ApiResponse.ok(null);
     }
 
+    /** 로그인 상태에서 비밀번호 변경 (현재 비밀번호 검증) */
+    @PutMapping("/password")
+    public ApiResponse<Map<String, String>> changeMyPassword(@Valid @RequestBody AuthRequest.ChangeMyPassword request) {
+        authService.changeMyPassword(AuthUtil.getCurrentUserId(), request);
+        return ApiResponse.ok(Map.of("message", "비밀번호가 변경되었습니다."));
+    }
+
     /** 현재 로그인한 사용자 정보 조회 */
     @GetMapping("/me")
     public ApiResponse<AuthResponse.UserInfo> getMyInfo() {
         return ApiResponse.ok(authService.getMyInfo(AuthUtil.getCurrentUserId()));
+    }
+
+    /** 계정 탈퇴 (비밀번호 확인 후 삭제) */
+    @PostMapping("/delete-account")
+    public ApiResponse<Map<String, String>> deleteAccount(@RequestBody AuthRequest.DeleteAccount request) {
+        authService.deleteAccount(AuthUtil.getCurrentUserId(), request.getPassword());
+        return ApiResponse.ok(Map.of("message", "계정이 삭제되었습니다."));
     }
 
     /** 프로필 수정 (닉네임, 프로필 이미지) */

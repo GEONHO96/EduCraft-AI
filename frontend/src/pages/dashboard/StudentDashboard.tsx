@@ -14,16 +14,17 @@ import ErrorCard from '../../components/ErrorCard'
 
 export default function StudentDashboard() {
   const { user } = useAuthStore()
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['student-dashboard'],
     queryFn: async () => {
       const res = await dashboardApi.student()
+      if (!res.data.success) throw new Error(res.data.error?.message || '데이터를 불러올 수 없습니다')
       return res.data.data
     },
   })
 
   if (isLoading) return <LoadingSkeleton />
-  if (isError) return <ErrorCard onRetry={refetch} />
+  if (isError) return <ErrorCard onRetry={refetch} description={error?.message} />
 
   const scorePercent = data?.averageScore ?? 0
   const scoreColor = useMemo(() =>

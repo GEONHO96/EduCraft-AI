@@ -31,15 +31,15 @@ export default function FeedPage() {
   const feedQuery = useQuery({
     queryKey: ['sns-feed', feedType, category],
     queryFn: async () => {
+      let res
       if (feedType === 'following') {
-        const res = await snsApi.getFollowingFeed()
-        return res.data.data
+        res = await snsApi.getFollowingFeed()
+      } else if (category) {
+        res = await snsApi.getPostsByCategory(category)
+      } else {
+        res = await snsApi.getFeed()
       }
-      if (category) {
-        const res = await snsApi.getPostsByCategory(category)
-        return res.data.data
-      }
-      const res = await snsApi.getFeed()
+      if (!res.data.success) throw new Error(res.data.error?.message || '피드를 불러올 수 없습니다')
       return res.data.data
     },
   })
@@ -443,7 +443,7 @@ const PostCard = memo(function PostCard({
       {post.imageUrl && (
         <div className="relative bg-gray-50">
           <img
-            src={post.imageUrl.startsWith('/uploads') ? `http://localhost:8080${post.imageUrl}` : post.imageUrl}
+            src={post.imageUrl.startsWith('/uploads') ? post.imageUrl : post.imageUrl}
             alt=""
             loading="lazy"
             className="w-full max-h-[480px] object-cover"

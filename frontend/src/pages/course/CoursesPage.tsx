@@ -23,6 +23,7 @@ export default function CoursesPage() {
     queryKey: ['courses'],
     queryFn: async () => {
       const res = await courseApi.getMyCourses()
+      if (!res.data.success) throw new Error(res.data.error?.message || '강의 목록을 불러올 수 없습니다')
       return res.data.data
     },
   })

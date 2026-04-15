@@ -80,13 +80,21 @@ export const authApi = {
   findEmail: (data: { name: string }) =>
     apiClient.post<ApiResponse<string[]>>('/auth/find-email', data),
 
-  /** 임시 비밀번호 발급 (이메일로 발송) */
-  resetPassword: (data: { email: string; name: string }) =>
-    apiClient.post<ApiResponse<{ message: string }>>('/auth/reset-password', data),
+  /** 임시 비밀번호 발급 (이메일만으로 발급) */
+  resetPassword: (data: { email: string }) =>
+    apiClient.post<ApiResponse<{ message: string; tempPassword: string }>>('/auth/reset-password', data),
 
   /** 임시 비밀번호로 새 비밀번호 설정 */
   changePassword: (data: { email: string; tempPassword: string; newPassword: string }) =>
     apiClient.post<ApiResponse<null>>('/auth/change-password', data),
+
+  /** 로그인 상태에서 비밀번호 변경 (현재 비밀번호 검증) */
+  changeMyPassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.put<ApiResponse<{ message: string }>>('/auth/password', data),
+
+  /** 계정 탈퇴 (비밀번호 확인 후 삭제) */
+  deleteAccount: (data: { password?: string }) =>
+    apiClient.post<ApiResponse<{ message: string }>>('/auth/delete-account', data),
 
   /** 현재 로그인된 유저 정보 조회 */
   me: () =>
