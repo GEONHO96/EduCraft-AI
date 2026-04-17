@@ -1,11 +1,9 @@
 package com.educraftai.domain.sns.entity;
 
 import com.educraftai.domain.user.entity.User;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 /**
  * 게시글 댓글 엔티티
@@ -20,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class PostComment {
+public class PostComment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +34,4 @@ public class PostComment {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

@@ -1,10 +1,8 @@
 package com.educraftai.domain.user.entity;
 
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 /**
  * 사용자 엔티티
@@ -17,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,9 +50,6 @@ public class User {
 
     /** 학생 학년 정보 (예: ELEMENTARY_1, MIDDLE_2, HIGH_3) */
     private String grade;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
     public enum Role {
         TEACHER, STUDENT

@@ -94,12 +94,12 @@ class SubscriptionServiceTest {
                     .amount(9900).paymentMethod(Payment.PaymentMethod.CREDIT_CARD)
                     .status(Payment.PaymentStatus.COMPLETED).pgTransactionId("PG-TEST").build();
             setId(payment, 100L);
-            // @CreationTimestamp는 DB 없이 동작하지 않으므로 수동 설정
-            var paidAtField = Payment.class.getDeclaredField("paidAt");
-            paidAtField.setAccessible(true);
-            paidAtField.set(payment, LocalDateTime.now());
+            // @CreationTimestamp는 DB 없이 동작하지 않으므로 수동 설정 (BaseEntity의 createdAt)
+            var createdAtField = com.educraftai.global.entity.BaseEntity.class.getDeclaredField("createdAt");
+            createdAtField.setAccessible(true);
+            createdAtField.set(payment, LocalDateTime.now());
 
-            given(paymentRepository.findByUserIdOrderByPaidAtDesc(1L)).willReturn(List.of(payment));
+            given(paymentRepository.findByUserIdOrderByCreatedAtDesc(1L)).willReturn(List.of(payment));
 
             List<SubscriptionDto.PaymentInfo> result = subscriptionService.getPaymentHistory(1L);
 
@@ -111,7 +111,7 @@ class SubscriptionServiceTest {
         @Test
         @DisplayName("결제 내역이 없으면 빈 리스트를 반환한다")
         void getPaymentHistory_empty() {
-            given(paymentRepository.findByUserIdOrderByPaidAtDesc(1L)).willReturn(List.of());
+            given(paymentRepository.findByUserIdOrderByCreatedAtDesc(1L)).willReturn(List.of());
 
             List<SubscriptionDto.PaymentInfo> result = subscriptionService.getPaymentHistory(1L);
 

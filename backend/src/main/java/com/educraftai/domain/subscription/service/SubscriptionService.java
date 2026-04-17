@@ -46,7 +46,7 @@ public class SubscriptionService {
 
     /** 결제 내역 조회 */
     public List<SubscriptionDto.PaymentInfo> getPaymentHistory(Long userId) {
-        return paymentRepository.findByUserIdOrderByPaidAtDesc(userId).stream()
+        return paymentRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(p -> SubscriptionDto.PaymentInfo.builder()
                         .id(p.getId())
                         .orderId(p.getOrderId())
@@ -54,7 +54,7 @@ public class SubscriptionService {
                         .amount(p.getAmount())
                         .paymentMethod(p.getPaymentMethod().name())
                         .status(p.getStatus().name())
-                        .paidAt(p.getPaidAt().toString())
+                        .paidAt(p.getCreatedAt().toString())
                         .build())
                 .toList();
     }

@@ -1,6 +1,7 @@
 package com.educraftai.domain.subscription.entity;
 
 import com.educraftai.domain.user.entity.User;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 /**
  * Subscription - 사용자 구독 정보
  * Community(무료), Pro, Max 플랜을 관리한다.
+ * 레코드의 생성·수정 시각은 {@link BaseEntity}에서 관리하며, {@code startedAt}은 구독 시작일이라는 별도 의미를 가진다.
  */
 @Entity
 @Table(name = "subscriptions")
@@ -18,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Subscription {
+public class Subscription extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

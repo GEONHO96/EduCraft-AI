@@ -1,11 +1,9 @@
 package com.educraftai.domain.curriculum.entity;
 
 import com.educraftai.domain.course.entity.Course;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "curriculums", indexes = {
@@ -16,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Curriculum {
+public class Curriculum extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,7 +39,4 @@ public class Curriculum {
     @Builder.Default
     @Column(nullable = false)
     private Boolean aiGenerated = false;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

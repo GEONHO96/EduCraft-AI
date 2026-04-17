@@ -1,15 +1,14 @@
 package com.educraftai.domain.subscription.entity;
 
 import com.educraftai.domain.user.entity.User;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 /**
  * Payment - 결제 내역
  * 각 결제 건의 금액, 결제 수단, 상태 등을 기록한다.
+ * 결제 시각은 {@link BaseEntity#getCreatedAt()}을 사용한다.
  */
 @Entity
 @Table(name = "payments", indexes = {
@@ -20,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Payment {
+public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,9 +55,6 @@ public class Payment {
 
     /** PG사 거래 ID */
     private String pgTransactionId;
-
-    @CreationTimestamp
-    private LocalDateTime paidAt;
 
     public enum PaymentMethod {
         CREDIT_CARD,    // 신용카드
