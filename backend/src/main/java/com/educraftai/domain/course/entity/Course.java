@@ -1,11 +1,9 @@
 package com.educraftai.domain.course.entity;
 
 import com.educraftai.domain.user.entity.User;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "courses", indexes = {
@@ -15,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Course {
+public class Course extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +31,4 @@ public class Course {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

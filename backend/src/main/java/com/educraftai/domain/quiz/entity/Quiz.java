@@ -1,11 +1,9 @@
 package com.educraftai.domain.quiz.entity;
 
 import com.educraftai.domain.material.entity.Material;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "quizzes")
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Quiz {
+public class Quiz extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +26,4 @@ public class Quiz {
     private String questionsJson;
 
     private Integer timeLimit;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

@@ -1,18 +1,21 @@
 package com.educraftai.domain.ai.controller;
 
+import com.educraftai.domain.ai.dto.ChatRequest;
+import com.educraftai.domain.ai.dto.ChatResponse;
+import com.educraftai.domain.ai.dto.UserContext;
 import com.educraftai.global.common.ApiResponse;
 import com.educraftai.infra.ai.AiClient;
-import lombok.Getter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
- * ChatController - AI 챗봇 대화 엔드포인트
- * 대화 기록과 사용자 컨텍스트를 포함하여 맥락 있는 답변을 제공한다.
+ * AI 챗봇 대화 컨트롤러.
+ *
+ * <p>사용자 메시지·대화 이력·프로필 컨텍스트를 받아 Claude API에 전달하고,
+ * 응답이 불가능하면 {@code offline: true} 플래그와 함께 반환하여 프론트엔드의
+ * 오프라인 키워드 응답으로 폴백되게 한다.
  */
 @Slf4j
 @RestController
@@ -22,8 +25,9 @@ public class ChatController {
 
     private final AiClient aiClient;
 
+    /** 챗봇 대화 (단일 턴 또는 히스토리 포함 다중 턴) */
     @PostMapping
-    public ApiResponse<ChatResponse> chat(@RequestBody ChatRequest request) {
+    public ApiResponse<ChatResponse> chat(@Valid @RequestBody ChatRequest request) {
         String systemPrompt = buildSystemPrompt(request.getUserContext());
 
         try {
@@ -35,12 +39,12 @@ public class ChatController {
             }
             return ApiResponse.ok(new ChatResponse(reply, false));
         } catch (Exception e) {
-            log.warn("챗봇 AI 응답 실패 - 오프라인 모드로 전환: {}", e.getMessage());
+            log.warn("[Chat] AI 응답 실패 → 오프라인 모드로 전환: {}", e.getMessage());
             return ApiResponse.ok(new ChatResponse("offline", true));
         }
     }
 
-    /** 사용자 컨텍스트를 반영한 시스템 프롬프트 생성 */
+    /** 사용자 프로필 컨텍스트를 반영한 시스템 프롬프트 생성 */
     private String buildSystemPrompt(UserContext ctx) {
         StringBuilder sb = new StringBuilder();
 
@@ -103,7 +107,6 @@ public class ChatController {
             - 위험하거나 부적절한 내용은 절대 답변 금지
             """);
 
-        // 사용자 컨텍스트 추가
         if (ctx != null) {
             sb.append("\n═══ 현재 대화 중인 사용자 정보 ═══\n");
             if (ctx.getName() != null) {
@@ -113,64 +116,11 @@ public class ChatController {
                 sb.append("- 역할: ").append("TEACHER".equals(ctx.getRole()) ? "교강사 (강의 생성/관리)" : "학생 (강의 수강/학습)").append("\n");
             }
             if (ctx.getGrade() != null) {
-                sb.append("- 학년: ").append(formatGrade(ctx.getGrade())).append("\n");
+                sb.append("- 학년: ").append(com.educraftai.global.util.GradeLabelMapper.toLabel(ctx.getGrade())).append("\n");
             }
             sb.append("→ 이 정보를 참고해서 사용자에 맞는 수준과 맥락으로 답변해줘.\n");
         }
 
         return sb.toString();
-    }
-
-    /** 학년 코드를 한국어로 변환 */
-    private String formatGrade(String grade) {
-        if (grade == null) return "미설정";
-        return switch (grade) {
-            case "ELEMENTARY_1" -> "초등 1학년";
-            case "ELEMENTARY_2" -> "초등 2학년";
-            case "ELEMENTARY_3" -> "초등 3학년";
-            case "ELEMENTARY_4" -> "초등 4학년";
-            case "ELEMENTARY_5" -> "초등 5학년";
-            case "ELEMENTARY_6" -> "초등 6학년";
-            case "MIDDLE_1" -> "중학 1학년";
-            case "MIDDLE_2" -> "중학 2학년";
-            case "MIDDLE_3" -> "중학 3학년";
-            case "HIGH_1" -> "고등 1학년";
-            case "HIGH_2" -> "고등 2학년";
-            case "HIGH_3" -> "고등 3학년";
-            default -> grade;
-        };
-    }
-
-    // ====== DTO ======
-
-    @Getter @Setter
-    public static class ChatRequest {
-        private String message;
-        private List<HistoryMessage> history;
-        private UserContext userContext;
-    }
-
-    @Getter @Setter
-    public static class HistoryMessage {
-        private String role; // "user" or "bot"
-        private String text;
-    }
-
-    @Getter @Setter
-    public static class UserContext {
-        private String name;
-        private String role;  // "TEACHER" or "STUDENT"
-        private String grade; // "ELEMENTARY_1" ~ "HIGH_3"
-    }
-
-    @Getter
-    public static class ChatResponse {
-        private final String reply;
-        private final boolean offline;
-
-        public ChatResponse(String reply, boolean offline) {
-            this.reply = reply;
-            this.offline = offline;
-        }
     }
 }

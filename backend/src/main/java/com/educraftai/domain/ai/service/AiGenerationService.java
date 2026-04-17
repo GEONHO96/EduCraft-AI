@@ -10,8 +10,10 @@ import com.educraftai.domain.curriculum.entity.Curriculum;
 import com.educraftai.domain.curriculum.repository.CurriculumRepository;
 import com.educraftai.domain.material.entity.Material;
 import com.educraftai.domain.material.repository.MaterialRepository;
+import com.educraftai.domain.quiz.entity.GradeQuizSubmission;
 import com.educraftai.domain.quiz.entity.Quiz;
 import com.educraftai.domain.quiz.entity.QuizSubmission;
+import com.educraftai.domain.quiz.repository.GradeQuizSubmissionRepository;
 import com.educraftai.domain.quiz.repository.QuizRepository;
 import com.educraftai.domain.quiz.repository.QuizSubmissionRepository;
 import com.educraftai.domain.user.entity.User;
@@ -57,6 +59,7 @@ public class AiGenerationService {
     private final MaterialRepository materialRepository;
     private final QuizRepository quizRepository;
     private final QuizSubmissionRepository quizSubmissionRepository;
+    private final GradeQuizSubmissionRepository gradeQuizSubmissionRepository;
     private final UserRepository userRepository;
     private final AiGenerationLogRepository aiGenerationLogRepository;
 
@@ -229,7 +232,8 @@ public class AiGenerationService {
             jsonContent = generateOfflineMaterial(curriculum.getTopic(), curriculum.getObjectives(), request.getType());
         }
 
-        Material.MaterialType materialType = Material.MaterialType.valueOf(request.getType().toUpperCase());
+        Material.MaterialType materialType = com.educraftai.global.util.EnumUtil.safeValueOfUpperCase(
+                Material.MaterialType.class, request.getType(), ErrorCode.INVALID_ENUM_VALUE);
 
         Material material = Material.builder()
                 .curriculum(curriculum)
@@ -386,7 +390,11 @@ public class AiGenerationService {
                 .build();
     }
 
-    /** 학년 코드를 한국어 라벨로 변환 */
+    /**
+     * 학년 코드를 한국어 라벨로 변환한다.
+     * <p>AI 프롬프트 문맥에 맞추기 위해 "초등학교 1학년"처럼 긴 형식을 사용한다.
+     * 대시보드 UI 등 짧은 라벨이 필요한 곳은 {@link com.educraftai.global.util.GradeLabelMapper}를 쓴다.
+     */
     private String convertGradeLabel(String grade) {
         return switch (grade) {
             case "ELEMENTARY_1" -> "초등학교 1학년";
@@ -403,6 +411,33 @@ public class AiGenerationService {
             case "HIGH_3" -> "고등학교 3학년";
             default -> grade;
         };
+    }
+
+    /**
+     * 학년별 AI 퀴즈 결과 저장.
+     * <p>기존에는 {@code AiController}가 {@link UserRepository}·{@link GradeQuizSubmissionRepository}를 직접 주입받아
+     * 엔티티를 빌드·저장했으나, 컨트롤러 책임을 벗어나므로 서비스로 이관.
+     */
+    public AiResponse.GradeQuizSubmissionResult submitGradeQuiz(Long userId, AiRequest.SubmitGradeQuiz request) {
+        User student = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        GradeQuizSubmission submission = gradeQuizSubmissionRepository.save(GradeQuizSubmission.builder()
+                .student(student)
+                .grade(request.getGrade())
+                .subject(request.getSubject())
+                .score(request.getScore())
+                .totalQuestions(request.getTotalQuestions())
+                .build());
+
+        return AiResponse.GradeQuizSubmissionResult.builder()
+                .id(submission.getId())
+                .grade(submission.getGrade())
+                .subject(submission.getSubject())
+                .score(submission.getScore())
+                .totalQuestions(submission.getTotalQuestions())
+                .submittedAt(submission.getSubmittedAt().toString())
+                .build();
     }
 
     public AiResponse.SupplementResult generateSupplement(Long userId, AiRequest.GenerateSupplement request) {

@@ -28,6 +28,11 @@ spring:
     job:
       enabled: false
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 server:
   port: 8080
   servlet:
@@ -36,16 +41,15 @@ server:
       enabled: true
       force: true
 
-# 파일 업로드 설정
-spring.servlet.multipart:
-  max-file-size: 10MB
-  max-request-size: 10MB
-
 file:
   upload-dir: ./uploads
 
+# 애플리케이션 공통 설정 (프론트엔드 URL 등)
+app:
+  frontend-url: ${APP_FRONTEND_URL:http://localhost:5173}
+
 ---
-# 로컬 개발 프로필
+# ─── 로컬 개발 프로필 ──────────────────────────────────────────
 spring:
   config:
     activate:
@@ -83,24 +87,26 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+  # 로컬 전용 SQL 표시 (공통 ddl-auto는 상위 블록에서 이미 선언)
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
 
 jwt:
-  secret: educraftai-local-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
+  # 로컬 개발용 기본값. 운영 환경에서는 반드시 JWT_SECRET 환경변수로 오버라이드할 것.
+  secret: ${JWT_SECRET:dev-only-local-secret-change-me-at-least-256-bits-long-hs256}
   expiration: 86400000
 
 social:
+  # 소셜 로그인 크리덴셜은 환경변수로만 주입 — 기본값은 빈 문자열(미설정).
+  # 실제 키는 .env.local 또는 IDE Run Configuration 환경변수로 전달.
   naver:
-    client-id: ZsTK1qXQouaeK9jzWd6z
-    client-secret: PGTPS01rZZ
+    client-id: ${NAVER_CLIENT_ID:}
+    client-secret: ${NAVER_CLIENT_SECRET:}
   kakao:
-    client-id: "3d156fb67d32652fd0c89c5e659f0942"
+    client-id: ${KAKAO_CLIENT_ID:}
 
 ---
-# Docker 프로필
+# ─── Docker / 운영 프로필 ──────────────────────────────────────
 spring:
   config:
     activate:
@@ -121,11 +127,11 @@ spring:
     anthropic:
       api-key: ${AI_API_KEY}
 
+  # 운영 — SQL 출력 억제 (공통 ddl-auto는 상위 블록)
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: false
 
 jwt:
-  secret: ${JWT_SECRET:educraftai-production-jwt-secret-key-must-be-at-least-256-bits}
+  # 운영 환경 — 기본값 없음. JWT_SECRET 환경변수 필수.
+  secret: ${JWT_SECRET}
   expiration: 86400000

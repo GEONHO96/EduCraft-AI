@@ -1,11 +1,9 @@
 package com.educraftai.domain.sns.entity;
 
 import com.educraftai.domain.user.entity.User;
+import com.educraftai.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 /**
  * SNS 게시글 엔티티
@@ -21,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Post {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,9 +50,6 @@ public class Post {
     /** 댓글 수 (비정규화 카운트) */
     @Builder.Default
     private int commentCount = 0;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
     public enum Category {
         FREE,           // 자유 게시판

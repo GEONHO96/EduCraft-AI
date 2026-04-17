@@ -90,9 +90,21 @@ class QuizServiceTest {
     }
 
     private void setField(Object obj, String fieldName, Object value) throws Exception {
-        var field = obj.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(obj, value);
+        // BaseEntity 같은 부모 클래스에 선언된 필드까지 탐색
+        Class<?> clazz = obj.getClass();
+        NoSuchFieldException last = null;
+        while (clazz != null) {
+            try {
+                var field = clazz.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(obj, value);
+                return;
+            } catch (NoSuchFieldException e) {
+                last = e;
+                clazz = clazz.getSuperclass();
+            }
+        }
+        throw last != null ? last : new NoSuchFieldException(fieldName);
     }
 
     @Nested
@@ -246,7 +258,7 @@ class QuizServiceTest {
             assertThatThrownBy(() -> quizService.getSubmissionResult(10L, 999L))
                     .isInstanceOf(BusinessException.class)
                     .extracting(e -> ((BusinessException) e).getErrorCode())
-                    .isEqualTo(ErrorCode.QUIZ_NOT_FOUND);
+                    .isEqualTo(ErrorCode.QUIZ_SUBMISSION_NOT_FOUND);
         }
 
         @Test

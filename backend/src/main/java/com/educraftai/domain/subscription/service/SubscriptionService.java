@@ -9,6 +9,7 @@ import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.exception.BusinessException;
 import com.educraftai.global.exception.ErrorCode;
+import com.educraftai.global.util.EnumUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class SubscriptionService {
 
     /** 결제 내역 조회 */
     public List<SubscriptionDto.PaymentInfo> getPaymentHistory(Long userId) {
-        return paymentRepository.findByUserIdOrderByPaidAtDesc(userId).stream()
+        return paymentRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(p -> SubscriptionDto.PaymentInfo.builder()
                         .id(p.getId())
                         .orderId(p.getOrderId())
@@ -54,7 +55,7 @@ public class SubscriptionService {
                         .amount(p.getAmount())
                         .paymentMethod(p.getPaymentMethod().name())
                         .status(p.getStatus().name())
-                        .paidAt(p.getPaidAt().toString())
+                        .paidAt(p.getCreatedAt().toString())
                         .build())
                 .toList();
     }
@@ -62,22 +63,21 @@ public class SubscriptionService {
     /** 구독 신청 (결제 처리) */
     @Transactional
     public SubscriptionDto.SubscribeResult subscribe(Long userId, SubscriptionDto.SubscribeRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = findUser(userId);
 
-        Subscription.Plan plan = Subscription.Plan.valueOf(request.getPlan());
-        Payment.PaymentMethod paymentMethod = Payment.PaymentMethod.valueOf(request.getPaymentMethod());
-        int amount = getPlanPrice(plan);
+        Subscription.Plan plan = EnumUtil.safeValueOf(Subscription.Plan.class, request.getPlan(), ErrorCode.INVALID_PLAN);
+        Payment.PaymentMethod paymentMethod = EnumUtil.safeValueOf(
+                Payment.PaymentMethod.class, request.getPaymentMethod(), ErrorCode.INVALID_PAYMENT_METHOD);
 
         if (plan == Subscription.Plan.COMMUNITY) {
             throw new BusinessException(ErrorCode.INVALID_INPUT, "무료 플랜은 별도 결제가 필요하지 않습니다.");
         }
 
-        // 결제 처리 (실제로는 PG사 연동)
+        int amount = getPlanPrice(plan);
         String orderId = "EDU-" + UUID.randomUUID().toString().substring(0, 12).toUpperCase();
         String pgTxId = "PG-" + UUID.randomUUID().toString().substring(0, 16).toUpperCase();
 
-        log.info("결제 처리: userId={}, plan={}, amount={}, method={}, orderId={}",
+        log.info("[Subscription] 결제 처리 userId={} plan={} amount={} method={} orderId={}",
                 userId, plan, amount, paymentMethod, orderId);
 
         // 결제 내역 저장
@@ -117,7 +117,7 @@ public class SubscriptionService {
     @Transactional
     public SubscriptionDto.SubscriptionInfo cancelSubscription(Long userId) {
         Subscription sub = subscriptionRepository.findByUserId(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "구독 정보가 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 
         if (sub.getPlan() == Subscription.Plan.COMMUNITY) {
             throw new BusinessException(ErrorCode.INVALID_INPUT, "무료 플랜은 취소할 수 없습니다.");
@@ -161,5 +161,10 @@ public class SubscriptionService {
                 .plan("COMMUNITY")
                 .status("ACTIVE")
                 .build();
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 }

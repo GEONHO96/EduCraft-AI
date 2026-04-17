@@ -1,5 +1,6 @@
 package com.educraftai.global.security;
 
+import com.educraftai.global.constant.AuthConstants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,8 +18,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * JWT 인증 필터
- * 매 요청마다 Authorization 헤더에서 JWT를 추출하고 검증하여 SecurityContext에 인증 정보를 설정한다.
+ * JWT 인증 필터.
+ *
+ * <p>매 요청마다 Authorization 헤더에서 Bearer 토큰을 추출·검증하여
+ * {@link SecurityContextHolder}에 인증 정보를 설정한다.
+ * 상수({@link AuthConstants})를 통해 헤더명·접두어·역할 prefix를 참조하여 하드코딩을 제거.
  */
 @Slf4j
 @Component
@@ -27,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    /** 요청 헤더의 JWT 토큰을 검증하고 인증 정보를 SecurityContext에 저장 */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -37,21 +40,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Long userId = jwtTokenProvider.getUserId(token);
             String role = jwtTokenProvider.getRole(token);
 
-            var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+            var authorities = List.of(new SimpleGrantedAuthority(AuthConstants.ROLE_PREFIX + role));
             var authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("[JWT 인증] userId={}, role={}, uri={}", userId, role, request.getRequestURI());
+            log.debug("[JWT] 인증 성공 userId={} role={} uri={}", userId, role, request.getRequestURI());
         }
 
         filterChain.doFilter(request, response);
-        log.debug("[요청 처리 완료] {} {} → {}", request.getMethod(), request.getRequestURI(), response.getStatus());
     }
 
-    /** Authorization 헤더에서 "Bearer " 접두사를 제거하고 토큰 문자열 추출 */
+    /** Authorization 헤더에서 "Bearer " 접두어를 제거하고 토큰 문자열 반환 */
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        String header = request.getHeader(AuthConstants.AUTHORIZATION_HEADER);
+        if (StringUtils.hasText(header) && header.startsWith(AuthConstants.BEARER_PREFIX)) {
+            return header.substring(AuthConstants.BEARER_PREFIX_LENGTH);
         }
         return null;
     }

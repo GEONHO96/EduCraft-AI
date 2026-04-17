@@ -4,7 +4,7 @@ import com.educraftai.domain.course.dto.CourseRequest;
 import com.educraftai.domain.course.dto.CourseResponse;
 import com.educraftai.domain.course.service.CourseService;
 import com.educraftai.global.common.ApiResponse;
-import com.educraftai.global.security.AuthUtil;
+import com.educraftai.global.security.CurrentUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * 강의 관리 API 컨트롤러
- * 강의 생성, 조회, 수강 신청 등을 처리한다.
+ * 강의 관리 API 컨트롤러.
+ * <p>강의 생성/조회/탐색·검색, 학생 수강 신청을 처리한다.
  */
 @RestController
 @RequestMapping("/api/courses")
@@ -26,25 +26,22 @@ public class CourseController {
     /** 강의 생성 (선생님 전용) */
     @PostMapping
     @PreAuthorize("hasRole('TEACHER')")
-    public ApiResponse<CourseResponse.Info> createCourse(@Valid @RequestBody CourseRequest.Create request) {
-        return ApiResponse.ok(courseService.createCourse(AuthUtil.getCurrentUserId(), request));
+    public ApiResponse<CourseResponse.Info> createCourse(@CurrentUserId Long userId,
+                                                         @Valid @RequestBody CourseRequest.Create request) {
+        return ApiResponse.ok(courseService.createCourse(userId, request));
     }
 
     /** 내 강의 목록 조회 (선생님: 개설한 강의, 학생: 수강 중인 강의) */
     @GetMapping
-    public ApiResponse<List<CourseResponse.Info>> getMyCourses() {
-        return ApiResponse.ok(courseService.getMyCourses(AuthUtil.getCurrentUserId()));
+    public ApiResponse<List<CourseResponse.Info>> getMyCourses(@CurrentUserId Long userId) {
+        return ApiResponse.ok(courseService.getMyCourses(userId));
     }
 
-    /** 전체 강의 탐색 (수강생 수, 수강 여부 포함) */
+    /** 전체 강의 탐색 — keyword가 있으면 제목·과목 검색, 없으면 전체 조회 */
     @GetMapping("/browse")
-    public ApiResponse<List<CourseResponse.Browse>> browseCourses(
-            @RequestParam(required = false) String keyword) {
-        Long userId = AuthUtil.getCurrentUserId();
-        if (keyword != null && !keyword.isBlank()) {
-            return ApiResponse.ok(courseService.searchCourses(keyword, userId));
-        }
-        return ApiResponse.ok(courseService.browseAllCourses(userId));
+    public ApiResponse<List<CourseResponse.Browse>> browseCourses(@CurrentUserId Long userId,
+                                                                  @RequestParam(required = false) String keyword) {
+        return ApiResponse.ok(courseService.browseCourses(keyword, userId));
     }
 
     /** 강의 단건 조회 */
@@ -56,8 +53,8 @@ public class CourseController {
     /** 수강 신청 (학생 전용) */
     @PostMapping("/{courseId}/enroll")
     @PreAuthorize("hasRole('STUDENT')")
-    public ApiResponse<Void> enrollStudent(@PathVariable Long courseId) {
-        courseService.enrollStudent(courseId, AuthUtil.getCurrentUserId());
+    public ApiResponse<Void> enrollStudent(@CurrentUserId Long userId, @PathVariable Long courseId) {
+        courseService.enrollStudent(courseId, userId);
         return ApiResponse.ok();
     }
 }
