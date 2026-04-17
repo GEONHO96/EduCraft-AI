@@ -5,8 +5,6 @@ import com.educraftai.domain.course.repository.CourseEnrollmentRepository;
 import com.educraftai.domain.course.repository.CourseRepository;
 import com.educraftai.domain.dashboard.dto.DashboardResponse;
 import com.educraftai.domain.material.repository.MaterialRepository;
-import com.educraftai.domain.quiz.entity.GradeQuizSubmission;
-import com.educraftai.domain.quiz.entity.QuizSubmission;
 import com.educraftai.domain.quiz.repository.GradeQuizSubmissionRepository;
 import com.educraftai.domain.quiz.repository.QuizRepository;
 import com.educraftai.domain.quiz.repository.QuizSubmissionRepository;
