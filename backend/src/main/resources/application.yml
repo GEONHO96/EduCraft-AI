@@ -89,15 +89,18 @@ spring:
     show-sql: true
 
 jwt:
-  secret: educraftai-local-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
+  # 로컬 개발용 기본값. 운영 환경에서는 반드시 JWT_SECRET 환경변수로 오버라이드할 것.
+  secret: ${JWT_SECRET:dev-only-local-secret-change-me-at-least-256-bits-long-hs256}
   expiration: 86400000
 
 social:
+  # 소셜 로그인 크리덴셜은 환경변수로만 주입 — 기본값은 빈 문자열(미설정).
+  # 실제 키는 .env.local 또는 IDE Run Configuration 환경변수로 전달.
   naver:
-    client-id: ZsTK1qXQouaeK9jzWd6z
-    client-secret: PGTPS01rZZ
+    client-id: ${NAVER_CLIENT_ID:}
+    client-secret: ${NAVER_CLIENT_SECRET:}
   kakao:
-    client-id: "3d156fb67d32652fd0c89c5e659f0942"
+    client-id: ${KAKAO_CLIENT_ID:}
 
 ---
 # Docker 프로필
@@ -127,5 +130,6 @@ spring:
     show-sql: false
 
 jwt:
-  secret: ${JWT_SECRET:educraftai-production-jwt-secret-key-must-be-at-least-256-bits}
+  # 운영 환경 — 기본값 없음. JWT_SECRET 환경변수 필수.
+  secret: ${JWT_SECRET}
   expiration: 86400000
