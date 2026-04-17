@@ -3,14 +3,16 @@ package com.educraftai.global.common;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
- * EmailService - 이메일 발송 서비스
- * 임시 비밀번호, 알림 등 이메일 발송 기능을 담당한다.
+ * 이메일 발송 서비스.
+ * <p>임시 비밀번호 안내 등 사용자 알림 이메일을 발송한다.
+ * SMTP 설정은 {@code application.yml}의 {@code spring.mail.*}에 의존.
  */
 @Slf4j
 @Service
@@ -19,8 +21,13 @@ public class EmailService {
 
     private final JavaMailSender mailSender;
 
+    /** 비밀번호 변경 유도 링크의 베이스 URL (로컬 기본값: http://localhost:5173) */
+    @Value("${app.frontend-url:http://localhost:5173}")
+    private String frontendUrl;
+
     /**
-     * 임시 비밀번호 이메일 발송
+     * 임시 비밀번호 이메일 발송 (비동기).
+     *
      * @param to 수신자 이메일
      * @param name 수신자 이름
      * @param tempPassword 발급된 임시 비밀번호
@@ -36,15 +43,13 @@ public class EmailService {
             helper.setText(buildTempPasswordHtml(name, tempPassword), true);
 
             mailSender.send(message);
-            log.info("[Email] 임시 비밀번호 이메일 발송 성공 - to: {}", to);
+            log.info("[Email] 임시 비밀번호 이메일 발송 성공");
         } catch (Exception e) {
-            log.warn("[Email] 임시 비밀번호 이메일 발송 실패 (화면에서 직접 확인 가능) - to: {}, error: {}", to, e.getMessage());
+            log.warn("[Email] 임시 비밀번호 이메일 발송 실패 (화면에서 직접 확인 가능): {}", e.getMessage());
         }
     }
 
-    /**
-     * 임시 비밀번호 이메일 HTML 템플릿 생성
-     */
+    /** 임시 비밀번호 이메일 HTML 템플릿 */
     private String buildTempPasswordHtml(String name, String tempPassword) {
         return """
             <!DOCTYPE html>
@@ -85,7 +90,7 @@ public class EmailService {
 
                         <!-- 버튼 -->
                         <div style="text-align:center;">
-                            <a href="http://localhost:5173/find-account" style="display:inline-block;background:#6366f1;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">비밀번호 변경하러 가기</a>
+                            <a href="%s/find-account" style="display:inline-block;background:#6366f1;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;">비밀번호 변경하러 가기</a>
                         </div>
                     </div>
 
@@ -99,6 +104,6 @@ public class EmailService {
                 </div>
             </body>
             </html>
-            """.formatted(name, tempPassword);
+            """.formatted(name, tempPassword, frontendUrl);
     }
 }
