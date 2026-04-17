@@ -10,15 +10,14 @@ import com.educraftai.domain.quiz.entity.QuizSubmission;
 import com.educraftai.domain.quiz.repository.GradeQuizSubmissionRepository;
 import com.educraftai.domain.quiz.repository.QuizRepository;
 import com.educraftai.domain.quiz.repository.QuizSubmissionRepository;
+import com.educraftai.global.util.GradeLabelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -33,14 +32,7 @@ public class DashboardService {
     private final GradeQuizSubmissionRepository gradeQuizSubmissionRepository;
     private final AiGenerationLogRepository aiLogRepository;
 
-    private static final Map<String, String> GRADE_LABELS = new HashMap<>() {{
-        put("ELEMENTARY_1", "초등 1학년"); put("ELEMENTARY_2", "초등 2학년"); put("ELEMENTARY_3", "초등 3학년");
-        put("ELEMENTARY_4", "초등 4학년"); put("ELEMENTARY_5", "초등 5학년"); put("ELEMENTARY_6", "초등 6학년");
-        put("MIDDLE_1", "중학 1학년"); put("MIDDLE_2", "중학 2학년"); put("MIDDLE_3", "중학 3학년");
-        put("HIGH_1", "고등 1학년"); put("HIGH_2", "고등 2학년"); put("HIGH_3", "고등 3학년");
-    }};
-
-    public DashboardResponse.TeacherDashboard getTeacherDashboard(Long teacherId) {
+public DashboardResponse.TeacherDashboard getTeacherDashboard(Long teacherId) {
         var courses = courseRepository.findByTeacherId(teacherId);
         List<Long> courseIds = courses.stream().map(c -> c.getId()).toList();
 
@@ -100,7 +92,7 @@ public class DashboardService {
         }
 
         for (var g : gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(studentId)) {
-            String gradeLabel = GRADE_LABELS.getOrDefault(g.getGrade(), g.getGrade());
+            String gradeLabel = GradeLabelMapper.toLabel(g.getGrade());
             recentResults.add(DashboardResponse.QuizResult.builder()
                     .quizTitle(gradeLabel + " " + g.getSubject() + " 퀴즈")
                     .score(g.getScore())

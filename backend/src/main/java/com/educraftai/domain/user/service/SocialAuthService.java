@@ -22,10 +22,19 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+/**
+ * 소셜 로그인 서비스 (Google · Kakao · Naver).
+ *
+ * <p>클래스는 읽기 트랜잭션 기본값, 쓰기 메서드({@link #socialLogin(SocialAuthRequest)})만
+ * 별도 {@link Transactional}을 선언한다. 외부 OAuth API 호출(RestTemplate)은 트랜잭션 밖에서
+ * 이뤄지는 것이 바람직하지만, 기존 흐름을 크게 바꾸지 않기 위해 읽기 트랜잭션으로 유지한다.
+ *
+ * <p>PII 보호: 이메일·OAuth 응답 원문은 로그에 찍지 않는다. 최소한의 식별 정보만 info로 기록.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class SocialAuthService {
 
     private final UserRepository userRepository;
@@ -42,8 +51,9 @@ public class SocialAuthService {
     @Value("${social.kakao.client-id:}")
     private String kakaoClientId;
 
+    @Transactional
     public AuthResponse.Token socialLogin(SocialAuthRequest request) {
-        log.info("[소셜 로그인 요청] provider={}", request.getProvider());
+        log.info("[Social] 로그인 요청 provider={}", request.getProvider());
 
         SocialUserInfo socialUser = switch (request.getProvider()) {
             case GOOGLE -> getGoogleUserInfo(request.getAccessToken());
@@ -51,9 +61,6 @@ public class SocialAuthService {
             case NAVER -> getNaverUserInfo(request.getAccessToken());
             default -> throw new BusinessException(ErrorCode.INVALID_INPUT);
         };
-
-        log.debug("[소셜 사용자 정보] provider={}, socialId={}, email={}, name={}",
-                request.getProvider(), socialUser.socialId(), socialUser.email(), socialUser.name());
 
         Optional<User> existingUser = userRepository.findBySocialProviderAndSocialId(
                 request.getProvider(), socialUser.socialId());
@@ -67,12 +74,12 @@ public class SocialAuthService {
             }
             user.setProfileImage(socialUser.profileImage());
 
-            // 기존 이메일이 폴백(socialId@naver.com 등) 형태이고, 실제 이메일을 받은 경우 업데이트
+            // 기존 이메일이 폴백(socialId@naver.com 등)이고 실제 이메일이 새로 들어오면 갱신
             if (isFallbackEmail(user.getEmail()) && !isFallbackEmail(socialUser.email())) {
-                log.info("[소셜 로그인] 이메일 업데이트: {} → {}", user.getEmail(), socialUser.email());
+                log.info("[Social] 이메일 업데이트 userId={}", user.getId());
                 user.setEmail(socialUser.email());
             }
-            log.info("[소셜 로그인] 기존 사용자 로그인 - userId={}, email={}", user.getId(), user.getEmail());
+            log.info("[Social] 기존 사용자 로그인 userId={}", user.getId());
         } else {
             Optional<User> emailUser = userRepository.findByEmail(socialUser.email());
             if (emailUser.isPresent()) {
@@ -80,18 +87,17 @@ public class SocialAuthService {
                 user.setSocialProvider(request.getProvider());
                 user.setSocialId(socialUser.socialId());
                 user.setProfileImage(socialUser.profileImage());
-                log.info("[소셜 로그인] 기존 계정에 소셜 연동 - userId={}, provider={}", user.getId(), request.getProvider());
+                log.info("[Social] 기존 계정에 소셜 연동 userId={} provider={}", user.getId(), request.getProvider());
             } else {
-                user = User.builder()
+                user = userRepository.save(User.builder()
                         .email(socialUser.email())
                         .name(socialUser.name())
                         .role(request.getRole() != null ? request.getRole() : User.Role.STUDENT)
                         .socialProvider(request.getProvider())
                         .socialId(socialUser.socialId())
                         .profileImage(socialUser.profileImage())
-                        .build();
-                userRepository.save(user);
-                log.info("[소셜 회원가입] 신규 사용자 생성 - userId={}, email={}, provider={}", user.getId(), user.getEmail(), request.getProvider());
+                        .build());
+                log.info("[Social] 신규 사용자 생성 userId={} provider={}", user.getId(), request.getProvider());
             }
         }
 
@@ -107,8 +113,9 @@ public class SocialAuthService {
      * 프론트엔드에서 받은 code를 백엔드에서 access token으로 교환 후 로그인 처리
      * (Naver/Kakao는 CORS로 인해 브라우저에서 직접 토큰 교환 불가)
      */
+    @Transactional
     public AuthResponse.Token socialLoginWithCode(SocialCodeRequest request) {
-        log.info("[소셜 코드 로그인 요청] provider={}", request.getProvider());
+        log.info("[Social] 코드 로그인 요청 provider={}", request.getProvider());
 
         String accessToken = switch (request.getProvider()) {
             case KAKAO -> exchangeKakaoCode(request.getCode(), request.getRedirectUri());
@@ -116,7 +123,6 @@ public class SocialAuthService {
             default -> throw new BusinessException(ErrorCode.INVALID_INPUT);
         };
 
-        // 기존 socialLogin 로직 재사용
         SocialAuthRequest authRequest = new SocialAuthRequest();
         authRequest.setAccessToken(accessToken);
         authRequest.setProvider(request.getProvider());
@@ -146,17 +152,15 @@ public class SocialAuthService {
             String accessToken = root.path("access_token").asText(null);
 
             if (accessToken == null || accessToken.isEmpty()) {
-                log.error("Naver 토큰 교환 실패: {}", response.getBody());
-                throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+                log.error("[Social/Naver] 토큰 교환 실패 (응답 본문 생략)");
+                throw new BusinessException(ErrorCode.SOCIAL_TOKEN_EXCHANGE_FAILED);
             }
-
-            log.debug("[Naver 토큰 교환 성공]");
             return accessToken;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Naver 토큰 교환 실패", e);
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            log.error("[Social/Naver] 토큰 교환 예외", e);
+            throw new BusinessException(ErrorCode.SOCIAL_TOKEN_EXCHANGE_FAILED);
         }
     }
 
@@ -181,17 +185,15 @@ public class SocialAuthService {
             String accessToken = root.path("access_token").asText(null);
 
             if (accessToken == null || accessToken.isEmpty()) {
-                log.error("Kakao 토큰 교환 실패: {}", response.getBody());
-                throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+                log.error("[Social/Kakao] 토큰 교환 실패 (응답 본문 생략)");
+                throw new BusinessException(ErrorCode.SOCIAL_TOKEN_EXCHANGE_FAILED);
             }
-
-            log.debug("[Kakao 토큰 교환 성공]");
             return accessToken;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Kakao 토큰 교환 실패", e);
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            log.error("[Social/Kakao] 토큰 교환 예외", e);
+            throw new BusinessException(ErrorCode.SOCIAL_TOKEN_EXCHANGE_FAILED);
         }
     }
 
@@ -213,8 +215,8 @@ public class SocialAuthService {
                     root.path("picture").asText(null)
             );
         } catch (Exception e) {
-            log.error("Google 사용자 정보 조회 실패", e);
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            log.error("[Social/Google] 사용자 정보 조회 실패", e);
+            throw new BusinessException(ErrorCode.SOCIAL_USERINFO_FAILED);
         }
     }
 
@@ -239,8 +241,8 @@ public class SocialAuthService {
 
             return new SocialUserInfo(socialId, email, name, profileImage);
         } catch (Exception e) {
-            log.error("Kakao 사용자 정보 조회 실패", e);
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            log.error("[Social/Kakao] 사용자 정보 조회 실패", e);
+            throw new BusinessException(ErrorCode.SOCIAL_USERINFO_FAILED);
         }
     }
 
@@ -257,8 +259,7 @@ public class SocialAuthService {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode responseNode = root.path("response");
 
-            log.info("[Naver API 응답] resultcode={}, fields={}", root.path("resultcode").asText(), responseNode.fieldNames());
-            log.debug("[Naver API 상세] response={}", responseNode.toString());
+            log.info("[Social/Naver] API 응답 resultcode={}", root.path("resultcode").asText());
 
             String socialId = responseNode.path("id").asText();
 
@@ -268,7 +269,7 @@ public class SocialAuthService {
                 email = responseNode.path("email").asText();
             }
             if (email == null || email.isBlank()) {
-                log.warn("[Naver] 이메일 미제공 — 네이버 개발자 콘솔에서 '이메일 주소' 권한을 '필수'로 설정하세요. socialId={}", socialId);
+                log.warn("[Social/Naver] 이메일 미제공 — 콘솔에서 '이메일 주소' 권한을 필수로 설정하세요");
                 email = socialId + "@naver.com";
             }
 
@@ -279,11 +280,11 @@ public class SocialAuthService {
 
             String profileImage = responseNode.path("profile_image").asText(null);
 
-            log.info("[Naver 사용자 정보] email={}, name={}, hasProfileImage={}", email, name, profileImage != null);
+            log.info("[Social/Naver] 사용자 정보 수신 완료 (이름/이메일 로그 생략)");
             return new SocialUserInfo(socialId, email, name, profileImage);
         } catch (Exception e) {
-            log.error("Naver 사용자 정보 조회 실패", e);
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            log.error("[Social/Naver] 사용자 정보 조회 실패", e);
+            throw new BusinessException(ErrorCode.SOCIAL_USERINFO_FAILED);
         }
     }
 

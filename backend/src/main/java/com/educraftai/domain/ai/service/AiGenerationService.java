@@ -232,7 +232,8 @@ public class AiGenerationService {
             jsonContent = generateOfflineMaterial(curriculum.getTopic(), curriculum.getObjectives(), request.getType());
         }
 
-        Material.MaterialType materialType = Material.MaterialType.valueOf(request.getType().toUpperCase());
+        Material.MaterialType materialType = com.educraftai.global.util.EnumUtil.safeValueOfUpperCase(
+                Material.MaterialType.class, request.getType(), ErrorCode.INVALID_ENUM_VALUE);
 
         Material material = Material.builder()
                 .curriculum(curriculum)

@@ -24,9 +24,9 @@ public final class GradeLabelMapper {
             Map.entry("ELEMENTARY_4", "초등 4학년"),
             Map.entry("ELEMENTARY_5", "초등 5학년"),
             Map.entry("ELEMENTARY_6", "초등 6학년"),
-            Map.entry("MIDDLE_1", "중등 1학년"),
-            Map.entry("MIDDLE_2", "중등 2학년"),
-            Map.entry("MIDDLE_3", "중등 3학년"),
+            Map.entry("MIDDLE_1", "중학 1학년"),
+            Map.entry("MIDDLE_2", "중학 2학년"),
+            Map.entry("MIDDLE_3", "중학 3학년"),
             Map.entry("HIGH_1", "고등 1학년"),
             Map.entry("HIGH_2", "고등 2학년"),
             Map.entry("HIGH_3", "고등 3학년")

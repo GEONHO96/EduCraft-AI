@@ -31,49 +31,63 @@ public class QuizService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
+    /** 퀴즈 단건 조회 */
     public QuizResponse.Info getQuiz(Long quizId) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_NOT_FOUND));
-        return QuizResponse.Info.from(quiz);
+        return QuizResponse.Info.from(findQuiz(quizId));
     }
 
+    /** 퀴즈 제출 — 중복 제출 방지, 즉시 채점 */
     @Transactional
     public QuizResponse.SubmissionResult submitQuiz(Long quizId, Long studentId, QuizRequest.Submit request) {
-        Quiz quiz = quizRepository.findById(quizId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_NOT_FOUND));
+        Quiz quiz = findQuiz(quizId);
 
         if (submissionRepository.existsByQuizIdAndStudentId(quizId, studentId)) {
             throw new BusinessException(ErrorCode.ALREADY_SUBMITTED);
         }
 
-        User student = userRepository.findById(studentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
+        User student = findUser(studentId);
         int score = calculateScore(quiz.getQuestionsJson(), request.getAnswersJson());
         int totalQuestions = countQuestions(quiz.getQuestionsJson());
 
-        QuizSubmission submission = QuizSubmission.builder()
+        QuizSubmission submission = submissionRepository.save(QuizSubmission.builder()
                 .quiz(quiz)
                 .student(student)
                 .answersJson(request.getAnswersJson())
                 .score(score)
                 .totalQuestions(totalQuestions)
-                .build();
+                .build());
 
-        submissionRepository.save(submission);
         return QuizResponse.SubmissionResult.from(submission);
     }
 
+    /**
+     * 학생 본인의 제출 결과 조회.
+     * <p>제출 기록이 없으면 {@link ErrorCode#QUIZ_SUBMISSION_NOT_FOUND}로 변경
+     * (기존엔 {@code QUIZ_NOT_FOUND}였으나 의미가 부정확했음).
+     */
     public QuizResponse.SubmissionResult getSubmissionResult(Long quizId, Long studentId) {
         QuizSubmission submission = submissionRepository.findByQuizIdAndStudentId(quizId, studentId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_SUBMISSION_NOT_FOUND));
         return QuizResponse.SubmissionResult.from(submission);
     }
 
+    /** 선생님용 — 해당 퀴즈의 전체 학생 제출 결과 */
     public List<QuizResponse.SubmissionResult> getQuizResults(Long quizId) {
         return submissionRepository.findByQuizId(quizId).stream()
                 .map(QuizResponse.SubmissionResult::from)
                 .toList();
+    }
+
+    // ─── 내부 헬퍼 ───
+
+    private Quiz findQuiz(Long quizId) {
+        return quizRepository.findById(quizId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUIZ_NOT_FOUND));
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
     private int calculateScore(String questionsJson, String answersJson) {

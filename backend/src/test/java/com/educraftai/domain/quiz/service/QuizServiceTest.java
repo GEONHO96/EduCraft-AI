@@ -258,7 +258,7 @@ class QuizServiceTest {
             assertThatThrownBy(() -> quizService.getSubmissionResult(10L, 999L))
                     .isInstanceOf(BusinessException.class)
                     .extracting(e -> ((BusinessException) e).getErrorCode())
-                    .isEqualTo(ErrorCode.QUIZ_NOT_FOUND);
+                    .isEqualTo(ErrorCode.QUIZ_SUBMISSION_NOT_FOUND);
         }
 
         @Test

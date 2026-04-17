@@ -20,8 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 강의 비즈니스 로직 서비스
- * 강의 생성, 조회, 수강 신청 처리를 담당한다.
+ * 강의 비즈니스 로직 서비스.
+ * <p>강의 생성·조회·탐색, 수강 신청을 담당한다.
+ * 탐색 메서드는 N+1 방지를 위해 배치 쿼리로 수강생 수·수강 여부를 일괄 집계한다.
  */
 @Service
 @RequiredArgsConstructor
@@ -32,43 +33,36 @@ public class CourseService {
     private final CourseEnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
 
-    /** 강의 생성 - 선생님 사용자가 새 강의를 개설 */
+    /** 강의 생성 (선생님 전용) */
     @Transactional
     public CourseResponse.Info createCourse(Long teacherId, CourseRequest.Create request) {
-        User teacher = userRepository.findById(teacherId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User teacher = findUser(teacherId);
 
-        Course course = Course.builder()
+        Course course = courseRepository.save(Course.builder()
                 .teacher(teacher)
                 .title(request.getTitle())
                 .subject(request.getSubject())
                 .description(request.getDescription())
-                .build();
+                .build());
 
-        courseRepository.save(course);
         return CourseResponse.Info.from(course);
     }
 
-    /** 내 강의 조회 - 역할에 따라 개설 강의 또는 수강 강의 반환 */
+    /** 내 강의 목록 — 선생님은 개설 강의, 학생은 수강 중 강의 */
     public List<CourseResponse.Info> getMyCourses(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        User user = findUser(userId);
 
         if (user.getRole() == User.Role.TEACHER) {
             return courseRepository.findByTeacherId(userId).stream()
                     .map(CourseResponse.Info::from)
                     .toList();
-        } else {
-            return enrollmentRepository.findByStudentId(userId).stream()
-                    .map(e -> CourseResponse.Info.from(e.getCourse()))
-                    .toList();
         }
+        return enrollmentRepository.findByStudentId(userId).stream()
+                .map(e -> CourseResponse.Info.from(e.getCourse()))
+                .toList();
     }
 
-    /**
-     * 강의 탐색 - 키워드가 있으면 제목·과목 검색, 없으면 전체 조회.
-     * N+1 방지 배치 쿼리로 수강생 수·수강 여부를 일괄 집계한다.
-     */
+    /** 강의 탐색 — 키워드가 있으면 제목·과목 검색, 없으면 전체 조회 */
     public List<CourseResponse.Browse> browseCourses(String keyword, Long userId) {
         List<Course> courses = (keyword == null || keyword.isBlank())
                 ? courseRepository.findAllByOrderByCreatedAtDesc()
@@ -76,17 +70,38 @@ public class CourseService {
         return toBrowseList(courses, userId);
     }
 
+    /** 강의 단건 조회 */
+    public CourseResponse.Info getCourse(Long courseId) {
+        return CourseResponse.Info.from(findCourse(courseId));
+    }
+
+    /** 수강 신청 (중복 방지) */
+    @Transactional
+    public void enrollStudent(Long courseId, Long studentId) {
+        Course course = findCourse(courseId);
+        User student = findUser(studentId);
+
+        if (enrollmentRepository.existsByCourseIdAndStudentId(courseId, studentId)) {
+            throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
+        }
+
+        enrollmentRepository.save(CourseEnrollment.builder()
+                .course(course)
+                .student(student)
+                .build());
+    }
+
+    // ─── 내부 헬퍼 ───
+
     /** 강의 목록을 Browse DTO로 변환 (배치 쿼리로 N+1 방지) */
     private List<CourseResponse.Browse> toBrowseList(List<Course> courses, Long userId) {
         if (courses.isEmpty()) return List.of();
 
         List<Long> courseIds = courses.stream().map(Course::getId).toList();
 
-        // 배치 쿼리로 수강생 수 한 번에 조회
         Map<Long, Long> countMap = enrollmentRepository.countGroupByCourseIds(courseIds).stream()
                 .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
 
-        // 배치 쿼리로 수강 여부 한 번에 조회
         Set<Long> enrolledIds = userId != null
                 ? Set.copyOf(enrollmentRepository.findEnrolledCourseIds(userId, courseIds))
                 : Set.of();
@@ -98,30 +113,13 @@ public class CourseService {
         )).toList();
     }
 
-    /** 강의 단건 조회 */
-    public CourseResponse.Info getCourse(Long courseId) {
-        Course course = courseRepository.findById(courseId)
+    private Course findCourse(Long courseId) {
+        return courseRepository.findById(courseId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COURSE_NOT_FOUND));
-        return CourseResponse.Info.from(course);
     }
 
-    /** 수강 신청 - 중복 수강 방지 후 등록 */
-    @Transactional
-    public void enrollStudent(Long courseId, Long studentId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.COURSE_NOT_FOUND));
-        User student = userRepository.findById(studentId)
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-        if (enrollmentRepository.existsByCourseIdAndStudentId(courseId, studentId)) {
-            throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
-        }
-
-        CourseEnrollment enrollment = CourseEnrollment.builder()
-                .course(course)
-                .student(student)
-                .build();
-
-        enrollmentRepository.save(enrollment);
     }
 }

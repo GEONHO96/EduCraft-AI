@@ -132,13 +132,13 @@ class FullIntegrationTest {
         String token = register("sub@edu.com", "구독자", "STUDENT", "MIDDLE_2");
 
         // 2. 구독 전 상태 확인 (COMMUNITY)
-        mockMvc.perform(get("/api/subscription/me")
+        mockMvc.perform(get("/api/subscriptions/me")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.plan").value("COMMUNITY"));
 
         // 3. PRO 구독
-        mockMvc.perform(post("/api/subscription/subscribe")
+        mockMvc.perform(post("/api/subscriptions/subscribe")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -149,20 +149,20 @@ class FullIntegrationTest {
                 .andExpect(jsonPath("$.data.amount").value(9900));
 
         // 4. 구독 상태 확인
-        mockMvc.perform(get("/api/subscription/me")
+        mockMvc.perform(get("/api/subscriptions/me")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.plan").value("PRO"))
                 .andExpect(jsonPath("$.data.status").value("ACTIVE"));
 
         // 5. 구독 취소
-        mockMvc.perform(post("/api/subscription/cancel")
+        mockMvc.perform(post("/api/subscriptions/cancel")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("CANCELLED"));
 
         // 6. 결제 내역 확인
-        mockMvc.perform(get("/api/subscription/payments")
+        mockMvc.perform(get("/api/subscriptions/payments")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
