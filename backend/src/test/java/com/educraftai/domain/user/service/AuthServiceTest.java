@@ -190,14 +190,14 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 사용자 조회 시 예외를 던진다")
+        @DisplayName("존재하지 않는 사용자 조회 시 UNAUTHORIZED 예외를 던진다")
         void getMyInfo_notFound_throwsException() {
             given(userRepository.findById(999L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> authService.getMyInfo(999L))
                     .isInstanceOf(BusinessException.class)
                     .extracting(e -> ((BusinessException) e).getErrorCode())
-                    .isEqualTo(ErrorCode.USER_NOT_FOUND);
+                    .isEqualTo(ErrorCode.UNAUTHORIZED);
         }
     }
 
@@ -241,18 +241,15 @@ class AuthServiceTest {
     class ResetPassword {
 
         @Test
-        @DisplayName("임시 비밀번호를 생성하고 이메일을 발송한다")
+        @DisplayName("이메일로 임시 비밀번호를 생성하고 반환한다")
         void resetPassword_success() {
-            AuthRequest.ResetPassword request = new AuthRequest.ResetPassword();
-            request.setEmail("test@edu.com");
-            request.setName("홍길동");
-
-            given(userRepository.findByEmailAndName("test@edu.com", "홍길동"))
+            given(userRepository.findByEmail("test@edu.com"))
                     .willReturn(Optional.of(testUser));
             given(passwordEncoder.encode(anyString())).willReturn("newEncoded");
 
-            authService.resetPassword(request);
+            String tempPassword = authService.resetPassword("test@edu.com");
 
+            assertThat(tempPassword).isNotBlank();
             then(emailService).should().sendTempPasswordEmail(eq("test@edu.com"), eq("홍길동"), anyString());
         }
 
@@ -266,17 +263,25 @@ class AuthServiceTest {
                     .role(User.Role.STUDENT)
                     .build();
 
-            AuthRequest.ResetPassword request = new AuthRequest.ResetPassword();
-            request.setEmail("social@edu.com");
-            request.setName("소셜유저");
-
-            given(userRepository.findByEmailAndName("social@edu.com", "소셜유저"))
+            given(userRepository.findByEmail("social@edu.com"))
                     .willReturn(Optional.of(socialUser));
 
-            assertThatThrownBy(() -> authService.resetPassword(request))
+            assertThatThrownBy(() -> authService.resetPassword("social@edu.com"))
                     .isInstanceOf(BusinessException.class)
                     .extracting(e -> ((BusinessException) e).getErrorCode())
-                    .isEqualTo(ErrorCode.INVALID_INPUT);
+                    .isEqualTo(ErrorCode.SOCIAL_LOGIN_NO_PASSWORD);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 이메일로 재설정 시 예외를 던진다")
+        void resetPassword_emailNotFound_throwsException() {
+            given(userRepository.findByEmail("notfound@edu.com"))
+                    .willReturn(Optional.empty());
+
+            assertThatThrownBy(() -> authService.resetPassword("notfound@edu.com"))
+                    .isInstanceOf(BusinessException.class)
+                    .extracting(e -> ((BusinessException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.USER_NOT_FOUND);
         }
     }
 

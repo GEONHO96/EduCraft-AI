@@ -4,12 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import com.educraftai.domain.ai.controller.ChatController;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,6 +68,40 @@ public class AiClient {
 
         } catch (Exception e) {
             log.error("AI API 호출 실패", e);
+            throw new RuntimeException("AI 생성에 실패했습니다.", e);
+        }
+    }
+
+    /**
+     * 대화 기록을 포함한 AI 응답 생성
+     * System + 이전 대화 히스토리 + 현재 메시지를 함께 전송하여 맥락 있는 답변을 생성한다.
+     */
+    public String generateWithHistory(String systemPrompt, List<ChatController.HistoryMessage> history, String userPrompt) {
+        try {
+            List<Message> messages = new ArrayList<>();
+            messages.add(new SystemMessage(systemPrompt));
+
+            // 이전 대화 기록 추가 (최대 20개로 제한)
+            if (history != null) {
+                int start = Math.max(0, history.size() - 20);
+                for (int i = start; i < history.size(); i++) {
+                    var h = history.get(i);
+                    if ("user".equals(h.getRole())) {
+                        messages.add(new UserMessage(h.getText()));
+                    } else {
+                        messages.add(new AssistantMessage(h.getText()));
+                    }
+                }
+            }
+
+            messages.add(new UserMessage(userPrompt));
+
+            Prompt prompt = new Prompt(messages);
+            ChatResponse response = chatModel.call(prompt);
+            return response.getResult().getOutput().getText();
+
+        } catch (Exception e) {
+            log.error("AI API 호출 실패 (with history)", e);
             throw new RuntimeException("AI 생성에 실패했습니다.", e);
         }
     }
