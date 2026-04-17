@@ -197,7 +197,7 @@ class CourseServiceTest {
         given(enrollmentRepository.findEnrolledCourseIds(2L, List.of(10L)))
                 .willReturn(List.of(10L));
 
-        List<CourseResponse.Browse> result = courseService.browseAllCourses(2L);
+        List<CourseResponse.Browse> result = courseService.browseCourses(null, 2L);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getStudentCount()).isEqualTo(5);

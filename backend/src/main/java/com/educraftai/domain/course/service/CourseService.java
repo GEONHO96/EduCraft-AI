@@ -65,16 +65,14 @@ public class CourseService {
         }
     }
 
-    /** 전체 강의 목록 조회 (학생의 수강 여부 포함) - N+1 방지 배치 쿼리 */
-    public List<CourseResponse.Browse> browseAllCourses(Long userId) {
-        List<Course> courses = courseRepository.findAllByOrderByCreatedAtDesc();
-        return toBrowseList(courses, userId);
-    }
-
-    /** 강의 검색 (제목 또는 과목) - N+1 방지 배치 쿼리 */
-    public List<CourseResponse.Browse> searchCourses(String keyword, Long userId) {
-        List<Course> courses = courseRepository
-                .findByTitleContainingIgnoreCaseOrSubjectContainingIgnoreCaseOrderByCreatedAtDesc(keyword, keyword);
+    /**
+     * 강의 탐색 - 키워드가 있으면 제목·과목 검색, 없으면 전체 조회.
+     * N+1 방지 배치 쿼리로 수강생 수·수강 여부를 일괄 집계한다.
+     */
+    public List<CourseResponse.Browse> browseCourses(String keyword, Long userId) {
+        List<Course> courses = (keyword == null || keyword.isBlank())
+                ? courseRepository.findAllByOrderByCreatedAtDesc()
+                : courseRepository.findByTitleContainingIgnoreCaseOrSubjectContainingIgnoreCaseOrderByCreatedAtDesc(keyword, keyword);
         return toBrowseList(courses, userId);
     }
 

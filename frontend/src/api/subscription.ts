@@ -37,17 +37,17 @@ export interface SubscribeResult {
 
 export const subscriptionApi = {
   getMySubscription: () =>
-    apiClient.get<ApiResponse<SubscriptionInfo>>('/subscription/me'),
+    apiClient.get<ApiResponse<SubscriptionInfo>>('/subscriptions/me'),
 
   getPaymentHistory: () =>
-    apiClient.get<ApiResponse<PaymentInfo[]>>('/subscription/payments'),
+    apiClient.get<ApiResponse<PaymentInfo[]>>('/subscriptions/payments'),
 
   subscribe: (data: SubscribeRequest) =>
-    apiClient.post<ApiResponse<SubscribeResult>>('/subscription/subscribe', data),
+    apiClient.post<ApiResponse<SubscribeResult>>('/subscriptions/subscribe', data),
 
   cancel: () =>
-    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscription/cancel'),
+    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscriptions/cancel'),
 
   downgrade: () =>
-    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscription/downgrade'),
+    apiClient.post<ApiResponse<SubscriptionInfo>>('/subscriptions/downgrade'),
 }
