@@ -69,13 +69,17 @@ public class AuthController {
         return ApiResponse.ok(authService.findEmail(request));
     }
 
-    /** 비밀번호 초기화 — 이메일만으로 임시 비밀번호 발급 */
+    /**
+     * 비밀번호 초기화 — 이메일만으로 임시 비밀번호 발급.
+     * <p>보안을 위해 발급된 임시 비밀번호는 응답 본문에 포함하지 않고,
+     * {@link com.educraftai.global.common.EmailService}를 통해 사용자의 이메일로만 전달한다.
+     * 클라이언트는 "발송 완료" 메시지만 받아서 사용자에게 메일함 확인을 안내한다.
+     */
     @PostMapping("/reset-password")
     public ApiResponse<Map<String, String>> resetPassword(@Valid @RequestBody AuthRequest.ResetPassword request) {
-        String tempPassword = authService.resetPassword(request.getEmail());
+        authService.resetPassword(request.getEmail());
         return ApiResponse.ok(Map.of(
-                "message", "임시 비밀번호가 발급되었습니다.",
-                "tempPassword", tempPassword
+                "message", "임시 비밀번호가 이메일로 발송되었습니다. 메일함을 확인해주세요."
         ));
     }
 

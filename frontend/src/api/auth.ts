@@ -80,9 +80,12 @@ export const authApi = {
   findEmail: (data: { name: string }) =>
     apiClient.post<ApiResponse<string[]>>('/auth/find-email', data),
 
-  /** 임시 비밀번호 발급 (이메일만으로 발급) */
+  /**
+   * 임시 비밀번호 발급 — 이메일만으로 요청.
+   * 보안을 위해 비밀번호는 응답에 포함되지 않고 사용자 이메일로만 발송된다.
+   */
   resetPassword: (data: { email: string }) =>
-    apiClient.post<ApiResponse<{ message: string; tempPassword: string }>>('/auth/reset-password', data),
+    apiClient.post<ApiResponse<{ message: string }>>('/auth/reset-password', data),
 
   /** 임시 비밀번호로 새 비밀번호 설정 */
   changePassword: (data: { email: string; tempPassword: string; newPassword: string }) =>

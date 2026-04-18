@@ -280,11 +280,10 @@ function ResetPasswordForm() {
     try {
       const res = await authApi.resetPassword({ email })
       if (res.data.success) {
-        if (res.data.data.tempPassword) {
-          setInputTempPw(res.data.data.tempPassword)
-        }
+        // 보안을 위해 임시 비밀번호는 화면에 노출하지 않고 이메일로만 안내한다.
+        // (백엔드가 tempPassword를 응답에 포함하더라도 프론트엔드에서 무시)
         setStep('temp-issued')
-        toast.success('임시 비밀번호가 발급되었습니다.')
+        toast.success('임시 비밀번호가 이메일로 발송되었습니다. 메일함을 확인해주세요.')
       } else {
         toast.error(getResponseError(res.data, '가입되지 않은 이메일입니다.'))
       }
@@ -363,7 +362,7 @@ function ResetPasswordForm() {
   if (step === 'temp-issued') {
     return (
       <div>
-        {/* 임시 비밀번호 발급 완료 안내 */}
+        {/* 임시 비밀번호 발급 완료 안내 — 보안을 위해 비밀번호는 화면에 표시하지 않고 이메일로만 안내 */}
         <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl mb-5">
           <div className="flex items-center gap-2 mb-2">
             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
@@ -371,16 +370,14 @@ function ResetPasswordForm() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-emerald-800">임시 비밀번호 발급 완료</span>
+            <span className="text-sm font-semibold text-emerald-800">임시 비밀번호 발송 완료</span>
           </div>
-          {inputTempPw && (
-            <div className="bg-white border-2 border-emerald-200 rounded-lg p-3 text-center my-2">
-              <p className="text-[11px] text-emerald-600 font-semibold uppercase tracking-wider mb-1">임시 비밀번호</p>
-              <p className="text-xl font-bold font-mono text-emerald-700 tracking-[4px] select-all">{inputTempPw}</p>
-            </div>
-          )}
-          <p className="text-sm text-emerald-700 leading-relaxed">
-            아래에서 새 비밀번호로 바로 변경해주세요.
+          <p className="text-sm text-emerald-700 leading-relaxed mb-1">
+            <strong className="font-mono text-emerald-800">{email}</strong> 으로
+            <br />임시 비밀번호를 발송했습니다. 메일함을 확인해주세요.
+          </p>
+          <p className="text-xs text-emerald-600/80 mt-2 leading-relaxed">
+            💡 메일이 도착하지 않았다면 <strong>스팸함</strong>을 확인해보세요. (최대 1~2분 소요)
           </p>
         </div>
 
