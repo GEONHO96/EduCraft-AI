@@ -173,19 +173,37 @@ class AuthControllerIntegrationTest {
     @DisplayName("비밀번호 재설정 API")
     class ResetPasswordApi {
 
+        /**
+         * 보안 강화 후 응답 본문에는 임시 비밀번호가 포함되지 않고 message만 반환된다.
+         * 실제 임시 비밀번호는 {@link com.educraftai.global.common.EmailService}를 통해 이메일로만 전달.
+         */
         @Test
-        @DisplayName("임시 비밀번호 발급 요청 시 메시지를 반환한다")
+        @DisplayName("임시 비밀번호 발급 요청 시 메시지만 반환하고 비밀번호는 응답에 포함되지 않는다")
         void resetPassword_success() throws Exception {
             registerAndGetToken("reset@edu.com", "리셋", "STUDENT", "MIDDLE_1");
 
             String body = """
-                    {"email":"reset@edu.com","name":"리셋"}
+                    {"email":"reset@edu.com"}
                     """;
             mockMvc.perform(post("/api/auth/reset-password")
                             .contentType(MediaType.APPLICATION_JSON).content(body))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value(true))
-                    .andExpect(jsonPath("$.data.message").isNotEmpty());
+                    .andExpect(jsonPath("$.data.message").isNotEmpty())
+                    .andExpect(jsonPath("$.data.tempPassword").doesNotExist());
+        }
+
+        @Test
+        @DisplayName("가입되지 않은 이메일로 요청하면 USER_NOT_FOUND 에러 응답을 반환한다")
+        void resetPassword_unknownEmail() throws Exception {
+            String body = """
+                    {"email":"nobody@edu.com"}
+                    """;
+            mockMvc.perform(post("/api/auth/reset-password")
+                            .contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success").value(false))
+                    .andExpect(jsonPath("$.error.code").value("USER_001"));
         }
     }
 

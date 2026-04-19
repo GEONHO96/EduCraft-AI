@@ -140,10 +140,20 @@ class SnsServiceTest {
     @DisplayName("좋아요")
     class Likes {
 
+        /**
+         * 서비스는 {@code postRepository.incrementLikeCount(postId)} 같은 원자적 DB 업데이트를 수행하고,
+         * 그 직후 {@code postRepository.flush()} + {@code findById(postId)}로 최신 카운트를 재조회한다.
+         * 테스트에서는 증감 호출을 검증만 하고, 두 번째 조회 시 업데이트된 상태의 Post를 반환하도록 준비한다.
+         */
         @Test
         @DisplayName("좋아요 추가 시 liked=true와 증가된 카운트를 반환한다")
         void toggleLike_add() {
-            given(postRepository.findById(100L)).willReturn(Optional.of(post));
+            Post likedPost = Post.builder().author(user1).content("테스트 게시글").category(Post.Category.FREE).build();
+            likedPost.incrementLikeCount(); // 서비스의 DB 업데이트 결과를 시뮬레이션
+
+            given(postRepository.findById(100L))
+                    .willReturn(Optional.of(post))      // 첫 번째 조회 (findPost)
+                    .willReturn(Optional.of(likedPost)); // 두 번째 조회 (flush 후 재조회)
             given(userRepository.findById(2L)).willReturn(Optional.of(user2));
             given(postLikeRepository.findByPostIdAndUserId(100L, 2L)).willReturn(Optional.empty());
             given(postLikeRepository.save(any())).willAnswer(inv -> inv.getArgument(0));
@@ -152,16 +162,19 @@ class SnsServiceTest {
 
             assertThat(result.isLiked()).isTrue();
             assertThat(result.getLikeCount()).isEqualTo(1);
+            then(postRepository).should().incrementLikeCount(100L);
         }
 
         @Test
         @DisplayName("좋아요 취소 시 liked=false와 감소된 카운트를 반환한다")
         void toggleLike_remove() {
             PostLike existingLike = PostLike.builder().post(post).user(user2).build();
-            // 먼저 좋아요를 1로 설정
-            post.incrementLikeCount();
+            Post unlikedPost = Post.builder().author(user1).content("테스트 게시글").category(Post.Category.FREE).build();
+            // 서비스가 decrementLikeCount를 호출해 0이 된 상태 시뮬레이션 (초기값 0 유지)
 
-            given(postRepository.findById(100L)).willReturn(Optional.of(post));
+            given(postRepository.findById(100L))
+                    .willReturn(Optional.of(post))        // 첫 번째 조회
+                    .willReturn(Optional.of(unlikedPost)); // 두 번째 조회
             given(userRepository.findById(2L)).willReturn(Optional.of(user2));
             given(postLikeRepository.findByPostIdAndUserId(100L, 2L)).willReturn(Optional.of(existingLike));
 
@@ -169,7 +182,8 @@ class SnsServiceTest {
 
             assertThat(result.isLiked()).isFalse();
             assertThat(result.getLikeCount()).isEqualTo(0);
-            then(postLikeRepository).should().delete(existingLike);
+            then(postLikeRepository).should().deleteByPostIdAndUserId(100L, 2L);
+            then(postRepository).should().decrementLikeCount(100L);
         }
     }
 
@@ -177,8 +191,12 @@ class SnsServiceTest {
     @DisplayName("댓글")
     class Comments {
 
+        /**
+         * 서비스는 in-memory 엔티티를 수정하지 않고 {@code postRepository.incrementCommentCount(postId)}
+         * 원자적 SQL 업데이트를 사용한다. 따라서 카운트는 직접 검증하지 않고 해당 리포지토리 호출을 검증한다.
+         */
         @Test
-        @DisplayName("댓글을 정상 작성한다")
+        @DisplayName("댓글을 정상 작성하고 게시글의 댓글 수 증가 쿼리를 호출한다")
         void addComment_success() {
             SnsRequest.CreateComment request = new SnsRequest.CreateComment();
             request.setContent("좋은 글이네요!");
@@ -190,7 +208,9 @@ class SnsServiceTest {
             SnsResponse.CommentInfo result = snsService.addComment(2L, 100L, request);
 
             assertThat(result).isNotNull();
-            assertThat(post.getCommentCount()).isEqualTo(1);
+            assertThat(result.getContent()).isEqualTo("좋은 글이네요!");
+            then(postCommentRepository).should().save(any(PostComment.class));
+            then(postRepository).should().incrementCommentCount(100L);
         }
 
         @Test

@@ -164,12 +164,13 @@ class DashboardServiceTest {
     @DisplayName("학생 대시보드")
     class StudentDashboard {
 
+        /**
+         * DashboardService는 DB 집계 쿼리(countByStudentId, getAverageScorePercentByStudentId)를
+         * 사용하고 최근 결과만 Top10 쿼리로 조회하는 구조라, mock은 이 시그니처에 맞춰야 한다.
+         */
         @Test
         @DisplayName("수강 강의 수, 퀴즈 수, 평균 점수를 포함한다")
         void getStudentDashboard_success() throws Exception {
-            CourseEnrollment enrollment = CourseEnrollment.builder().course(course).student(student).build();
-            setId(enrollment, 1L);
-
             QuizSubmission sub1 = QuizSubmission.builder().quiz(quiz).student(student)
                     .answersJson("[\"2\",\"6\"]").score(2).totalQuestions(2).build();
             setId(sub1, 1L);
@@ -180,29 +181,33 @@ class DashboardServiceTest {
             setId(sub2, 2L);
             setField(sub2, "submittedAt", LocalDateTime.of(2026, 4, 11, 10, 0));
 
-            given(enrollmentRepository.findByStudentId(2L)).willReturn(List.of(enrollment));
-            given(submissionRepository.findByStudentId(2L)).willReturn(List.of(sub1, sub2));
-            given(gradeQuizSubmissionRepository.findByStudentIdOrderBySubmittedAtDesc(2L))
+            given(enrollmentRepository.countByStudentId(2L)).willReturn(1L);
+            given(submissionRepository.countByStudentId(2L)).willReturn(2L);
+            given(submissionRepository.getAverageScorePercentByStudentId(2L)).willReturn(75.0);
+            given(submissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
+                    .willReturn(List.of(sub2, sub1));
+            given(gradeQuizSubmissionRepository.countByStudentId(2L)).willReturn(0L);
+            given(gradeQuizSubmissionRepository.getAverageScorePercentByStudentId(2L)).willReturn(0.0);
+            given(gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
                     .willReturn(Collections.emptyList());
 
             DashboardResponse.StudentDashboard result = dashboardService.getStudentDashboard(2L);
 
             assertThat(result.getEnrolledCourses()).isEqualTo(1);
             assertThat(result.getCompletedQuizzes()).isEqualTo(2);
-            // sub1: 2/2=100%, sub2: 1/2=50% → 평균 75.0
             assertThat(result.getAverageScore()).isEqualTo(75.0);
             assertThat(result.getRecentQuizResults()).hasSize(2);
         }
 
         @Test
         @DisplayName("퀴즈 없으면 평균 점수 0이다")
-        void getStudentDashboard_noQuizzes() throws Exception {
-            CourseEnrollment enrollment = CourseEnrollment.builder().course(course).student(student).build();
-            setId(enrollment, 1L);
-
-            given(enrollmentRepository.findByStudentId(2L)).willReturn(List.of(enrollment));
-            given(submissionRepository.findByStudentId(2L)).willReturn(Collections.emptyList());
-            given(gradeQuizSubmissionRepository.findByStudentIdOrderBySubmittedAtDesc(2L))
+        void getStudentDashboard_noQuizzes() {
+            given(enrollmentRepository.countByStudentId(2L)).willReturn(1L);
+            given(submissionRepository.countByStudentId(2L)).willReturn(0L);
+            given(gradeQuizSubmissionRepository.countByStudentId(2L)).willReturn(0L);
+            given(submissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
+                    .willReturn(Collections.emptyList());
+            given(gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
                     .willReturn(Collections.emptyList());
 
             DashboardResponse.StudentDashboard result = dashboardService.getStudentDashboard(2L);
@@ -216,9 +221,6 @@ class DashboardServiceTest {
         @Test
         @DisplayName("강의 퀴즈와 학년별 퀴즈 결과를 통합한다")
         void getStudentDashboard_mergesGradeQuiz() throws Exception {
-            CourseEnrollment enrollment = CourseEnrollment.builder().course(course).student(student).build();
-            setId(enrollment, 1L);
-
             QuizSubmission sub1 = QuizSubmission.builder().quiz(quiz).student(student)
                     .answersJson("[\"2\"]").score(2).totalQuestions(2).build();
             setId(sub1, 1L);
@@ -236,9 +238,14 @@ class DashboardServiceTest {
             setId(gradeSub2, 2L);
             setField(gradeSub2, "submittedAt", LocalDateTime.of(2026, 4, 12, 9, 0));
 
-            given(enrollmentRepository.findByStudentId(2L)).willReturn(List.of(enrollment));
-            given(submissionRepository.findByStudentId(2L)).willReturn(List.of(sub1));
-            given(gradeQuizSubmissionRepository.findByStudentIdOrderBySubmittedAtDesc(2L))
+            given(enrollmentRepository.countByStudentId(2L)).willReturn(1L);
+            given(submissionRepository.countByStudentId(2L)).willReturn(1L);
+            given(submissionRepository.getAverageScorePercentByStudentId(2L)).willReturn(100.0);
+            given(submissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
+                    .willReturn(List.of(sub1));
+            given(gradeQuizSubmissionRepository.countByStudentId(2L)).willReturn(2L);
+            given(gradeQuizSubmissionRepository.getAverageScorePercentByStudentId(2L)).willReturn(75.0);
+            given(gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
                     .willReturn(List.of(gradeSub2, gradeSub1));
 
             DashboardResponse.StudentDashboard result = dashboardService.getStudentDashboard(2L);
@@ -246,7 +253,7 @@ class DashboardServiceTest {
             assertThat(result.getCompletedQuizzes()).isEqualTo(3);
             assertThat(result.getRecentQuizResults()).hasSize(3);
 
-            // sub1: 2/2=100%, gradeSub1: 8/10=80%, gradeSub2: 7/10=70% → 평균 83.3
+            // quiz(1개, 100%) + gradeQuiz(2개, 75%) 가중 평균 → (100*1 + 75*2) / 3 ≈ 83.33
             assertThat(result.getAverageScore()).isEqualTo(83.3);
 
             // 학년별 퀴즈 타이틀에 한글 학년 라벨이 포함된다
@@ -260,10 +267,7 @@ class DashboardServiceTest {
         @Test
         @DisplayName("최근 결과는 최신순으로 정렬되고 최대 10개이다")
         void getStudentDashboard_sortedAndLimited() throws Exception {
-            CourseEnrollment enrollment = CourseEnrollment.builder().course(course).student(student).build();
-            setId(enrollment, 1L);
-
-            // 11개의 학년별 퀴즈 생성 (10개 제한 테스트)
+            // 11개의 학년별 퀴즈 (최신이 먼저 오도록 준비)
             List<GradeQuizSubmission> gradeSubs = new java.util.ArrayList<>();
             for (int i = 1; i <= 11; i++) {
                 GradeQuizSubmission gs = GradeQuizSubmission.builder()
@@ -275,14 +279,19 @@ class DashboardServiceTest {
             }
             Collections.reverse(gradeSubs); // 최신순 정렬
 
-            given(enrollmentRepository.findByStudentId(2L)).willReturn(List.of(enrollment));
-            given(submissionRepository.findByStudentId(2L)).willReturn(Collections.emptyList());
-            given(gradeQuizSubmissionRepository.findByStudentIdOrderBySubmittedAtDesc(2L))
+            given(enrollmentRepository.countByStudentId(2L)).willReturn(1L);
+            given(submissionRepository.countByStudentId(2L)).willReturn(0L);
+            given(submissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
+                    .willReturn(Collections.emptyList());
+            given(gradeQuizSubmissionRepository.countByStudentId(2L)).willReturn(11L);
+            given(gradeQuizSubmissionRepository.getAverageScorePercentByStudentId(2L)).willReturn(60.0);
+            given(gradeQuizSubmissionRepository.findTop10ByStudentIdOrderBySubmittedAtDesc(2L))
                     .willReturn(gradeSubs);
 
             DashboardResponse.StudentDashboard result = dashboardService.getStudentDashboard(2L);
 
             assertThat(result.getCompletedQuizzes()).isEqualTo(11);
+            // Top10 쿼리 결과 + 병합 정렬 → 최대 10건
             assertThat(result.getRecentQuizResults()).hasSize(10);
 
             // 최신순 정렬 확인 (첫 번째가 가장 최신)
