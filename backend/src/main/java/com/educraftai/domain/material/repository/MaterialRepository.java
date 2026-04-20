@@ -23,4 +23,8 @@ public interface MaterialRepository extends JpaRepository<Material, Long> {
     @Query("SELECT CASE WHEN COUNT(m) > 0 THEN true ELSE false END " +
             "FROM Material m WHERE m.id = :materialId AND m.curriculum.course.id = :courseId")
     boolean existsByIdAndCourseId(@Param("materialId") Long materialId, @Param("courseId") Long courseId);
+
+    /** 여러 커리큘럼에 속한 자료를 한 번에 배치 조회 (N+1 방지) */
+    @Query("SELECT m FROM Material m WHERE m.curriculum.id IN :curriculumIds ORDER BY m.curriculum.id, m.id")
+    List<Material> findByCurriculumIdIn(@Param("curriculumIds") List<Long> curriculumIds);
 }

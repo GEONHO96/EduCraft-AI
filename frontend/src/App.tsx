@@ -32,6 +32,11 @@ const GradeQuizPage = lazy(() => import('./pages/quiz/GradeQuizPage'))
 const PricingPage = lazy(() => import('./pages/subscription/PricingPage'))
 const ProfileEditPage = lazy(() => import('./pages/auth/ProfileEditPage'))
 const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'))
+// 학습 진도 & 수료증
+const MyProgressPage = lazy(() => import('./pages/progress/MyProgressPage'))
+const CourseProgressDetailPage = lazy(() => import('./pages/progress/CourseProgressDetailPage'))
+const CertificateListPage = lazy(() => import('./pages/certificate/CertificateListPage'))
+const CertificateDetailPage = lazy(() => import('./pages/certificate/CertificateDetailPage'))
 
 /** 인증 가드 - 토큰 없으면 로그인 페이지로 리다이렉트 */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -89,6 +94,11 @@ function App() {
           {/* SNS 커뮤니티 */}
           <Route path="sns/feed" element={<FeedPage />} />
           <Route path="sns/profile/:userId" element={<ProfilePage />} />
+          {/* 학습 진도 & 수료증 */}
+          <Route path="progress/me" element={<MyProgressPage />} />
+          <Route path="progress/courses/:courseId" element={<CourseProgressDetailPage />} />
+          <Route path="certificates" element={<CertificateListPage />} />
+          <Route path="certificates/:certificateNumber" element={<CertificateDetailPage />} />
         </Route>
       </Routes>
     </Suspense>
