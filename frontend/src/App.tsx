@@ -38,6 +38,8 @@ const CourseProgressDetailPage = lazy(() => import('./pages/progress/CourseProgr
 const MyWeaknessPage = lazy(() => import('./pages/progress/MyWeaknessPage'))
 const CertificateListPage = lazy(() => import('./pages/certificate/CertificateListPage'))
 const CertificateDetailPage = lazy(() => import('./pages/certificate/CertificateDetailPage'))
+// 교사 모니터링
+const CourseMonitoringPage = lazy(() => import('./pages/teacher/CourseMonitoringPage'))
 
 /** 인증 가드 - 토큰 없으면 로그인 페이지로 리다이렉트 */
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -101,6 +103,8 @@ function App() {
           <Route path="progress/weakness" element={<MyWeaknessPage />} />
           <Route path="certificates" element={<CertificateListPage />} />
           <Route path="certificates/:certificateNumber" element={<CertificateDetailPage />} />
+          {/* 교사 모니터링 */}
+          <Route path="teacher/courses/:courseId/monitoring" element={<CourseMonitoringPage />} />
         </Route>
       </Routes>
     </Suspense>
