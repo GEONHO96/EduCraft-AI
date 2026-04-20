@@ -6,6 +6,7 @@ import com.educraftai.domain.quiz.entity.Quiz;
 import com.educraftai.domain.quiz.entity.QuizSubmission;
 import com.educraftai.domain.quiz.repository.QuizRepository;
 import com.educraftai.domain.quiz.repository.QuizSubmissionRepository;
+import com.educraftai.domain.progress.event.QuizSubmittedEvent;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.exception.BusinessException;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +32,20 @@ public class QuizService {
     private final QuizSubmissionRepository submissionRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     /** 퀴즈 단건 조회 */
     public QuizResponse.Info getQuiz(Long quizId) {
         return QuizResponse.Info.from(findQuiz(quizId));
     }
 
-    /** 퀴즈 제출 — 중복 제출 방지, 즉시 채점 */
+    /**
+     * 퀴즈 제출 — 중복 제출 방지, 즉시 채점.
+     *
+     * <p>제출 완료 후 {@link QuizSubmittedEvent}를 발행한다. 이벤트 리스너는
+     * {@code AFTER_COMMIT} 단계에서 실행되므로 이벤트 처리(진도 갱신, 약점 분석)가
+     * 실패해도 퀴즈 제출 자체는 이미 커밋되어 있어 학생 플로우에 영향 없음.
+     */
     @Transactional
     public QuizResponse.SubmissionResult submitQuiz(Long quizId, Long studentId, QuizRequest.Submit request) {
         Quiz quiz = findQuiz(quizId);
@@ -56,6 +65,14 @@ public class QuizService {
                 .score(score)
                 .totalQuestions(totalQuestions)
                 .build());
+
+        // 진도·약점 분석 트리거 (커밋 후 비동기 처리)
+        double scorePercent = totalQuestions > 0 ? (double) score / totalQuestions * 100.0 : 0.0;
+        int incorrectCount = Math.max(0, totalQuestions - score);
+        Long courseId = quiz.getMaterial().getCurriculum().getCourse().getId();
+        eventPublisher.publishEvent(new QuizSubmittedEvent(
+                studentId, courseId, quizId, submission.getId(), scorePercent, incorrectCount
+        ));
 
         return QuizResponse.SubmissionResult.from(submission);
     }

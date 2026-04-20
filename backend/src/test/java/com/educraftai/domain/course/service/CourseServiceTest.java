@@ -35,6 +35,7 @@ class CourseServiceTest {
     @Mock private CourseRepository courseRepository;
     @Mock private CourseEnrollmentRepository enrollmentRepository;
     @Mock private UserRepository userRepository;
+    @Mock private com.educraftai.domain.progress.service.LearningProgressService learningProgressService;
 
     private User teacher;
     private User student;
