@@ -35,6 +35,7 @@ const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'))
 // 학습 진도 & 수료증
 const MyProgressPage = lazy(() => import('./pages/progress/MyProgressPage'))
 const CourseProgressDetailPage = lazy(() => import('./pages/progress/CourseProgressDetailPage'))
+const MyWeaknessPage = lazy(() => import('./pages/progress/MyWeaknessPage'))
 const CertificateListPage = lazy(() => import('./pages/certificate/CertificateListPage'))
 const CertificateDetailPage = lazy(() => import('./pages/certificate/CertificateDetailPage'))
 
@@ -97,6 +98,7 @@ function App() {
           {/* 학습 진도 & 수료증 */}
           <Route path="progress/me" element={<MyProgressPage />} />
           <Route path="progress/courses/:courseId" element={<CourseProgressDetailPage />} />
+          <Route path="progress/weakness" element={<MyWeaknessPage />} />
           <Route path="certificates" element={<CertificateListPage />} />
           <Route path="certificates/:certificateNumber" element={<CertificateDetailPage />} />
         </Route>
