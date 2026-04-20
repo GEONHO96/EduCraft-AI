@@ -6,6 +6,7 @@ import com.educraftai.domain.course.entity.Course;
 import com.educraftai.domain.course.entity.CourseEnrollment;
 import com.educraftai.domain.course.repository.CourseEnrollmentRepository;
 import com.educraftai.domain.course.repository.CourseRepository;
+import com.educraftai.domain.progress.service.LearningProgressService;
 import com.educraftai.domain.user.entity.User;
 import com.educraftai.domain.user.repository.UserRepository;
 import com.educraftai.global.exception.BusinessException;
@@ -32,6 +33,7 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseEnrollmentRepository enrollmentRepository;
     private final UserRepository userRepository;
+    private final LearningProgressService learningProgressService;
 
     /** 강의 생성 (선생님 전용) */
     @Transactional
@@ -75,7 +77,7 @@ public class CourseService {
         return CourseResponse.Info.from(findCourse(courseId));
     }
 
-    /** 수강 신청 (중복 방지) */
+    /** 수강 신청 (중복 방지). 등록과 함께 학습 진도 레코드도 초기화한다. */
     @Transactional
     public void enrollStudent(Long courseId, Long studentId) {
         Course course = findCourse(courseId);
@@ -85,10 +87,13 @@ public class CourseService {
             throw new BusinessException(ErrorCode.ALREADY_ENROLLED);
         }
 
-        enrollmentRepository.save(CourseEnrollment.builder()
+        CourseEnrollment enrollment = enrollmentRepository.save(CourseEnrollment.builder()
                 .course(course)
                 .student(student)
                 .build());
+
+        // 진도 레코드 즉시 초기화 — 이후 자료 체크·퀴즈 제출이 이 레코드를 갱신한다
+        learningProgressService.initializeForEnrollment(enrollment);
     }
 
     // ─── 내부 헬퍼 ───

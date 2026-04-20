@@ -40,6 +40,7 @@ class QuizServiceTest {
     @Mock private QuizRepository quizRepository;
     @Mock private QuizSubmissionRepository submissionRepository;
     @Mock private UserRepository userRepository;
+    @Mock private org.springframework.context.ApplicationEventPublisher eventPublisher;
     @Spy  private ObjectMapper objectMapper = new ObjectMapper();
 
     private User teacher;

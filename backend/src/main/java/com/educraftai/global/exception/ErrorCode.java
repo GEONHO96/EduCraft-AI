@@ -64,6 +64,25 @@ public enum ErrorCode {
     BATCH_JOB_NOT_FOUND("BATCH_001", "요청한 배치 작업을 찾을 수 없습니다."),
     BATCH_JOB_FAILED("BATCH_002", "배치 작업 실행에 실패했습니다."),
 
+    // ── Progress (PROGRESS_xxx) ──
+    PROGRESS_NOT_FOUND("PROGRESS_001", "학습 진도 정보를 찾을 수 없습니다."),
+    MATERIAL_NOT_IN_COURSE("PROGRESS_002", "해당 자료는 이 강의에 속하지 않습니다."),
+    ALREADY_COMPLETED_MATERIAL("PROGRESS_003", "이미 완료 처리된 자료입니다."),
+    NOT_ENROLLED_IN_COURSE("PROGRESS_004", "수강 중이지 않은 강의입니다."),
+
+    // ── Certificate (CERT_xxx) ──
+    CERTIFICATE_NOT_FOUND("CERT_001", "수료증을 찾을 수 없습니다."),
+    CERTIFICATE_ALREADY_ISSUED("CERT_002", "이미 발급된 수료증입니다."),
+    CERTIFICATE_REQUIREMENTS_NOT_MET("CERT_003", "수료 조건을 충족하지 않았습니다."),
+
+    // ── Weakness (WEAKNESS_xxx) ──
+    WEAKNESS_REPORT_NOT_FOUND("WEAKNESS_001", "약점 분석 리포트를 찾을 수 없습니다."),
+    WEAKNESS_ANALYSIS_IN_PROGRESS("WEAKNESS_002", "약점 분석이 아직 진행 중입니다. 잠시 후 다시 시도해주세요."),
+    WEAKNESS_ANALYSIS_FAILED("WEAKNESS_003", "약점 분석에 실패했습니다."),
+
+    // ── Teacher Monitoring (MONITOR_xxx) ──
+    TEACHER_COURSE_ACCESS_DENIED("MONITOR_001", "담당 강의가 아닙니다."),
+
     // ── Common (COMMON_xxx) ──
     NOT_FOUND("COMMON_000", "리소스를 찾을 수 없습니다."),
     INVALID_INPUT("COMMON_001", "잘못된 입력값입니다."),
